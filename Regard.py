@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*
 from __future__ import print_function
-# import time
+import tqdm
 # import numpy as np
 import torch
 import torch.nn as nn
@@ -11,7 +11,8 @@ from torchvision import datasets, transforms
 from torchvision.datasets import ImageFolder
 import torch.multiprocessing as mp
 import torchvision.models as models
-
+import torchvision
+# torchvision.set_image_backend('accimage')
 
 class Data():
     def __init__(self, args):
@@ -44,12 +45,13 @@ class Data():
         from torchvision.utils import make_grid
         npimg = make_grid(images, normalize=True).numpy()
         import matplotlib.pyplot as plt
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=((13, 5)))
         import numpy as np
         if transpose:
             ax.imshow(np.transpose(npimg, (1, 2, 0)))
         else:
             ax.imshow(npimg)
+        plt.setp(ax, xticks=[], yticks=[])
 
         return fig, ax
 
@@ -64,9 +66,9 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(args.dimension, 4)
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
         #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-        x = F.relu(F.max_pool2d(self.conv2(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
         x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
         #x = F.dropout(x, training=self.training)
@@ -140,20 +142,19 @@ class ML():
         self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
 
-
     def forward(self, img):
         # normalize img
         return (img - self.mean) / self.std
 
+    def train(self):
+        for epoch in tqdm(range(1, self.args.epochs + 1)):
+            if self.args.log_interval>0:
+                print('Train Epoch: {} '.format(epoch))
+            self.train_epoch(epoch, rank=0)
 
-    def train(self, rank=0):
-        torch.manual_seed(self.args.seed + rank)
-        for epoch in range(1, self.args.epochs + 1):
-            self.train_epoch(epoch)
-            #test_epoch(model, test_loader)
-
-    def train_epoch(self, epoch):
+    def train_epoch(self, epoch, rank=0):
         self.model.train()
+        torch.manual_seed(self.args.seed + rank)
         for batch_idx, (data, target) in enumerate(self.d.train_loader):
             data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
@@ -161,13 +162,11 @@ class ML():
             loss = F.nll_loss(output, target)
             loss.backward()
             self.optimizer.step()
-            if self.args.log_interval>0:
+            if self.args.verbose and self.args.log_interval>0:
                 if batch_idx % self.args.log_interval == 0:
-                    print('[{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        batch_idx * len(data), len(self.d.train_loader.dataset),
+                    print('\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                        epoch, batch_idx * len(data), len(self.d.train_loader.dataset),
                         100. * batch_idx / len(self.d.train_loader), loss.item()))
-
-
     def test(self):
         self.model.eval()
         test_loss = 0
@@ -188,23 +187,30 @@ class ML():
             100. * correct / len(self.d.test_loader.dataset)))
         return correct.numpy() / len(self.d.test_loader.dataset)
 
-    def protocol(self):
+    def show(self, gamma=.5, noise_level=.4, transpose=True):
 
-        if self.args.num_processes>1:
-            self.model.share_memory() # gradients are allocated lazily, so they are not shared here
+        data, target = next(iter(self.d.train_loader))
+        data, target = data.to(self.device), target.to(self.device)
+        output = self.model(data)
+        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+        print(target, pred)
 
-            processes = []
-            for rank in range(self.args.num_processes):
-                p = mp.Process(target=self.train, args=(rank,))
-                p.start()
-                processes.append(p)
-            for p in processes:
-                p.join()
+
+        from torchvision.utils import make_grid
+        npimg = make_grid(data, normalize=True).numpy()
+        import matplotlib.pyplot as plt
+        fig, ax = plt.subplots(figsize=((13, 5)))
+        import numpy as np
+        if transpose:
+            ax.imshow(np.transpose(npimg, (1, 2, 0)))
         else:
-            for epoch in range(1, self.args.epochs + 1):
-                if self.args.log_interval>0: # rajout de la commande pour pouvoir print ou non les différents epoch ou juste le résultat
-                    print('Train Epoch: {} '.format(epoch))
-                self.train()
+            ax.imshow(npimg)
+        plt.setp(ax, xticks=[], yticks=[])
+
+        return fig, ax
+
+    def protocol(self):
+        self.train()
         Accuracy = self.test()
         return Accuracy
 
@@ -263,6 +269,5 @@ def init(batch_size=64, test_batch_size=1000, epochs=10,
 
 if __name__ == '__main__':
     args = init_cdl()
-
     ml = ML(args)
     ml.main()
