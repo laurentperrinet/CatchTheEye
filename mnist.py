@@ -28,7 +28,7 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
 parser.add_argument('--dimension', type=int, default = 50, metavar='D',
-                    help='the dimension of the second neuron network') #ajout de l'argument dimension représentant le nombre de neurone dans la deuxième couche. 
+                    help='the dimension of the second neuron network') #ajout de l'argument dimension représentant le nombre de neurone dans la deuxième couche.
 parser.add_argument('--boucle', type=int, default=0, metavar='B',
                    help='boucle pour faire différents couche de la deuxième couche de neurone')# ajout de boucle pour automatiser le nombre de neurone dans la deuxieme couche
 args = parser.parse_args()
@@ -56,13 +56,13 @@ test_loader = torch.utils.data.DataLoader(
     batch_size=args.test_batch_size, shuffle=True, **kwargs)
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, dimension=args.dimension):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(320, args.dimension)# args.dimension prend la valeur default de l'argument dimension.
-        self.fc2 = nn.Linear(args.dimension, 10)
+        self.fc1 = nn.Linear(320, dimension)# args.dimension prend la valeur default de l'argument dimension.
+        self.fc2 = nn.Linear(dimension, 10)
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
@@ -79,7 +79,7 @@ if args.cuda:
 
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
-def train(epoch):
+def train(model, epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         if args.cuda:
@@ -95,6 +95,7 @@ def train(epoch):
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     epoch, batch_idx * len(data), len(train_loader.dataset),
                     100. * batch_idx / len(train_loader), loss.data[0]))
+    return model
 
 def test():
     model.eval()
@@ -120,25 +121,22 @@ def protocol():
         train(epoch)
     return test()
 
-def main():
+def main(model):
     for epoch in range(1, args.epochs + 1):
-        train(epoch)
-        Accuracy = test()
+        model = train(model, epoch)
+    Accuracy = test()
     print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
-    
-    
-if __name__ == '__main__':  
+
+
+if __name__ == '__main__':
     if args.boucle == 1: # Pour que la boucle se fasse indiquer --boucle 1
-        rho = 10**(1/3) 
-        for i in [int (k) for k in rho**np.arange(2,9)]:# i prend les valeur en entier du tuple rho correspondra au nombre de neurone
-            args.dimension = i
-            print ('La deuxième couche de neurone comporte',i,'neurones')
-            main()
+        rho = 10**(1/3)
+        for i in [int (k) for k in rho**np.arange(2,9)]:
+            model = Net(dimension=i)
+            print ('La deuxième couche de neurone comporte', i, 'neurones')
+            main(model)
     else:
-        t0 = time.time () # ajout de la constante de temps t0
-
-        main()
-
+        t0 = time.time ()
+        main(model)
         t1 = time.time () # ajout de la constante de temps t1
-
-        print ("Le programme a mis",t1-t0, "secondes à s'exécuter.") #compare t1 et t0, connaitre le temps d'execution du programme
+        print ("Le programme a mis", t1-t0, "secondes à s'exécuter.") #compare t1 et t0, connaitre le temps d'execution du programme
