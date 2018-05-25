@@ -7,6 +7,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.autograd import Variable
+import argparse
 
 class Data():
     def __init__(self, args):
@@ -32,6 +33,7 @@ class Net(nn.Module):
         self.conv1 = nn.Conv2d(1, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
+        print(args.dimension)
         self.fc1 = nn.Linear(320, args.dimension)
         self.fc2 = nn.Linear(args.dimension, 10)
 
@@ -62,7 +64,6 @@ class ML():
         self.model = Net(args)
         self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
-
 
     def train(self):
         self.model.train()
@@ -117,9 +118,8 @@ class ML():
         Accuracy = self.protocol()
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
-
-if __name__ == '__main__':
-
+def init(epochs=10, lr=0.01, momentum=0.5, cuda=False, seed=42,
+            log_interval=10, dimension=50):
     # Training settings
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -131,7 +131,7 @@ if __name__ == '__main__':
                         help='number of epochs to train (default: 10)')
     parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                         help='learning rate (default: 0.01)')
-    parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
+    parser.add_argument('--momentum', type=float, default=momentum, metavar='M',
                         help='SGD momentum (default: 0.5)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
@@ -141,7 +141,12 @@ if __name__ == '__main__':
                         help='how many batches to wait before logging training status')
     parser.add_argument('--dimension', type=int, default = 50, metavar='D',
                         help='the dimension of the second neuron network')
-    args = parser.parse_args()
+    parser.add_argument("-v", "--verbose", action="store_true", default=True,
+                        help="increase output verbosity")
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    args = init()
 
     ml = ML(args)
     ml.main()
