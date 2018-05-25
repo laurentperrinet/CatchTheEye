@@ -24,20 +24,21 @@ class Data():
             print('cuda?', self.args.cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
 
-        self.IMAGENET_MEAN = [0.485, 0.456, 0.406]
-        self.IMAGENET_STD = [0.229, 0.224, 0.225]
-
+        # self.IMAGENET_MEAN = [0.485, 0.456, 0.406]
+        # self.IMAGENET_STD = [0.229, 0.224, 0.225]
 
         kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
         t = transforms.Compose([
-            transforms.CenterCrop(256),
+            transforms.CenterCrop(args.crop),
+            transforms.Resize(args.size),
             transforms.ToTensor(),
-            transforms.Normalize(mean=self.IMAGENET_MEAN, std=self.IMAGENET_STD),
+            #transforms.Normalize(mean=self.IMAGENET_MEAN, std=self.IMAGENET_STD),
+            transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
         self.dataset = ImageFolder('dataset', t)
         self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
         self.test_loader= torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=2)
-        self.classes = 'blink', 'left', 'right', 'center'
+        self.classes = 'blink', 'left ', 'right', ' fix '
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
 
@@ -55,13 +56,15 @@ class Data():
         plt.setp(ax, xticks=[], yticks=[])
 
         return fig, ax
+
+
 class Net(nn.Module):
     def __init__(self, args):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         #self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(74420, args.dimension)
+        self.fc1 = nn.Linear(16820, args.dimension)
         self.fc2 = nn.Linear(args.dimension, 4)
 
     def forward(self, x):
@@ -146,13 +149,16 @@ class ML():
         return (img - self.mean) / self.std
 
     def train(self):
-        for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch'):
-            #if self.args.log_interval>0:
-            #    print('Train Epoch: {} '.format(epoch))
-            self.train_epoch(epoch, rank=0)
+        self.model.train()
+        
+        if self.args.verbose :
+            for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch'):
+                self.train_epoch(epoch, rank=0)
+        else:
+            for epoch in range(1, self.args.epochs + 1):
+                self.train_epoch(epoch, rank=0)
 
     def train_epoch(self, epoch, rank=0):
-        self.model.train()
         torch.manual_seed(self.args.seed + rank)
         for batch_idx, (data, target) in enumerate(self.d.train_loader):
             data, target = data.to(self.device), target.to(self.device)
@@ -191,8 +197,10 @@ class ML():
         data, target = next(iter(self.d.train_loader))
         data, target = data.to(self.device), target.to(self.device)
         output = self.model(data)
-        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-        print(target, pred)
+        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-
+        print('target:' + ' '.join('%5s' % self.d.classes[j] for j in target))
+        print('pred  :' + ' '.join('%5s' % self.d.classes[j] for j in pred))
+        #print(target, pred)
 
 
         from torchvision.utils import make_grid
@@ -219,7 +227,9 @@ class ML():
 
 def init_cdl(batch_size=64, test_batch_size=1000, epochs=10,
             lr=0.01, momentum=0.5, no_cuda=True, num_processes=1, seed=42,
-            log_interval=10, dimension=50, verbose=False):
+            log_interval=10, crop=256, size=128,
+            conv1_dim=10, conv1_kernel_size=5, conv2_dim=20, conv2_kernel_size=5,
+            dimension=50, verbose=False):
     # Training settings
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -237,6 +247,18 @@ def init_cdl(batch_size=64, test_batch_size=1000, epochs=10,
                         help='disables CUDA training')
     parser.add_argument('--num-processes', type=int, default=num_processes,
                         help='using multi-processing')
+    parser.add_argument('--crop', type=int, default=crop,
+                        help='size of cropped image')
+    parser.add_argument('--size', type=int, default=size,
+                        help='size of image')
+    parser.add_argument('--conv1_dim', type=int, default=conv1_dim,
+                        help='size of conv1 depth')
+    parser.add_argument('--conv2_dim', type=int, default=conv2_dim,
+                        help='size of conv2 depth')
+    parser.add_argument('--conv1_kernel_size', type=int, default=conv1_kernel_size,
+                        help='size of conv1 kernel_size')
+    parser.add_argument('--conv2_kernel_size', type=int, default=conv2_kernel_size,
+                        help='size of conv2 kernel_size')
     parser.add_argument('--seed', type=int, default=seed, metavar='S',
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=log_interval, metavar='N',
@@ -249,7 +271,7 @@ def init_cdl(batch_size=64, test_batch_size=1000, epochs=10,
 
 def init(batch_size=64, test_batch_size=1000, epochs=10,
             lr=0.01, momentum=0.5, no_cuda=True, num_processes=1, seed=42,
-            log_interval=10,
+            log_interval=10, crop=256, size=128, mean=.5, std=.25,
             conv1_dim=10, conv1_kernel_size=5, conv2_dim=20, conv2_kernel_size=5,
             dimension=50, verbose=False):
     # Training settings
@@ -267,7 +289,10 @@ def init(batch_size=64, test_batch_size=1000, epochs=10,
             "verbose": verbose,
     }
     kwargs.update(conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
-                  conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size)
+                  conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+                  crop=256, size=128, mean=mean, std=std
+                  )
+    # print(kwargs)
     import easydict
     return easydict.EasyDict(kwargs)
 
