@@ -105,7 +105,7 @@ class ML():
 
         test_loss /= len(self.d.test_loader.dataset)
 
-        if args.log_interval>0:
+        if self.args.log_interval>0:
             print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
             test_loss, correct, len(self.d.test_loader.dataset),
             100. * correct / len(self.d.test_loader.dataset)))

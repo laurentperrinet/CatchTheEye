@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*
 from __future__ import print_function
-import tqdm
+#import tqdm
+from tqdm import tqdm_notebook as tqdm
 # import numpy as np
 import torch
 import torch.nn as nn
@@ -54,13 +55,11 @@ class Data():
         plt.setp(ax, xticks=[], yticks=[])
 
         return fig, ax
-
-
 class Net(nn.Module):
     def __init__(self, args):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
-        self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
+        self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
+        self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         #self.conv2_drop = nn.Dropout2d()
         self.fc1 = nn.Linear(74420, args.dimension)
         self.fc2 = nn.Linear(args.dimension, 4)
@@ -147,9 +146,9 @@ class ML():
         return (img - self.mean) / self.std
 
     def train(self):
-        for epoch in tqdm(range(1, self.args.epochs + 1)):
-            if self.args.log_interval>0:
-                print('Train Epoch: {} '.format(epoch))
+        for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch'):
+            #if self.args.log_interval>0:
+            #    print('Train Epoch: {} '.format(epoch))
             self.train_epoch(epoch, rank=0)
 
     def train_epoch(self, epoch, rank=0):
@@ -224,7 +223,7 @@ def init_cdl(batch_size=64, test_batch_size=1000, epochs=10,
     # Training settings
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-    parser.add_argument('--batch-size', type=int, default=64, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=batch_size, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=test_batch_size, metavar='N',
                         help='input batch size for testing (default: 1000)')
@@ -250,10 +249,11 @@ def init_cdl(batch_size=64, test_batch_size=1000, epochs=10,
 
 def init(batch_size=64, test_batch_size=1000, epochs=10,
             lr=0.01, momentum=0.5, no_cuda=True, num_processes=1, seed=42,
-            log_interval=10, dimension=50, verbose=False):
+            log_interval=10,
+            conv1_dim=10, conv1_kernel_size=5, conv2_dim=20, conv2_kernel_size=5,
+            dimension=50, verbose=False):
     # Training settings
-    import easydict
-    return easydict.EasyDict({
+    kwargs = {
             "batch_size": batch_size,
             "test_batch_size": test_batch_size,
             "epochs":epochs,
@@ -265,7 +265,11 @@ def init(batch_size=64, test_batch_size=1000, epochs=10,
             "log_interval": log_interval,
             "dimension": dimension,
             "verbose": verbose,
-    })
+    }
+    kwargs.update(conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
+                  conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size)
+    import easydict
+    return easydict.EasyDict(kwargs)
 
 if __name__ == '__main__':
     args = init_cdl()
