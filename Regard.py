@@ -225,11 +225,31 @@ class ML():
         Accuracy = self.protocol()
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
-def init_cdl(batch_size=32, test_batch_size=1000, epochs=50,
-            lr=0.01, momentum=0.5, no_cuda=True, num_processes=1, seed=42,
-            log_interval=10, crop=128, size=128,
-            conv1_dim=10, conv1_kernel_size=5, conv2_dim=20, conv2_kernel_size=5,
-            dimension=50, verbose=False):
+batch_size=32
+test_batch_size=1000
+epochs=10
+lr=0.01momentum=0.5
+no_cuda=True
+num_processes=1
+seed=42
+log_interval=10
+crop=128
+size=128
+mean=.5
+std=.5
+conv1_dim=10
+conv1_kernel_size=5
+conv2_dim=20
+conv2_kernel_size=5
+dimension=50
+verbose=False
+
+def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epochs,
+            lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
+            log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
+            conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
+            conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+            dimension=dimension, verbose=verbose):
     # Training settings
     import argparse
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -269,11 +289,12 @@ def init_cdl(batch_size=32, test_batch_size=1000, epochs=50,
                         help="increase output verbosity")
     return parser.parse_args()
 
-def init(batch_size=32, test_batch_size=1000, epochs=10,
-            lr=0.01, momentum=0.5, no_cuda=True, num_processes=1, seed=42,
-            log_interval=10, crop=128, size=128,
-            conv1_dim=10, conv1_kernel_size=5, conv2_dim=20, conv2_kernel_size=5,
-            dimension=50, verbose=False):
+def init(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epochs,
+            lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
+            log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
+            conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
+            conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+            dimension=dimension, verbose=verbose):
     # Training settings
     kwargs = {
             "batch_size": batch_size,
@@ -290,7 +311,7 @@ def init(batch_size=32, test_batch_size=1000, epochs=10,
     }
     kwargs.update(conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                   conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-                  crop=256, size=128, mean=mean, std=std
+                  crop=crop, size=128, mean=mean, std=std
                   )
     # print(kwargs)
     import easydict
