@@ -225,18 +225,19 @@ class ML():
         Accuracy = self.protocol()
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
-batch_size=32
+batch_size=8
 test_batch_size=1000
-epochs=10
-lr=0.01momentum=0.5
+epochs=50
+lr=0.03
+momentum=0.25
 no_cuda=True
 num_processes=1
 seed=42
 log_interval=10
-crop=128
+crop=181
 size=128
-mean=.5
-std=.5
+mean=.3
+std=.6
 conv1_dim=10
 conv1_kernel_size=5
 conv2_dim=20
