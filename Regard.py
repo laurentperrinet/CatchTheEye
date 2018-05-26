@@ -1,10 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*
 from __future__ import print_function
+
+batch_size = 8
+test_batch_size = 400
+epochs = 30
+lr = 0.01
+momentum = 0.25
+no_cuda = True
+num_processes = 1
+seed = 42
+log_interval = 10
+crop = 181
+size = 128
+mean = .3
+std = .6
+conv1_dim = 10
+conv1_kernel_size = 5
+conv2_dim = 20
+conv2_kernel_size = 5
+dimension = 50
+verbose = False
+
+
 #import tqdm
 from tqdm import tqdm_notebook as tqdm
 # import numpy as np
 import torch
+torch.set_default_tensor_type('torch.FloatTensor')
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -36,8 +59,8 @@ class Data():
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
         self.dataset = ImageFolder('dataset', t)
-        self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=2)
-        self.test_loader= torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=2)
+        self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
+        self.test_loader= torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
         self.classes = 'blink', 'left ', 'right', ' fix '
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
@@ -64,13 +87,15 @@ class Net(nn.Module):
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         #self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(16820, args.dimension)
+        padding = 2* (2* (args.conv1_kernel_size -1)//2 + (args.conv2_kernel_size -1)//2)
+        fc1_dim = int((args.size - padding) **2 * args.conv2_dim / 16)
+        self.fc1 = nn.Linear(fc1_dim, args.dimension)
         self.fc2 = nn.Linear(args.dimension, 4)
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=2, stride=2))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[2, 2], stride=[2, 2]))
         #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=2, stride=2))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[2, 2], stride=[2, 2]))
         x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
         #x = F.dropout(x, training=self.training)
@@ -143,6 +168,7 @@ class ML():
         #self.model = models.vgg19(pretrained=True).features.to(device).eval()
         self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
+        # optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
 
     def forward(self, img):
         # normalize img
@@ -197,7 +223,7 @@ class ML():
         data, target = next(iter(self.d.train_loader))
         data, target = data.to(self.device), target.to(self.device)
         output = self.model(data)
-        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-
+        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
         print('target:' + ' '.join('%5s' % self.d.classes[j] for j in target))
         print('pred  :' + ' '.join('%5s' % self.d.classes[j] for j in pred))
         #print(target, pred)
@@ -225,25 +251,6 @@ class ML():
         Accuracy = self.protocol()
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
-batch_size=8
-test_batch_size=1000
-epochs=50
-lr=0.03
-momentum=0.25
-no_cuda=True
-num_processes=1
-seed=42
-log_interval=10
-crop=181
-size=128
-mean=.3
-std=.6
-conv1_dim=10
-conv1_kernel_size=5
-conv2_dim=20
-conv2_kernel_size=5
-dimension=50
-verbose=False
 
 def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epochs,
             lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
