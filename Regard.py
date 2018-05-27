@@ -11,8 +11,8 @@ no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-crop = 181
-size = 128
+crop = 121
+size = 200
 mean = .3
 std = .6
 conv1_dim = 10
@@ -61,7 +61,7 @@ class Data():
         self.dataset = ImageFolder('dataset', t)
         self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
         self.test_loader= torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
-        self.classes = 'blink', 'left ', 'right', ' fix '
+        self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
 
