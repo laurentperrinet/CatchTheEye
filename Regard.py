@@ -3,15 +3,16 @@
 from __future__ import print_function
 
 batch_size = 8
-test_batch_size = 400
-epochs = 30
+test_batch_size = 1
+valid_size = .2
+epochs = 60
 lr = 0.01
 momentum = 0.25
 no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-crop = 121
+crop = 181
 size = 200
 mean = .3
 std = .6
@@ -25,7 +26,7 @@ verbose = False
 
 #import tqdm
 from tqdm import tqdm_notebook as tqdm
-# import numpy as np
+import numpy as np
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
 import torch.nn as nn
@@ -37,6 +38,7 @@ import torch.multiprocessing as mp
 import torchvision.models as models
 import torchvision
 # torchvision.set_image_backend('accimage')
+from torch.utils.data.sampler import SubsetRandomSampler
 
 class Data():
     def __init__(self, args):
@@ -50,7 +52,6 @@ class Data():
         # self.IMAGENET_MEAN = [0.485, 0.456, 0.406]
         # self.IMAGENET_STD = [0.229, 0.224, 0.225]
 
-        kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
         t = transforms.Compose([
             transforms.CenterCrop(args.crop),
             transforms.Resize(args.size),
@@ -59,9 +60,30 @@ class Data():
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
         self.dataset = ImageFolder('dataset', t)
-        self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
-        self.test_loader= torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
-        self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
+        #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
+        #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
+
+        # https://gist.github.com/kevinzakka/d33bf8d6c7f06a9d8c76d97a7879f5cb
+        num_train = len(self.dataset)
+        if self.args.verbose:
+            print('Found', num_train, 'sample images')
+        # indices = list(range(num_train))
+        split = int(np.floor(self.args.valid_size * num_train))
+        #
+        # np.random.seed(self.args.seed)
+        # np.random.shuffle(indices)
+        #
+        # train_idx, valid_idx = indices[split:], indices[:split]
+        # train_sampler = SubsetRandomSampler(train_idx)
+        # valid_sampler = SubsetRandomSampler(valid_idx)
+
+        train_dataset, test_dataset = torch.utils.data.random_split(self.dataset, [num_train-split, split])
+
+        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.args.batch_size, **kwargs)
+        self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.args.test_batch_size, **kwargs)
+
+        from torch.utils.data import random_split
+        # self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
 
@@ -252,7 +274,7 @@ class ML():
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
 
-def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epochs,
+def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
             lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -265,6 +287,8 @@ def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epoc
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=test_batch_size, metavar='N',
                         help='input batch size for testing (default: 1000)')
+    parser.add_argument('--valid-size', type=float, default=valid_size, metavar='N',
+                        help='ratio of samples used for validation (default: .2)')
     parser.add_argument('--epochs', type=int, default=epochs, metavar='N',
                         help='number of epochs to train (default: 10)')
     parser.add_argument('--lr', type=float, default=lr, metavar='LR',
@@ -297,7 +321,7 @@ def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epoc
                         help="increase output verbosity")
     return parser.parse_args()
 
-def init(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epochs,
+def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
             lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -307,6 +331,7 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, epochs=epochs,
     kwargs = {
             "batch_size": batch_size,
             "test_batch_size": test_batch_size,
+            "valid_size":valid_size,
             "epochs":epochs,
             "lr": lr,
             "momentum":momentum,
