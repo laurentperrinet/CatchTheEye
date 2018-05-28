@@ -6,7 +6,7 @@ batch_size = 8
 test_batch_size = 1
 valid_size = .2
 epochs = 60
-lr = 0.01
+lr = 0.02
 momentum = 0.25
 no_cuda = True
 num_processes = 1
@@ -65,10 +65,10 @@ class Data():
 
         # https://gist.github.com/kevinzakka/d33bf8d6c7f06a9d8c76d97a7879f5cb
         num_train = len(self.dataset)
-        if self.args.verbose:
-            print('Found', num_train, 'sample images')
         # indices = list(range(num_train))
         split = int(np.floor(self.args.valid_size * num_train))
+        if self.args.verbose:
+            print('Found', num_train, 'sample images; ', num_train-split, ' to train', split, 'to test')
         #
         # np.random.seed(self.args.seed)
         # np.random.shuffle(indices)
@@ -242,12 +242,12 @@ class ML():
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
 
-        data, target = next(iter(self.d.train_loader))
+        data, target = next(iter(self.d.test_loader))
         data, target = data.to(self.device), target.to(self.device)
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-        print('target:' + ' '.join('%5s' % self.d.classes[j] for j in target))
-        print('pred  :' + ' '.join('%5s' % self.d.classes[j] for j in pred))
+        print('target:' + ' '.join('%5s' % self.d.dataset.classes[j] for j in target))
+        print('pred  :' + ' '.join('%5s' % self.d.dataset.classes[j] for j in pred))
         #print(target, pred)
 
 
