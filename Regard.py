@@ -47,7 +47,7 @@ class Data():
         self.args.cuda = not self.args.no_cuda and torch.cuda.is_available()
         if self.args.verbose:
             print('cuda?', self.args.cuda)
-        kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {}
+        kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {'num_workers': 1, 'shuffle': True}
 
         # self.IMAGENET_MEAN = [0.485, 0.456, 0.406]
         # self.IMAGENET_STD = [0.229, 0.224, 0.225]
@@ -77,12 +77,12 @@ class Data():
         # train_sampler = SubsetRandomSampler(train_idx)
         # valid_sampler = SubsetRandomSampler(valid_idx)
 
-        train_dataset, test_dataset = torch.utils.data.random_split(self.dataset, [num_train-split, split])
+        from torch.utils.data import random_split
+        train_dataset, test_dataset = random_split(self.dataset, [num_train-split, split])
 
         self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.args.batch_size, **kwargs)
         self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.args.test_batch_size, **kwargs)
 
-        from torch.utils.data import random_split
         # self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
