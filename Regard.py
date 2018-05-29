@@ -2,25 +2,25 @@
 # -*- coding: utf-8 -*
 from __future__ import print_function
 
-batch_size = 8
+batch_size = 16
 test_batch_size = 1
 valid_size = .2
-epochs = 60
+epochs = 100
 lr = 0.02
 momentum = 0.25
 no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-crop = 181
-size = 200
-mean = .3
-std = .6
+crop = 160
+size = 70
+mean = .5
+std = .4
 conv1_dim = 10
 conv1_kernel_size = 5
-conv2_dim = 20
+conv2_dim = 8
 conv2_kernel_size = 5
-dimension = 50
+dimension = 25
 verbose = False
 
 
@@ -116,7 +116,7 @@ class Net(nn.Module):
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[2, 2], stride=[2, 2]))
-        #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[2, 2], stride=[2, 2]))
         x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[2, 2], stride=[2, 2]))
         x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
@@ -207,7 +207,7 @@ class ML():
                 self.train_epoch(epoch, rank=0)
 
     def train_epoch(self, epoch, rank=0):
-        torch.manual_seed(self.args.seed + rank)
+        torch.manual_seed(self.args.seed + epoch + rank*self.args.epochs)
         for batch_idx, (data, target) in enumerate(self.d.train_loader):
             data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
@@ -220,13 +220,15 @@ class ML():
                     print('\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                         epoch, batch_idx * len(data), len(self.d.train_loader.dataset),
                         100. * batch_idx / len(self.d.train_loader), loss.item()))
-    def test(self):
+
+    def test(self, dataloader=None):
+        if dataloader is None:
+            dataloader = self.d.test_loader
         self.model.eval()
         test_loss = 0
         correct = 0
-        for data, target in self.d.test_loader:
+        for data, target in dataloader:
             data, target = data.to(self.device), target.to(self.device)
-
             output = self.model(data)
             test_loss += F.nll_loss(output, target, size_average=False).item() # sum up batch loss
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
@@ -265,6 +267,7 @@ class ML():
         return fig, ax
 
     def protocol(self):
+        # TODO: make a loop for the cross-validation of results
         self.train()
         Accuracy = self.test()
         return Accuracy
