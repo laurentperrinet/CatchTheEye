@@ -12,7 +12,7 @@ no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-crop = 160
+crop = 200
 size = 70
 mean = .5
 std = .4
@@ -24,8 +24,7 @@ dimension = 25
 verbose = False
 
 
-#import tqdm
-from tqdm import tqdm_notebook as tqdm
+
 import numpy as np
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
@@ -199,12 +198,25 @@ class ML():
     def train(self):
         self.model.train()
 
-        if self.args.verbose :
-            for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch'):
-                self.train_epoch(epoch, rank=0)
-        else:
-            for epoch in range(1, self.args.epochs + 1):
-                self.train_epoch(epoch, rank=0)
+        try:
+            from tqdm import tqdm_notebook as tqdm
+            verbose = 1
+        except ImportError:
+            verbose = 0
+        if self.args.verbose==0 or verbose==0:
+            def tqdm(x, desc=None):
+                if desc is not None: print(desc)
+                return x
+
+        for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
+            self.train_epoch(epoch, rank=0)
+
+        # if self.args.verbose :
+        #     for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch'):
+        #         self.train_epoch(epoch, rank=0)
+        # else:
+        #     for epoch in range(1, self.args.epochs + 1):
+        #         self.train_epoch(epoch, rank=0)
 
     def train_epoch(self, epoch, rank=0):
         torch.manual_seed(self.args.seed + epoch + rank*self.args.epochs)
