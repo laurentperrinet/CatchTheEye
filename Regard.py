@@ -13,12 +13,12 @@ num_processes = 1
 seed = 42
 log_interval = 10
 crop = 200
-size = 70
-mean = .5
+size = 128
+mean = .35
 std = .4
-conv1_dim = 10
+conv1_dim = 5
 conv1_kernel_size = 5
-conv2_dim = 8
+conv2_dim = 13
 conv2_kernel_size = 5
 dimension = 25
 verbose = False
@@ -254,29 +254,32 @@ class ML():
             100. * correct / len(self.d.test_loader.dataset)))
         return correct.numpy() / len(self.d.test_loader.dataset)
 
-    def show(self, gamma=.5, noise_level=.4, transpose=True):
+    def show(self, gamma=.5, noise_level=.4, transpose=True, only_wrong=False):
 
         data, target = next(iter(self.d.test_loader))
         data, target = data.to(self.device), target.to(self.device)
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-        print('target:' + ' '.join('%5s' % self.d.dataset.classes[j] for j in target))
-        print('pred  :' + ' '.join('%5s' % self.d.dataset.classes[j] for j in pred))
-        #print(target, pred)
+        if only_wrong and not pred == target:
+            print('target:' + ' '.join('%5s' % self.d.dataset.classes[j] for j in target))
+            print('pred  :' + ' '.join('%5s' % self.d.dataset.classes[j] for j in pred))
+            #print(target, pred)
 
 
-        from torchvision.utils import make_grid
-        npimg = make_grid(data, normalize=True).numpy()
-        import matplotlib.pyplot as plt
-        fig, ax = plt.subplots(figsize=((13, 5)))
-        import numpy as np
-        if transpose:
-            ax.imshow(np.transpose(npimg, (1, 2, 0)))
+            from torchvision.utils import make_grid
+            npimg = make_grid(data, normalize=True).numpy()
+            import matplotlib.pyplot as plt
+            fig, ax = plt.subplots(figsize=((13, 5)))
+            import numpy as np
+            if transpose:
+                ax.imshow(np.transpose(npimg, (1, 2, 0)))
+            else:
+                ax.imshow(npimg)
+            plt.setp(ax, xticks=[], yticks=[])
+
+            return fig, ax
         else:
-            ax.imshow(npimg)
-        plt.setp(ax, xticks=[], yticks=[])
-
-        return fig, ax
+            return None, None
 
     def protocol(self):
         # TODO: make a loop for the cross-validation of results
