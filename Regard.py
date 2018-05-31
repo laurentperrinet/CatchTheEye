@@ -39,7 +39,7 @@ import torchvision
 # torchvision.set_image_backend('accimage')
 from torch.utils.data.sampler import SubsetRandomSampler
 
-class Data():
+class Data:
     def __init__(self, args):
         self.args = args
         # GPU boilerplate
