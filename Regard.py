@@ -5,9 +5,9 @@ from __future__ import print_function
 batch_size = 16
 test_batch_size = 1
 valid_size = .2
-epochs = 200
-lr = 0.01
-momentum = 0.3
+epochs = 100
+lr = 0.005
+momentum = 0.1
 no_cuda = True
 num_processes = 1
 seed = 42
