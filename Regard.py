@@ -1,28 +1,25 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*
-from __future__ import print_function
-
 batch_size = 16
 test_batch_size = 1
 valid_size = .2
 epochs = 100
 lr = 0.005
-momentum = 0.1
+momentum = 0.48
 no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
 crop = 200
 size = 100
-mean = .25
-std = .33
-conv1_dim = 8
-conv1_kernel_size = 5
+mean = .36
+std = .3
+conv1_dim = 4
+conv1_kernel_size = 7
 conv2_dim = 13
 conv2_kernel_size = 5
 dimension = 25
 verbose = False
-
+stride1 = 2
+stride2 = 2
 
 
 import numpy as np
@@ -38,6 +35,8 @@ import torchvision.models as models
 import torchvision
 # torchvision.set_image_backend('accimage')
 from torch.utils.data.sampler import SubsetRandomSampler
+
+# from torch.optim import Adam
 
 class Data:
     def __init__(self, args):
@@ -81,8 +80,7 @@ class Data:
 
         self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.args.batch_size, **kwargs)
         self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.args.test_batch_size, **kwargs)
-
-        # self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
+        self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
 
     def show(self, gamma=.5, noise_level=.4, transpose=True):
 
@@ -105,18 +103,22 @@ class Data:
 class Net(nn.Module):
     def __init__(self, args):
         super(Net, self).__init__()
+        self.args = args
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         #self.conv2_drop = nn.Dropout2d()
-        padding = 2* (2* (args.conv1_kernel_size -1)//2 + (args.conv2_kernel_size -1)//2)
-        fc1_dim = int((args.size - padding) **2 * args.conv2_dim / 16)
+        padding1 = args.conv1_kernel_size - 1
+        out_size1 = (args.size - padding1) // stride1
+        padding2 = args.conv2_kernel_size - 1
+        out_size2 = (out_size1 - padding2) // stride2
+        fc1_dim = out_size2**2 * args.conv2_dim
         self.fc1 = nn.Linear(fc1_dim, args.dimension)
-        self.fc2 = nn.Linear(args.dimension, 4)
+        self.fc2 = nn.Linear(args.dimension, len(self.args.classes))
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[2, 2], stride=[2, 2]))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=self.args.stride1))#, stride=self.args.stride1))
         #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[2, 2], stride=[2, 2]))
-        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[2, 2], stride=[2, 2]))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=self.args.stride2))#, stride=self.args.stride2))
         x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
         #x = F.dropout(x, training=self.training)
@@ -153,20 +155,6 @@ class Net(nn.Module):
 #         x = self.fc3(x)
 #         return F.log_softmax(x, dim=1)
 
-# cnn_normalization_mean = torch.tensor([0.485, 0.456, 0.406]).to(device)
-# cnn_normalization_std = torch.tensor([0.229, 0.224, 0.225]).to(device)
-#
-# # create a module to normalize input image so we can easily put it in a
-# # nn.Sequential
-# class Normalization(nn.Module):
-#     def __init__(self, mean, std):
-#         super(Normalization, self).__init__()
-#         # .view the mean and std to make them [C x 1 x 1] so that they can
-#         # directly work with image Tensor of shape [B x C x H x W].
-#         # B is batch size. C is number of channels. H is height and W is width.
-#         self.mean = torch.tensor(mean).view(-1, 1, 1)
-#         self.std = torch.tensor(std).view(-1, 1, 1)
-
 
 class ML():
     def __init__(self, args):
@@ -183,12 +171,14 @@ class ML():
         if self.args.cuda:
             torch.cuda.manual_seed(self.args.seed)
         # DATA
-        self.d = Data(self.args)
+        self.dataset = Data(self.args)
+        self.args.classes = self.dataset.classes
         # MODEL
-        self.model = Net(args).to(self.device)
+        self.model = Net(self.args).to(self.device)
         #self.model = models.vgg19(pretrained=True).features.to(device).eval()
         self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
+        # self.optimizer = optim.Adam(model.parameters(), lr=self.args.lr, weight_decay=0.0001*self.args.momentum)
         # optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
 
     def forward(self, img):
@@ -220,7 +210,7 @@ class ML():
 
     def train_epoch(self, epoch, rank=0):
         torch.manual_seed(self.args.seed + epoch + rank*self.args.epochs)
-        for batch_idx, (data, target) in enumerate(self.d.train_loader):
+        for batch_idx, (data, target) in enumerate(self.dataset.train_loader):
             data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
             output = self.model(data)
@@ -230,12 +220,12 @@ class ML():
             if self.args.verbose and self.args.log_interval>0:
                 if batch_idx % self.args.log_interval == 0:
                     print('\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        epoch, batch_idx * len(data), len(self.d.train_loader.dataset),
-                        100. * batch_idx / len(self.d.train_loader), loss.item()))
+                        epoch, batch_idx * len(data), len(self.dataset.train_loader.dataset),
+                        100. * batch_idx / len(self.dataset.train_loader), loss.item()))
 
     def test(self, dataloader=None):
         if dataloader is None:
-            dataloader = self.d.test_loader
+            dataloader = self.dataset.test_loader
         self.model.eval()
         test_loss = 0
         correct = 0
@@ -246,23 +236,23 @@ class ML():
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).long().cpu().sum()
 
-        test_loss /= len(self.d.test_loader.dataset)
+        test_loss /= len(self.dataset.test_loader.dataset)
 
         if self.args.log_interval>0:
             print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-            test_loss, correct, len(self.d.test_loader.dataset),
-            100. * correct / len(self.d.test_loader.dataset)))
-        return correct.numpy() / len(self.d.test_loader.dataset)
+            test_loss, correct, len(self.dataset.test_loader.dataset),
+            100. * correct / len(self.dataset.test_loader.dataset)))
+        return correct.numpy() / len(self.dataset.test_loader.dataset)
 
     def show(self, gamma=.5, noise_level=.4, transpose=True, only_wrong=False):
 
-        data, target = next(iter(self.d.test_loader))
+        data, target = next(iter(self.dataset.test_loader))
         data, target = data.to(self.device), target.to(self.device)
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
         if only_wrong and not pred == target:
-            print('target:' + ' '.join('%5s' % self.d.dataset.classes[j] for j in target))
-            print('pred  :' + ' '.join('%5s' % self.d.dataset.classes[j] for j in pred))
+            print('target:' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in target))
+            print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
             #print(target, pred)
 
 
@@ -297,6 +287,7 @@ def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=
             log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+            stride1=stride1, stride2=stride2,
             dimension=dimension, verbose=verbose):
     # Training settings
     import argparse
@@ -325,6 +316,10 @@ def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=
                         help='size of conv1 depth')
     parser.add_argument('--conv2_dim', type=int, default=conv2_dim,
                         help='size of conv2 depth')
+    parser.add_argument('--stride1', type=int, default=stride1,
+                        help='size of conv1 depth')
+    parser.add_argument('--stride2', type=int, default=stride1,
+                        help='size of conv2 depth')
     parser.add_argument('--conv1_kernel_size', type=int, default=conv1_kernel_size,
                         help='size of conv1 kernel_size')
     parser.add_argument('--conv2_kernel_size', type=int, default=conv2_kernel_size,
@@ -344,6 +339,7 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
             log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+            stride1=stride1, stride2=stride2,
             dimension=dimension, verbose=verbose):
     # Training settings
     kwargs = {
@@ -362,6 +358,7 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
     }
     kwargs.update(conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                   conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+                  stride1=stride1, stride2=stride2,
                   crop=crop, size=128, mean=mean, std=std
                   )
     # print(kwargs)
