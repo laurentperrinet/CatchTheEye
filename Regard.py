@@ -107,20 +107,21 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.args = args
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
-        padding1 = args.conv1_kernel_size - 1 # total padding in layer 1
-        out_width_1 = (args.size - padding1) // stride1
+        padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
+        # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
+        out_width_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         #self.conv2_drop = nn.Dropout2d()
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
-        out_width_2 = (out_width_1 - padding2) // stride2
+        out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2**2) * args.conv2_dim
         self.fc1 = nn.Linear(fc1_dim, args.dimension)
         self.fc2 = nn.Linear(args.dimension, len(self.args.classes))
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[self.args.stride1, self.args.stride1], stride=[self.args.stride1, self.args.stride1]))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
         #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[2, 2], stride=[2, 2]))
-        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2], stride=[self.args.stride2, self.args.stride2]))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
         #x = F.dropout(x, training=self.training)
