@@ -2,13 +2,14 @@ batch_size = 16
 test_batch_size = 1
 valid_size = .2
 epochs = 100
-lr = 0.005
+lr = 0.0065
 momentum = 0.48
 no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-crop = 280
+fullsize = 300
+crop = 200
 size = 100
 mean = .36
 std = .3
@@ -51,6 +52,7 @@ class Data:
         # self.IMAGENET_STD = [0.229, 0.224, 0.225]
 
         t = transforms.Compose([
+            transforms.Resize(args.fullsize),
             transforms.CenterCrop(args.crop),
             transforms.Resize(args.size),
             transforms.ToTensor(),
@@ -339,7 +341,7 @@ def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=
 
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
             lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
-            log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
+            log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
             stride1=stride1, stride2=stride2,
@@ -362,7 +364,7 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
     kwargs.update(conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                   conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
                   stride1=stride1, stride2=stride2,
-                  crop=crop, size=128, mean=mean, std=std
+                  crop=crop, fullsize=fullsize, size=size, mean=mean, std=std
                   )
     # print(kwargs)
     import easydict
