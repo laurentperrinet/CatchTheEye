@@ -1,6 +1,7 @@
 batch_size = 16
 test_batch_size = 1
 valid_size = .2
+do_adam = False
 epochs = 100
 lr = 0.0065
 momentum = 0.48
@@ -22,6 +23,36 @@ verbose = False
 stride1 = 4
 stride2 = 4
 
+
+def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
+            do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
+            log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
+            conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
+            conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+            stride1=stride1, stride2=stride2,
+            dimension=dimension, verbose=verbose):
+    # Training settings
+    kwargs = {
+            "batch_size": batch_size,
+            "test_batch_size": test_batch_size,
+            "valid_size":valid_size,
+            "epochs":epochs,
+            "lr": lr,
+            "momentum":momentum,
+            "no_cuda": no_cuda,
+            "num_processes": num_processes,
+            "seed": seed,
+            "log_interval": log_interval,
+            "dimension": dimension,
+            "verbose": verbose,
+    }
+    kwargs.update(conv1_dim=conv1_dim, do_adam=do_adam, conv1_kernel_size=conv1_kernel_size,
+                  conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+                  stride1=stride1, stride2=stride2,
+                  crop=crop, fullsize=fullsize, size=size, mean=mean, std=std
+                  )
+    import easydict
+    return easydict.EasyDict(kwargs)
 
 import numpy as np
 import torch
@@ -180,11 +211,12 @@ class ML():
         # MODEL
         self.model = Net(self.args).to(self.device)
         #self.model = models.vgg19(pretrained=True).features.to(device).eval()
-        # self.optimizer = optim.SGD(self.model.parameters(),
-        #                             lr=self.args.lr, momentum=self.args.momentum)
-        # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=0.0001*self.args.momentum)
-
+        if self.do_adam:
+            # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=0.0001*self.args.momentum)
+        else:
+            self.optimizer = optim.SGD(self.model.parameters(),
+                                    lr=self.args.lr, momentum=self.args.momentum)
     # def forward(self, img):
     #     # normalize img
     #     return (img - self.mean) / self.std
@@ -289,90 +321,6 @@ class ML():
     def main(self):
         Accuracy = self.protocol()
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
-
-
-def init_cdl(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
-            lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
-            log_interval=log_interval, crop=crop, size=size, mean=mean, std=std,
-            conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
-            conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-            stride1=stride1, stride2=stride2,
-            dimension=dimension, verbose=verbose):
-    # Training settings
-    import argparse
-    parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-    parser.add_argument('--batch-size', type=int, default=batch_size, metavar='N',
-                        help='input batch size for training (default: 64)')
-    parser.add_argument('--test-batch-size', type=int, default=test_batch_size, metavar='N',
-                        help='input batch size for testing (default: 1000)')
-    parser.add_argument('--valid-size', type=float, default=valid_size, metavar='N',
-                        help='ratio of samples used for validation (default: .2)')
-    parser.add_argument('--epochs', type=int, default=epochs, metavar='N',
-                        help='number of epochs to train (default: 10)')
-    parser.add_argument('--lr', type=float, default=lr, metavar='LR',
-                        help='learning rate (default: 0.01)')
-    parser.add_argument('--momentum', type=float, default=momentum, metavar='M',
-                        help='SGD momentum (default: 0.5)')
-    parser.add_argument('--no-cuda', action='store_true', default=no_cuda,
-                        help='disables CUDA training')
-    parser.add_argument('--num-processes', type=int, default=num_processes,
-                        help='using multi-processing')
-    parser.add_argument('--crop', type=int, default=crop,
-                        help='size of cropped image')
-    parser.add_argument('--size', type=int, default=size,
-                        help='size of image')
-    parser.add_argument('--conv1_dim', type=int, default=conv1_dim,
-                        help='size of conv1 depth')
-    parser.add_argument('--conv2_dim', type=int, default=conv2_dim,
-                        help='size of conv2 depth')
-    parser.add_argument('--stride1', type=int, default=stride1,
-                        help='size of conv1 depth')
-    parser.add_argument('--stride2', type=int, default=stride1,
-                        help='size of conv2 depth')
-    parser.add_argument('--conv1_kernel_size', type=int, default=conv1_kernel_size,
-                        help='size of conv1 kernel_size')
-    parser.add_argument('--conv2_kernel_size', type=int, default=conv2_kernel_size,
-                        help='size of conv2 kernel_size')
-    parser.add_argument('--seed', type=int, default=seed, metavar='S',
-                        help='random seed (default: 1)')
-    parser.add_argument('--log-interval', type=int, default=log_interval, metavar='N',
-                        help='how many batches to wait before logging training status')
-    parser.add_argument('--dimension', type=int, default=dimension, metavar='D',
-                        help='the dimension of the second neuron network')
-    parser.add_argument("-v", "--verbose", action="store_true", default=verbose,
-                        help="increase output verbosity")
-    return parser.parse_args()
-
-def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
-            lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
-            log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
-            conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
-            conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-            stride1=stride1, stride2=stride2,
-            dimension=dimension, verbose=verbose):
-    # Training settings
-    kwargs = {
-            "batch_size": batch_size,
-            "test_batch_size": test_batch_size,
-            "valid_size":valid_size,
-            "epochs":epochs,
-            "lr": lr,
-            "momentum":momentum,
-            "no_cuda": no_cuda,
-            "num_processes": num_processes,
-            "seed": seed,
-            "log_interval": log_interval,
-            "dimension": dimension,
-            "verbose": verbose,
-    }
-    kwargs.update(conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
-                  conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-                  stride1=stride1, stride2=stride2,
-                  crop=crop, fullsize=fullsize, size=size, mean=mean, std=std
-                  )
-    # print(kwargs)
-    import easydict
-    return easydict.EasyDict(kwargs)
 
 if __name__ == '__main__':
     args = init_cdl()
