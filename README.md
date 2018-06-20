@@ -1,7 +1,7 @@
-# StageL3
+#  catch the eye
 
-
-
+this simple framework uses a deep learning network to find the eye in the image of a face (Four instance the image that will be taken by a WebCam) and then to predict the direction of the gaze
+Four instance the image that will be taken by a WebCam
 
 ## LICENCE
 
