@@ -8,9 +8,9 @@ no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-fullsize = 300
-crop = 200
-size = 100
+fullsize = 360
+crop = 290
+size = 290
 mean = .36
 std = .3
 conv1_dim = 4
@@ -19,8 +19,8 @@ conv2_dim = 13
 conv2_kernel_size = 5
 dimension = 25
 verbose = False
-stride1 = 2
-stride2 = 2
+stride1 = 4
+stride2 = 4
 
 
 import numpy as np
@@ -28,7 +28,6 @@ import torch
 torch.set_default_tensor_type('torch.FloatTensor')
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
 from torchvision import datasets, transforms
 from torchvision.datasets import ImageFolder
 import torch.multiprocessing as mp
@@ -37,7 +36,7 @@ import torchvision
 # torchvision.set_image_backend('accimage')
 from torch.utils.data.sampler import SubsetRandomSampler
 
-# from torch.optim import Adam
+import torch.optim as optim
 
 class Data:
     def __init__(self, args):
@@ -181,14 +180,14 @@ class ML():
         # MODEL
         self.model = Net(self.args).to(self.device)
         #self.model = models.vgg19(pretrained=True).features.to(device).eval()
-        self.optimizer = optim.SGD(self.model.parameters(),
-                                    lr=self.args.lr, momentum=self.args.momentum)
-        # self.optimizer = optim.Adam(model.parameters(), lr=self.args.lr, weight_decay=0.0001*self.args.momentum)
-        # optimizer = torch.optim.Adam(model.parameters(), lr = learning_rate)
+        # self.optimizer = optim.SGD(self.model.parameters(),
+        #                             lr=self.args.lr, momentum=self.args.momentum)
+        # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=0.0001*self.args.momentum)
 
-    def forward(self, img):
-        # normalize img
-        return (img - self.mean) / self.std
+    # def forward(self, img):
+    #     # normalize img
+    #     return (img - self.mean) / self.std
 
     def train(self):
         self.model.train()
@@ -217,10 +216,15 @@ class ML():
         torch.manual_seed(self.args.seed + epoch + rank*self.args.epochs)
         for batch_idx, (data, target) in enumerate(self.dataset.train_loader):
             data, target = data.to(self.device), target.to(self.device)
+            # Clear all accumulated gradients
             self.optimizer.zero_grad()
+            # Predict classes using images from the train set
             output = self.model(data)
+            # Compute the loss based on the predictions and actual labels
             loss = F.nll_loss(output, target)
+            # Backpropagate the loss
             loss.backward()
+            # Adjust parameters according to the computed gradients
             self.optimizer.step()
             if self.args.verbose and self.args.log_interval>0:
                 if batch_idx % self.args.log_interval == 0:
