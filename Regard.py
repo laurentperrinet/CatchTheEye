@@ -9,15 +9,15 @@ no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-fullsize = 360
-crop = 290
-size = 290
+fullsize = 350
+crop = int(.9*fullsize)
+size = 280
 mean = .36
 std = .3
-conv1_dim = 4
-conv1_kernel_size = 7
-conv2_dim = 13
-conv2_kernel_size = 5
+conv1_dim = 8
+conv1_kernel_size = 9
+conv2_dim = 8
+conv2_kernel_size = 9
 dimension = 25
 verbose = False
 stride1 = 4
@@ -32,25 +32,15 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
             stride1=stride1, stride2=stride2,
             dimension=dimension, verbose=verbose):
     # Training settings
-    kwargs = {
-            "batch_size": batch_size,
-            "test_batch_size": test_batch_size,
-            "valid_size":valid_size,
-            "epochs":epochs,
-            "lr": lr,
-            "momentum":momentum,
-            "no_cuda": no_cuda,
-            "num_processes": num_processes,
-            "seed": seed,
-            "log_interval": log_interval,
-            "dimension": dimension,
-            "verbose": verbose,
-    }
-    kwargs.update(conv1_dim=conv1_dim, do_adam=do_adam, conv1_kernel_size=conv1_kernel_size,
-                  conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-                  stride1=stride1, stride2=stride2,
-                  crop=crop, fullsize=fullsize, size=size, mean=mean, std=std
-                  )
+    kwargs = {}
+    kwargs.update(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
+                do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
+                log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
+                conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
+                conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+                stride1=stride1, stride2=stride2,
+                dimension=dimension, verbose=verbose
+                )
     import easydict
     return easydict.EasyDict(kwargs)
 
@@ -211,9 +201,9 @@ class ML():
         # MODEL
         self.model = Net(self.args).to(self.device)
         #self.model = models.vgg19(pretrained=True).features.to(device).eval()
-        if self.do_adam:
+        if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=0.0001*self.args.momentum)
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=0.001*self.args.momentum)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
@@ -221,28 +211,37 @@ class ML():
     #     # normalize img
     #     return (img - self.mean) / self.std
 
-    def train(self):
-        self.model.train()
-
+    def train(self, path=None):
+        # cosmetics
         try:
             from tqdm import tqdm_notebook as tqdm
             verbose = 1
         except ImportError:
             verbose = 0
-        if self.args.verbose==0 or verbose==0:
+        if self.args.verbose == 0 or verbose == 0:
             def tqdm(x, desc=None):
                 if desc is not None: print(desc)
                 return x
 
-        for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
-            self.train_epoch(epoch, rank=0)
+        # setting up training
+        self.model.train()
 
-        # if self.args.verbose :
-        #     for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch'):
-        #         self.train_epoch(epoch, rank=0)
-        # else:
-        #     for epoch in range(1, self.args.epochs + 1):
-        #         self.train_epoch(epoch, rank=0)
+        if path is not None:
+            # using a data_cache
+            import os
+            import torch
+            if os.path.isfile(path):
+                ml.model.load_state_dict(torch.load(path))
+                print('Loading file', path)
+            else:
+                print('Training model...')
+                for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
+                    self.train_epoch(epoch, rank=0)
+                    torch.save(ml.model.state_dict(), path) #save the neural network state
+                print('Model saved at', path)
+        else:
+            for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
+                self.train_epoch(epoch, rank=0)
 
     def train_epoch(self, epoch, rank=0):
         torch.manual_seed(self.args.seed + epoch + rank*self.args.epochs)
@@ -312,14 +311,14 @@ class ML():
         else:
             return None, None
 
-    def protocol(self):
+    def protocol(self, path=None):
         # TODO: make a loop for the cross-validation of results
-        self.train()
+        self.train(path=path)
         Accuracy = self.test()
         return Accuracy
 
-    def main(self):
-        Accuracy = self.protocol()
+    def main(self, path=None):
+        Accuracy = self.protocol(path=path)
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
 if __name__ == '__main__':
