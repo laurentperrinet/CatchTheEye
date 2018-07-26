@@ -22,14 +22,14 @@ dimension = 25
 verbose = False
 stride1 = 4
 stride2 = 4
-
+N_cv = 10
 
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
             do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-            stride1=stride1, stride2=stride2,
+            stride1=stride1, stride2=stride2, N_cv=N_cv,
             dimension=dimension, verbose=verbose):
     # Training settings
     kwargs = {}
@@ -38,9 +38,10 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                 conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-                stride1=stride1, stride2=stride2,
+                stride1=stride1, stride2=stride2, N_cv=N_cv,
                 dimension=dimension, verbose=verbose
                 )
+    # print(kwargs, locals())
     import easydict
     return easydict.EasyDict(kwargs)
 
@@ -79,8 +80,8 @@ class Data:
             #
             #transforms.RandomAffine(degrees=10, scale=(.8, 1.2), shear=10, resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
-            # transforms.CenterCrop((args.crop, int(args.crop*4/3))),  
-            transforms.CenterCrop(args.crop),  
+            # transforms.CenterCrop((args.crop, int(args.crop*4/3))),
+            transforms.CenterCrop(args.crop),
             #torchvision.transforms.RandomResizedCrop(size, scale=(0.08, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2)[
             transforms.Resize(args.size),
             # transforms.RandomAffine(args.size),
@@ -322,9 +323,12 @@ class ML():
             return None, None
 
     def protocol(self, path=None):
-        # TODO: make a loop for the cross-validation of results
-        self.train(path=path)
-        Accuracy = self.test()
+        # makes a loop for the cross-validation of results
+        Accuracy = []
+        for _ in range(self.args.N_cv):
+            args.seed += 1
+            self.train(path=path)
+            Accuracy.append(self.test())
         return Accuracy
 
     def main(self, path=None):
@@ -332,7 +336,11 @@ class ML():
         print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
 
 if __name__ == '__main__':
-    args = init_cdl()
+    print('Default parameters')
+    args = init(verbose=0, log_interval=0)
     ml = ML(args)
-    ml.main()
+    ml.protocol()
     # TODO : integrate parameter scan
+    seed = args.seed
+    #Accuracy = ml.protocol()
+    #print(Accuracy)
