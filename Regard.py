@@ -22,8 +22,9 @@ dimension = 25
 verbose = False
 stride1 = 4
 stride2 = 4
-N_cv = 10
+N_cv = 2
 
+import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
             do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
@@ -42,7 +43,6 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
                 dimension=dimension, verbose=verbose
                 )
     # print(kwargs, locals())
-    import easydict
     return easydict.EasyDict(kwargs)
 
 import numpy as np
@@ -64,10 +64,10 @@ class Data:
     def __init__(self, args):
         self.args = args
         # GPU boilerplate
-        self.args.cuda = not self.args.no_cuda and torch.cuda.is_available()
+        self.args.no_cuda = self.args.no_cuda or not torch.cuda.is_available()
         if self.args.verbose:
-            print('cuda?', self.args.cuda)
-        kwargs = {'num_workers': 1, 'pin_memory': True} if args.cuda else {'num_workers': 1, 'shuffle': True}
+            print('no cuda?', self.args.no_cuda)
+        kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1, 'shuffle': True}
 
         # self.IMAGENET_MEAN = [0.485, 0.456, 0.406]
         # self.IMAGENET_STD = [0.229, 0.224, 0.225]
@@ -196,22 +196,21 @@ class ML():
     def __init__(self, args):
         self.args = args
         # GPU boilerplate
-        self.args.cuda = not self.args.no_cuda and torch.cuda.is_available()
+        self.args.no_cuda = self.args.no_cuda or not torch.cuda.is_available()
         if self.args.verbose:
-            print('cuda?', self.args.cuda)
-
-        if self.args.cuda:
-            self.model.cuda()
-        self.device = torch.device("cuda" if self.args.cuda else "cpu")
+            print('cuda?', not self.args.no_cuda)
+        self.device = torch.device("cpu" if self.args.no_cuda else "cuda")
         torch.manual_seed(self.args.seed)
-        if self.args.cuda:
-            torch.cuda.manual_seed(self.args.seed)
         # DATA
         self.dataset = Data(self.args)
         self.args.classes = self.dataset.classes
         # MODEL
         self.model = Net(self.args).to(self.device)
-        #self.model = models.vgg19(pretrained=True).features.to(device).eval()
+        if not self.args.no_cuda:
+            print('doing cuda')
+            torch.cuda.manual_seed(self.args.seed)
+            self.model.cuda()
+
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
             self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=self.args.momentum)
@@ -338,7 +337,7 @@ class ML():
 
 import time
 class MetaML:
-    def __init__(self, default):
+    def __init__(self, args):
         self.args = args
         self.seed = args.seed
 
@@ -349,11 +348,10 @@ class MetaML:
     def scan(self, parameter, values):
         print('scanning over ', parameter, '=', values)
         for value in values:
-            args = self.args.copy()
+            args = easydict.EasyDict(self.args.copy())
             args[parameter]=value
-            args = init(**args)
             t0 = time.time()
-            ml = ML(self.args)
+            ml = ML(args)
             Accuracy = ml.protocol()
             print ('For parameter', parameter, '=', value, ', Accuracy=', '%.3f%' % Accuracy.mean()*100, '+/-', '%.3f' % Accuracy.std()*100, ' in ', '%.3f' % (time.time() - t0), 'seconds')
             self.seed += 1
@@ -371,10 +369,6 @@ if __name__ == '__main__':
     print('Default parameters')
     args = init(verbose=0, log_interval=0)
 
-    mml = MetaML(args)
-    mml.parameter_scan('crop')
-
-
     ml = ML(args)
     ml.protocol()
     print(' parameter scan ')
@@ -385,4 +379,5 @@ if __name__ == '__main__':
     seed = args.seed
     #Accuracy = ml.protocol()
     #print(Accuracy)
-    mml.parameter_scan('crop')
+    for parameter in ['crop']:
+        mml.parameter_scan(parameter)
