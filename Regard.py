@@ -353,11 +353,10 @@ class MetaML:
             t0 = time.time()
             ml = ML(args)
             Accuracy = ml.protocol()
-            print ('For parameter', parameter, '=', value, ', Accuracy=', '%.3f%' % Accuracy.mean()*100, '+/-', '%.3f' % Accuracy.std()*100, ' in ', '%.3f' % (time.time() - t0), 'seconds')
+            print ('For parameter', parameter, '=', value, ', Accuracy=', '%.3f%' % (Accuracy.mean()*100), '+/-', '%.3f' % (Accuracy.std()*100), ' in ', '%.3f' % (time.time() - t0), 'seconds')
             self.seed += 1
 
     def parameter_scan(self, parameter):
-
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
         if isinstance(self.args[parameter], int):
             print('integer detected')
@@ -366,18 +365,48 @@ class MetaML:
 
 
 if __name__ == '__main__':
+    print(50*'-')
     print('Default parameters')
+    print(50*'-')
     args = init(verbose=0, log_interval=0)
-
     ml = ML(args)
-    ml.protocol()
+    ml.main()
+    print(50*'-')
     print(' parameter scan ')
+    print(50*'-')
     args = init(verbose=0, log_interval=0)
     mml = MetaML(args)
-    fullsizes =  [int(k) for k in init().fullsize * np.logspace(-1, 1, N_scan, base=base)]
-    mml.scan('fullsize', fullsizes)
-    seed = args.seed
+    # fullsizes =  [int(k) for k in init().fullsize * np.logspace(-1, 1, N_scan, base=base)]
+    # mml.scan('fullsize', fullsizes)
+    # seed = args.seed
     #Accuracy = ml.protocol()
     #print(Accuracy)
-    for parameter in ['crop']:
+    print(50*'-')
+    print(' parameter scan : data ')
+    print(50*'-')
+    for parameter in ['fullsize', 'size', 'crop', 'mean', 'std']:
+        mml.parameter_scan(parameter)
+    print(' parameter scan : learning ')
+    print(50*'-')
+    print('Using SGD')
+    print(50*'-')
+    for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
+        mml.parameter_scan(parameter)
+    print(50*'-')
+    print('Using ADAM')
+    print(50*'-')
+    args = init(verbose=0, log_interval=0, do_adam=True)
+    mml = MetaML(args)
+    for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
+        mml.parameter_scan(parameter)
+
+    print(50*'-')
+    args = init(verbose=0, log_interval=0)
+    mml = MetaML(args)
+    print(' parameter scan : network ')
+    print(50*'-')
+    for parameter in ['conv1_kernel_size', 'conv1_dim',
+                      'conv2_kernel_size', 'conv2_dim',
+                      'stride1', 'stride2',
+                      'dimension']:
         mml.parameter_scan(parameter)
