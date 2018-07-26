@@ -2,7 +2,7 @@ batch_size = 16
 test_batch_size = 1
 valid_size = .2
 do_adam = False
-epochs = 60
+epochs = 2 #60
 lr = 0.0065
 momentum = 0.48
 no_cuda = True
@@ -329,18 +329,60 @@ class ML():
             args.seed += 1
             self.train(path=path)
             Accuracy.append(self.test())
-        return Accuracy
+        return np.array(Accuracy)
 
     def main(self, path=None):
         Accuracy = self.protocol(path=path)
-        print('Test set: Final Accuracy: {:.3f}%'.format(Accuracy*100)) # print que le pourcentage de réussite final
+        print('Test set: Final Accuracy: {:.3f}% +/- {:.3f}%'.format(Accuracy.mean()*100, Accuracy.std()*100)) # print que le pourcentage de réussite final
+
+
+import time
+class MetaML:
+    def __init__(self, default):
+        self.args = args
+        self.seed = args.seed
+
+        self.base = 2
+        self.N_scan = 9
+        self.default = dict(verbose=0, log_interval=0)
+
+    def scan(self, parameter, values):
+        print('scanning over ', parameter, '=', values)
+        for value in values:
+            args = self.args.copy()
+            args[parameter]=value
+            args = init(**args)
+            t0 = time.time()
+            ml = ML(self.args)
+            Accuracy = ml.protocol()
+            print ('For parameter', parameter, '=', value, ', Accuracy=', '%.3f%' % Accuracy.mean()*100, '+/-', '%.3f' % Accuracy.std()*100, ' in ', '%.3f' % (time.time() - t0), 'seconds')
+            self.seed += 1
+
+    def parameter_scan(self, parameter):
+
+        values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
+        if isinstance(self.args[parameter], int):
+            print('integer detected')
+            values =  [int(k) for k in values]
+        self.scan(parameter, values)
+
 
 if __name__ == '__main__':
     print('Default parameters')
     args = init(verbose=0, log_interval=0)
+
+    mml = MetaML(args)
+    mml.parameter_scan('crop')
+
+
     ml = ML(args)
     ml.protocol()
-    # TODO : integrate parameter scan
+    print(' parameter scan ')
+    args = init(verbose=0, log_interval=0)
+    mml = MetaML(args)
+    fullsizes =  [int(k) for k in init().fullsize * np.logspace(-1, 1, N_scan, base=base)]
+    mml.scan('fullsize', fullsizes)
     seed = args.seed
     #Accuracy = ml.protocol()
     #print(Accuracy)
+    mml.parameter_scan('crop')
