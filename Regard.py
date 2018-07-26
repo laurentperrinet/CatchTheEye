@@ -2,7 +2,7 @@ batch_size = 16
 test_batch_size = 1
 valid_size = .2
 do_adam = False
-epochs = 2 #60
+epochs = 60
 lr = 0.0065
 momentum = 0.48
 no_cuda = True
@@ -22,7 +22,7 @@ dimension = 25
 verbose = False
 stride1 = 4
 stride2 = 4
-N_cv = 2
+N_cv = 10
 
 import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
@@ -282,7 +282,7 @@ class ML():
         for data, target in dataloader:
             data, target = data.to(self.device), target.to(self.device)
             output = self.model(data)
-            test_loss += F.nll_loss(output, target, size_average=False).item() # sum up batch loss
+            test_loss += F.nll_loss(output, target, reduction='elementwise_mean').item() # sum up batch loss
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).long().cpu().sum()
 
@@ -337,23 +337,25 @@ class ML():
 
 import time
 class MetaML:
-    def __init__(self, args):
+    def __init__(self, args, base = 2, N_scan = 9, verbose=0, log_interval=0):
         self.args = args
         self.seed = args.seed
 
-        self.base = 2
-        self.N_scan = 9
-        self.default = dict(verbose=0, log_interval=0)
+        self.base = base
+        self.N_scan = N_scan
+        self.default = dict(verbose=verbose, log_interval=log_interval)
 
     def scan(self, parameter, values):
-        print('scanning over ', parameter, '=', values)
+        print('scanning over', parameter, '=', values)
         for value in values:
             args = easydict.EasyDict(self.args.copy())
             args[parameter]=value
             t0 = time.time()
             ml = ML(args)
             Accuracy = ml.protocol()
-            print ('For parameter', parameter, '=', value, ', Accuracy=', '%.3f%' % (Accuracy.mean()*100), '+/-', '%.3f' % (Accuracy.std()*100), ' in ', '%.3f' % (time.time() - t0), 'seconds')
+            print ('For parameter', parameter, '=', value,
+                   ', Accuracy={:.3f}% +/- {:.3f}%'.format(Accuracy.mean()*100, Accuracy.std()*100),
+                   ' in {:.3f} seconds'.format(time.time() - t0))
             self.seed += 1
 
     def parameter_scan(self, parameter):
@@ -374,39 +376,45 @@ if __name__ == '__main__':
     print(50*'-')
     print(' parameter scan ')
     print(50*'-')
-    args = init(verbose=0, log_interval=0)
-    mml = MetaML(args)
-    # fullsizes =  [int(k) for k in init().fullsize * np.logspace(-1, 1, N_scan, base=base)]
-    # mml.scan('fullsize', fullsizes)
-    # seed = args.seed
-    #Accuracy = ml.protocol()
-    #print(Accuracy)
-    print(50*'-')
-    print(' parameter scan : data ')
-    print(50*'-')
-    for parameter in ['fullsize', 'size', 'crop', 'mean', 'std']:
-        mml.parameter_scan(parameter)
-    print(' parameter scan : learning ')
-    print(50*'-')
-    print('Using SGD')
-    print(50*'-')
-    for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
-        mml.parameter_scan(parameter)
-    print(50*'-')
-    print('Using ADAM')
-    print(50*'-')
-    args = init(verbose=0, log_interval=0, do_adam=True)
-    mml = MetaML(args)
-    for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
-        mml.parameter_scan(parameter)
+    for base in [10, 2]:
+        print(50*'-')
+        print(' base=', base)
+        print(50*'-')
+        args = init(verbose=0, log_interval=0)
+        mml = MetaML(args, base=base)
+        # fullsizes =  [int(k) for k in init().fullsize * np.logspace(-1, 1, N_scan, base=base)]
+        # mml.scan('fullsize', fullsizes)
+        # seed = args.seed
+        #Accuracy = ml.protocol()
+        #print(Accuracy)
+        print(50*'-')
+        print(' parameter scan : data ')
+        print(50*'-')
+        for parameter in ['fullsize', 'size', 'crop', 'mean', 'std']:
+            mml.parameter_scan(parameter)
+        print(' parameter scan : learning ')
+        print(50*'-')
+        print('Using SGD')
+        print(50*'-')
+        for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
+            mml.parameter_scan(parameter)
+        print(50*'-')
+        print('Using ADAM')
+        print(50*'-')
+        args = init(verbose=0, log_interval=0, do_adam=True)
+        mml = MetaML(args)
+        for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
+            mml.parameter_scan(parameter)
 
-    print(50*'-')
-    args = init(verbose=0, log_interval=0)
-    mml = MetaML(args)
-    print(' parameter scan : network ')
-    print(50*'-')
-    for parameter in ['conv1_kernel_size', 'conv1_dim',
-                      'conv2_kernel_size', 'conv2_dim',
-                      'stride1', 'stride2',
-                      'dimension']:
-        mml.parameter_scan(parameter)
+        print(50*'-')
+        args = init(verbose=0, log_interval=0)
+        mml = MetaML(args)
+        print(' parameter scan : network ')
+        print(50*'-')
+        for parameter in ['conv1_kernel_size',
+                          'conv1_dim',
+                          'conv2_kernel_size',
+                          'conv2_dim',
+                          'stride1', 'stride2',
+                          'dimension']:
+            mml.parameter_scan(parameter)
