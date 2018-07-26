@@ -14,10 +14,10 @@ crop = 320 # int(.9*fullsize)
 size = 280
 mean = .36
 std = .3
-conv1_dim = 8
-conv1_kernel_size = 9
-conv2_dim = 8
-conv2_kernel_size = 9
+conv1_dim = 4
+conv1_kernel_size = 7
+conv2_dim = 13
+conv2_kernel_size = 5
 dimension = 25
 verbose = False
 stride1 = 4
@@ -72,9 +72,18 @@ class Data:
         # self.IMAGENET_STD = [0.229, 0.224, 0.225]
 
         t = transforms.Compose([
+            # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
+            # Resize the input PIL Image to the given size. size (sequence or int) – Desired output size. If size is a sequence like (h, w), output size will be matched to this. If size is an int, smaller edge of the image will be matched to this number. i.e, if height > width, then image will be rescaled to (size * height / width, size)
             transforms.Resize(args.fullsize),
-            transforms.CenterCrop(args.crop),
+            # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
+            #
+            #transforms.RandomAffine(degrees=10, scale=(.8, 1.2), shear=10, resample=False, fillcolor=0),
+            #transforms.RandomVerticalFlip(),
+            # transforms.CenterCrop((args.crop, int(args.crop*4/3))),  
+            transforms.CenterCrop(args.crop),  
+            #torchvision.transforms.RandomResizedCrop(size, scale=(0.08, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2)[
             transforms.Resize(args.size),
+            # transforms.RandomAffine(args.size),
             transforms.ToTensor(),
             #transforms.Normalize(mean=self.IMAGENET_MEAN, std=self.IMAGENET_STD),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
@@ -128,6 +137,7 @@ class Net(nn.Module):
     def __init__(self, args):
         super(Net, self).__init__()
         self.args = args
+        # data is in the format (N, C, H, W)
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
@@ -203,7 +213,7 @@ class ML():
         #self.model = models.vgg19(pretrained=True).features.to(device).eval()
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=0.001*self.args.momentum)
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=self.args.momentum)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
@@ -325,3 +335,4 @@ if __name__ == '__main__':
     args = init_cdl()
     ml = ML(args)
     ml.main()
+    # TODO : integrate parameter scan
