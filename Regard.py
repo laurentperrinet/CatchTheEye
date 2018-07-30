@@ -3,7 +3,8 @@ test_batch_size = 1
 valid_size = .2
 do_adam = False
 epochs = 60
-lr = 0.0065
+# epochs = 2
+lr = 0.01
 momentum = 0.48
 no_cuda = True
 num_processes = 1
@@ -23,6 +24,7 @@ verbose = False
 stride1 = 4
 stride2 = 4
 N_cv = 10
+# N_cv = 2
 
 import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
@@ -57,8 +59,8 @@ import torchvision.models as models
 import torchvision
 # torchvision.set_image_backend('accimage')
 from torch.utils.data.sampler import SubsetRandomSampler
-
 import torch.optim as optim
+
 
 class Data:
     def __init__(self, args):
@@ -224,7 +226,8 @@ class ML():
     def train(self, path=None):
         # cosmetics
         try:
-            from tqdm import tqdm_notebook as tqdm
+            from tqdm import tqdm
+            #from tqdm import tqdm_notebook as tqdm
             verbose = 1
         except ImportError:
             verbose = 0
@@ -295,7 +298,6 @@ class ML():
         return correct.numpy() / len(self.dataset.test_loader.dataset)
 
     def show(self, gamma=.5, noise_level=.4, transpose=True, only_wrong=False):
-
         data, target = next(iter(self.dataset.test_loader))
         data, target = data.to(self.device), target.to(self.device)
         output = self.model(data)
@@ -331,8 +333,10 @@ class ML():
         return np.array(Accuracy)
 
     def main(self, path=None):
+        t0 = time.time()
         Accuracy = self.protocol(path=path)
-        print('Test set: Final Accuracy: {:.3f}% +/- {:.3f}%'.format(Accuracy.mean()*100, Accuracy.std()*100)) # print que le pourcentage de réussite final
+        print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy.mean()*100, Accuracy.std()*100),
+              ' in {:.1f} seconds'.format(time.time() - t0))
 
 
 import time
@@ -348,20 +352,20 @@ class MetaML:
     def scan(self, parameter, values):
         print('scanning over', parameter, '=', values)
         for value in values:
-            args = easydict.EasyDict(self.args.copy())
-            args[parameter]=value
-            t0 = time.time()
-            ml = ML(args)
-            Accuracy = ml.protocol()
-            print ('For parameter', parameter, '=', value,
-                   ', Accuracy={:.3f}% +/- {:.3f}%'.format(Accuracy.mean()*100, Accuracy.std()*100),
-                   ' in {:.3f} seconds'.format(time.time() - t0))
-            self.seed += 1
+            try:
+                args = easydict.EasyDict(self.args.copy())
+                args[parameter]=value
+                ml = ML(args)
+                print ('For parameter', parameter, '=', value, ', ', end=" ")
+                Accuracy = ml.main()
+                self.seed += 1
+            except Exception as e:
+                print('Failed with error', e)
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
         if isinstance(self.args[parameter], int):
-            print('integer detected')
+            # print('integer detected') # DEBUG
             values =  [int(k) for k in values]
         self.scan(parameter, values)
 
@@ -376,7 +380,7 @@ if __name__ == '__main__':
     print(50*'-')
     print(' parameter scan ')
     print(50*'-')
-    for base in [10, 2]:
+    for base in [2]: #[10, 2]:
         print(50*'-')
         print(' base=', base)
         print(50*'-')
@@ -390,7 +394,7 @@ if __name__ == '__main__':
         print(50*'-')
         print(' parameter scan : data ')
         print(50*'-')
-        for parameter in ['fullsize', 'size', 'crop', 'mean', 'std']:
+        for parameter in ['size', 'fullsize', 'crop', 'mean', 'std']:
             mml.parameter_scan(parameter)
         print(' parameter scan : learning ')
         print(50*'-')
