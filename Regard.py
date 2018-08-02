@@ -12,7 +12,7 @@ seed = 42
 log_interval = 10
 fullsize = 350
 crop = 320 # int(.9*fullsize)
-size = 280
+size = 260
 mean = .36
 std = .3
 conv1_dim = 4
@@ -386,11 +386,6 @@ if __name__ == '__main__':
         print(50*'-')
         args = init(verbose=0, log_interval=0)
         mml = MetaML(args, base=base)
-        # fullsizes =  [int(k) for k in init().fullsize * np.logspace(-1, 1, N_scan, base=base)]
-        # mml.scan('fullsize', fullsizes)
-        # seed = args.seed
-        #Accuracy = ml.protocol()
-        #print(Accuracy)
         print(50*'-')
         print(' parameter scan : data ')
         print(50*'-')
