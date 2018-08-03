@@ -2,9 +2,9 @@ batch_size = 16
 test_batch_size = 1
 valid_size = .2
 do_adam = False
-epochs = 60
 epochs = 2
-lr = 0.01
+epochs = 40
+lr = 0.02
 momentum = 0.48
 no_cuda = True
 num_processes = 1
@@ -23,8 +23,8 @@ dimension = 25
 verbose = False
 stride1 = 4
 stride2 = 4
-N_cv = 10
 N_cv = 2
+N_cv = 10
 
 import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
@@ -354,9 +354,12 @@ class MetaML:
         for value in values:
             try:
                 args = easydict.EasyDict(self.args.copy())
-                args[parameter]=value
+                args[parameter] = value
                 ml = ML(args)
-                print ('For parameter', parameter, '=', value, ', ', end=" ")
+                if isinstance(self.args[parameter], int):
+                    print ('For parameter', parameter, '=', value, ', ', end=" ")
+                else:
+                    print ('For parameter {:.3f}%'.format{parameter}, '=', value, ', ', end=" ")
                 Accuracy = ml.main()
                 self.seed += 1
             except Exception as e:
