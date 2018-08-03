@@ -359,7 +359,7 @@ class MetaML:
                 if isinstance(self.args[parameter], int):
                     print ('For parameter', parameter, '=', value, ', ', end=" ")
                 else:
-                    print ('For parameter {:.3f} =  {},'.format{parameter, value}, end=" ")
+                    print ('For parameter {:.3f} =  {},'.format(parameter, value), end=" ")
                 Accuracy = ml.main()
                 self.seed += 1
             except Exception as e:
