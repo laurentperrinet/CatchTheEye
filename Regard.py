@@ -3,7 +3,6 @@ test_batch_size = 1
 valid_size = .2
 do_adam = False
 epochs = 40
-epochs = 2
 lr = 0.02
 momentum = 0.48
 no_cuda = True
@@ -24,7 +23,9 @@ verbose = False
 stride1 = 4
 stride2 = 4
 N_cv = 10
-N_cv = 2
+# DEBUG
+# epochs = 2
+# N_cv = 2
 
 import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
