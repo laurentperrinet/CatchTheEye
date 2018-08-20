@@ -50,7 +50,34 @@ For parameter fullsize = 588 ,  Accuracy=95.3% +/- 0.4%  in 29100.3 seconds
 For parameter fullsize = 700 ,  Accuracy=91.6% +/- 0.4%  in 29232.6 seconds
 scanning over crop = [160, 190, 226, 269, 320, 380, 452, 538, 640]
 For parameter crop = 160 ,  Accuracy=94.5% +/- 0.6%  in 29102.9 seconds
-For parameter crop = 190 ,
+For parameter crop = 190 ,  Accuracy=98.7% +/- 0.2%  in 29116.4 seconds
+For parameter crop = 226 ,  Accuracy=92.8% +/- 0.4%  in 29052.8 seconds
+For parameter crop = 269 ,  Accuracy=94.2% +/- 0.3%  in 28752.1 seconds
+For parameter crop = 320 ,  Accuracy=95.0% +/- 0.0%  in 29120.9 seconds
+For parameter crop = 380 ,  Accuracy=96.1% +/- 0.3%  in 29084.2 seconds
+For parameter crop = 452 ,  Accuracy=98.1% +/- 0.2%  in 29120.6 seconds
+For parameter crop = 538 ,  Accuracy=98.7% +/- 0.0%  in 29064.7 seconds
+For parameter crop = 640 ,  Accuracy=96.5% +/- 0.6%  in 29095.6 seconds
+scanning over mean = [ 0.18        0.21405728  0.25455844  0.30272271  0.36        0.42811456
+  0.50911688  0.60544542  0.72      ]
+For parameter mean = 0.18 ,  Accuracy=95.4% +/- 0.3%  in 29098.9 seconds
+For parameter mean = 0.2140572807 ,  Accuracy=97.5% +/- 0.0%  in 29099.5 seconds
+For parameter mean = 0.254558441227 ,  Accuracy=98.7% +/- 0.2%  in 29113.6 seconds
+For parameter mean = 0.302722709491 ,  Accuracy=93.7% +/- 0.0%  in 29121.3 seconds
+For parameter mean = 0.36 ,  Accuracy=97.2% +/- 0.3%  in 29111.9 seconds
+For parameter mean = 0.428114561401 ,  Accuracy=98.1% +/- 0.2%  in 29080.5 seconds
+For parameter mean = 0.509116882454 ,  Accuracy=93.5% +/- 2.0%  in 29075.1 seconds
+For parameter mean = 0.605445418983 ,  Accuracy=95.0% +/- 0.2%  in 29067.8 seconds
+For parameter mean = 0.72 ,  Accuracy=91.4% +/- 15.0%  in 29056.6 seconds
+scanning over std = [ 0.15        0.17838107  0.21213203  0.25226892  0.3         0.35676213
+  0.42426407  0.50453785  0.6       ]
+For parameter std = 0.15 ,  Accuracy=95.0% +/- 0.0%  in 29099.4 seconds
+For parameter std = 0.17838106725 ,  Accuracy=96.2% +/- 0.2%  in 29050.0 seconds
+For parameter std = 0.212132034356 ,  Accuracy=95.0% +/- 0.2%  in 29068.3 seconds
+For parameter std = 0.252268924576 ,  Accuracy=95.3% +/- 0.4%  in 29077.8 seconds
+For parameter std = 0.3 ,  Accuracy=97.5% +/- 0.2%  in 29055.2 seconds
+For parameter std = 0.356762134501 ,  Accuracy=94.6% +/- 0.8%  in 29077.9 seconds
+For parameter std = 0.424264068712 ,
 
 ````
 
