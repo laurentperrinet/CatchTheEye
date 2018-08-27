@@ -10,8 +10,8 @@ num_processes = 1
 seed = 42
 log_interval = 10
 fullsize = 350
-crop = 320 # int(.9*fullsize)
-size = 260
+crop = 350 # int(.9*fullsize)
+size = 180
 mean = .36
 std = .3
 conv1_dim = 4
@@ -308,7 +308,6 @@ class ML():
             print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
             #print(target, pred)
 
-
             from torchvision.utils import make_grid
             npimg = make_grid(data, normalize=True).numpy()
             import matplotlib.pyplot as plt
@@ -353,19 +352,28 @@ class MetaML:
     def scan(self, parameter, values):
         print('scanning over', parameter, '=', values)
         for value in values:
-            try:
-                args = easydict.EasyDict(self.args.copy())
-                args[parameter] = value
-                ml = ML(args)
-                print ('For parameter', parameter, '=', value, ', ', end=" ")
-                # if isinstance(self.args[parameter], int):
-                #     print ('For parameter', parameter, '=', value, ', ', end=" ")
-                # else:
-                #     print ('For parameter {:.3f} =  {},'.format(parameter, value), end=" ")
-                Accuracy = ml.main()
-                self.seed += 1
-            except Exception as e:
-                print('Failed with error', e)
+            path = '_tmp_scanning_' + parameter + '=' + value.replace('.', '_')
+            if not(os.path.isfile(path)):
+                if not(os.path.isfile(path + '_lock')):
+                    open(path + '_lock', 'w').close()
+                    try:
+                        args = easydict.EasyDict(self.args.copy())
+                        args[parameter] = value
+                        ml = ML(args)
+                        print ('For parameter', parameter, '=', value, ', ', end=" ")
+                        # if isinstance(self.args[parameter], int):
+                        #     print ('For parameter', parameter, '=', value, ', ', end=" ")
+                        # else:
+                        #     print ('For parameter {:.3f} =  {},'.format(parameter, value), end=" ")
+                        Accuracy = ml.main()
+                        self.seed += 1
+                    except Exception as e:
+                        print('Failed with error', e)
+                    np.save(path, Accuracy)
+                    os.remove(path + '_lock')
+            else:
+                Accuracy = np.load(path)
+
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
@@ -391,11 +399,6 @@ if __name__ == '__main__':
         print(50*'-')
         args = init(verbose=0, log_interval=0)
         mml = MetaML(args, base=base)
-        print(50*'-')
-        print(' parameter scan : data ')
-        print(50*'-')
-        for parameter in ['size', 'fullsize', 'crop', 'mean', 'std']:
-            mml.parameter_scan(parameter)
         print(' parameter scan : learning ')
         print(50*'-')
         print('Using SGD')
@@ -421,4 +424,10 @@ if __name__ == '__main__':
                           'conv2_dim',
                           'stride1', 'stride2',
                           'dimension']:
+            mml.parameter_scan(parameter)
+
+        print(50*'-')
+        print(' parameter scan : data ')
+        print(50*'-')
+        for parameter in ['size', 'fullsize', 'crop', 'mean', 'std']:
             mml.parameter_scan(parameter)

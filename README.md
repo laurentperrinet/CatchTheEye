@@ -77,7 +77,20 @@ For parameter std = 0.212132034356 ,  Accuracy=95.0% +/- 0.2%  in 29068.3 second
 For parameter std = 0.252268924576 ,  Accuracy=95.3% +/- 0.4%  in 29077.8 seconds
 For parameter std = 0.3 ,  Accuracy=97.5% +/- 0.2%  in 29055.2 seconds
 For parameter std = 0.356762134501 ,  Accuracy=94.6% +/- 0.8%  in 29077.9 seconds
-For parameter std = 0.424264068712 ,
+For parameter std = 0.424264068712 ,  Accuracy=99.4% +/- 0.0%  in 29123.7 seconds
+For parameter std = 0.504537849152 ,  Accuracy=95.5% +/- 0.2%  in 29103.9 seconds
+For parameter std = 0.6 ,  Accuracy=96.4% +/- 0.7%  in 29063.4 seconds
+ parameter scan : learning
+--------------------------------------------------
+Using SGD
+--------------------------------------------------
+scanning over lr = [ 0.01        0.01189207  0.01414214  0.01681793  0.02        0.02378414
+  0.02828427  0.03363586  0.04      ]
+For parameter lr = 0.01 ,  Accuracy=96.9% +/- 0.0%  in 28728.5 seconds
+For parameter lr = 0.01189207115 ,  Accuracy=94.7% +/- 0.4%  in 29102.3 seconds
+For parameter lr = 0.0141421356237 ,  Accuracy=96.8% +/- 0.2%  in 28706.5 seconds
+For parameter lr = 0.0168179283051 ,  Accuracy=98.7% +/- 0.2%  in 28777.7 seconds
+For parameter lr = 0.02 ,
 
 ````
 
