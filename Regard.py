@@ -210,7 +210,7 @@ class ML():
         # MODEL
         self.model = Net(self.args).to(self.device)
         if not self.args.no_cuda:
-            print('doing cuda')
+            # print('doing cuda')
             torch.cuda.manual_seed(self.args.seed)
             self.model.cuda()
 
@@ -385,13 +385,17 @@ class MetaML:
 
 
 if __name__ == '__main__':
-    if False:
+    if False :
         print(50*'-')
         print('Default parameters')
         print(50*'-')
         args = init(verbose=0, log_interval=0)
         ml = ML(args)
         ml.main()
+    if True :
+        args = init(verbose=0, log_interval=0)
+        mml = MetaML(args, base=base)
+        mml.scan('no_cuda', [True, False])
     print(50*'-')
     print(' parameter scan ')
     print(50*'-')
