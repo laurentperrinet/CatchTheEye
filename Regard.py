@@ -5,7 +5,7 @@ do_adam = False
 epochs = 40
 lr = 0.02
 momentum = 0.48
-no_cuda = True
+no_cuda = False
 num_processes = 1
 seed = 42
 log_interval = 10
@@ -350,9 +350,10 @@ class MetaML:
         self.default = dict(verbose=verbose, log_interval=log_interval)
 
     def scan(self, parameter, values):
+        import os
         print('scanning over', parameter, '=', values)
         for value in values:
-            path = '_tmp_scanning_' + parameter + '=' + value.replace('.', '_')
+            path = '_tmp_scanning_' + parameter + '=' + str(value).replace('.', '_')
             if not(os.path.isfile(path)):
                 if not(os.path.isfile(path + '_lock')):
                     open(path + '_lock', 'w').close()
@@ -384,12 +385,13 @@ class MetaML:
 
 
 if __name__ == '__main__':
-    print(50*'-')
-    print('Default parameters')
-    print(50*'-')
-    args = init(verbose=0, log_interval=0)
-    ml = ML(args)
-    ml.main()
+    if False:
+        print(50*'-')
+        print('Default parameters')
+        print(50*'-')
+        args = init(verbose=0, log_interval=0)
+        ml = ML(args)
+        ml.main()
     print(50*'-')
     print(' parameter scan ')
     print(50*'-')
