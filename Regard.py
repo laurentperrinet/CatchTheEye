@@ -379,6 +379,8 @@ class MetaML:
 
                 print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
                   ' in {:.1f} seconds'.format(Accuracy[-1]))
+            else:
+                print(' currently locked with ', path + '_lock')
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
