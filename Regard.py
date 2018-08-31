@@ -361,8 +361,8 @@ class MetaML:
                 value_str = '%.3f' % value
             path = '_tmp_scanning_' + parameter + '_' + value_str.replace('.', '_') + '.npy'
             print ('For parameter', parameter, '=', value_str, ', ', end=" ")
-            if not(os.path.isfile(path)):
-                if not(os.path.isfile(path + '_lock')):
+            if not(os.path.isfile(path + '_lock')):
+                if not(os.path.isfile(path)):
                     open(path + '_lock', 'w').close()
                     try:
                         args = easydict.EasyDict(self.args.copy())
@@ -374,11 +374,11 @@ class MetaML:
                         print('Failed with error', e)
                     np.save(path, Accuracy)
                     os.remove(path + '_lock')
-            else:
-                Accuracy = np.load(path)
+                else:
+                    Accuracy = np.load(path)
 
-            print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
-              ' in {:.1f} seconds'.format(Accuracy[-1]))
+                print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
+                  ' in {:.1f} seconds'.format(Accuracy[-1]))
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
