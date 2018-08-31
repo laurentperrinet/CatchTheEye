@@ -13,12 +13,19 @@ python3 Regard.py
 
 ## results
 
+In summary, by scanning different parameters, we prove that :
+ - using the GPU improves speed by a factor ~10,
+ - SGD is more performant than ADAM in most cases for this problem,
+ - there seem to be 2 optimal strategies, diabolo or inverted diabolo
+
 ````
 $ python3 Regard.py
 --------------------------------------------------
 Default parameters
 --------------------------------------------------
-Accuracy=96.2% +/- 0.0%  in 28483.2 seconds
+scanning over no_cuda = [True, False]
+For parameter no_cuda = True ,  Accuracy=95.8% +/- 0.5%  in 13856.7 seconds
+For parameter no_cuda = False ,  Accuracy=95.0% +/- 0.0%  in 1413.7 seconds
 --------------------------------------------------
  parameter scan
 --------------------------------------------------

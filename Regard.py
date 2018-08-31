@@ -394,7 +394,7 @@ if __name__ == '__main__':
         ml.main()
     if True :
         args = init(verbose=0, log_interval=0)
-        mml = MetaML(args, base=base)
+        mml = MetaML(args)
         mml.scan('no_cuda', [True, False])
     print(50*'-')
     print(' parameter scan ')
