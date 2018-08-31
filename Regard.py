@@ -4,25 +4,25 @@ valid_size = .2
 do_adam = False
 epochs = 40
 lr = 0.02
-momentum = 0.48
+momentum = 0.1
 no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
-fullsize = 350
-crop = 350 # int(.9*fullsize)
+fullsize = 175
+crop = 175 # int(.9*fullsize)
 size = 180
 mean = .36
 std = .3
-conv1_dim = 4
+conv1_dim = 8
 conv1_kernel_size = 7
 conv2_dim = 13
-conv2_kernel_size = 5
+conv2_kernel_size = 7
 dimension = 25
 verbose = False
-stride1 = 4
+stride1 = 2
 stride2 = 4
-N_cv = 10
+N_cv = 20
 # DEBUG
 # epochs = 2
 # N_cv = 2
@@ -216,7 +216,8 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            self.optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=self.args.momentum)
+            self.optimizer = optim.Adam(self.model.parameters(),
+                                    lr=self.args.lr, weight_decay=1-self.args.momentum)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
@@ -353,6 +354,11 @@ class MetaML:
         print('scanning over', parameter, '=', values)
         for value in values:
             path = '_tmp_scanning_' + parameter + '=' + value.replace('.', '_')
+            if isinstance(value, int):
+                value_str = str(value)
+            else:
+                value_str = '%.3f' % value
+            print ('For parameter', parameter, '=', value_str, ', ', end=" ")
             if not(os.path.isfile(path)):
                 if not(os.path.isfile(path + '_lock')):
                     open(path + '_lock', 'w').close()
@@ -360,11 +366,6 @@ class MetaML:
                         args = easydict.EasyDict(self.args.copy())
                         args[parameter] = value
                         ml = ML(args)
-                        print ('For parameter', parameter, '=', value, ', ', end=" ")
-                        # if isinstance(self.args[parameter], int):
-                        #     print ('For parameter', parameter, '=', value, ', ', end=" ")
-                        # else:
-                        #     print ('For parameter {:.3f} =  {},'.format(parameter, value), end=" ")
                         Accuracy = ml.main()
                         self.seed += 1
                     except Exception as e:
@@ -374,6 +375,8 @@ class MetaML:
             else:
                 Accuracy = np.load(path)
 
+            print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy.mean()*100, Accuracy.std()*100),
+              ' in {:.1f} seconds'.format(time.time() - t0))
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
@@ -393,7 +396,7 @@ if __name__ == '__main__':
     print(50*'-')
     print(' parameter scan ')
     print(50*'-')
-    for base in [2]: #[10, 2]:
+    for base in [10, 2]:
         print(50*'-')
         print(' base=', base)
         print(50*'-')
