@@ -1,3 +1,4 @@
+<<<
 batch_size = 16
 test_batch_size = 1
 valid_size = .2
@@ -5,7 +6,6 @@ do_adam = False
 epochs = 40
 lr = 0.02
 momentum = 0.1
-no_cuda = True
 num_processes = 1
 seed = 42
 log_interval = 10
@@ -210,7 +210,7 @@ class ML():
         # MODEL
         self.model = Net(self.args).to(self.device)
         if not self.args.no_cuda:
-            print('doing cuda')
+            # print('doing cuda')
             torch.cuda.manual_seed(self.args.seed)
             self.model.cuda()
 
@@ -351,14 +351,19 @@ class MetaML:
         self.default = dict(verbose=verbose, log_interval=log_interval)
 
     def scan(self, parameter, values):
+        import os
         print('scanning over', parameter, '=', values)
         for value in values:
+<<<<<<< HEAD
             path = '_tmp_scanning_' + parameter + '=' + value.replace('.', '_')
             if isinstance(value, int):
                 value_str = str(value)
             else:
                 value_str = '%.3f' % value
             print ('For parameter', parameter, '=', value_str, ', ', end=" ")
+=======
+            path = '_tmp_scanning_' + parameter + '=' + str(value).replace('.', '_')
+>>>>>>> f60f8a22960153df4aca1282731ecc9d6d80f63e
             if not(os.path.isfile(path)):
                 if not(os.path.isfile(path + '_lock')):
                     open(path + '_lock', 'w').close()
@@ -387,12 +392,17 @@ class MetaML:
 
 
 if __name__ == '__main__':
-    print(50*'-')
-    print('Default parameters')
-    print(50*'-')
-    args = init(verbose=0, log_interval=0)
-    ml = ML(args)
-    ml.main()
+    if False :
+        print(50*'-')
+        print('Default parameters')
+        print(50*'-')
+        args = init(verbose=0, log_interval=0)
+        ml = ML(args)
+        ml.main()
+    if True :
+        args = init(verbose=0, log_interval=0)
+        mml = MetaML(args, base=base)
+        mml.scan('no_cuda', [True, False])
     print(50*'-')
     print(' parameter scan ')
     print(50*'-')
