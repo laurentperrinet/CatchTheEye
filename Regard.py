@@ -1,4 +1,5 @@
 batch_size = 16
+no_cuda = False
 test_batch_size = 1
 valid_size = .2
 do_adam = False
@@ -353,11 +354,11 @@ class MetaML:
         import os
         print('scanning over', parameter, '=', values)
         for value in values:
-            path = '_tmp_scanning_' + parameter + '=' + value.replace('.', '_')
             if isinstance(value, int):
                 value_str = str(value)
             else:
                 value_str = '%.3f' % value
+            path = '_tmp_scanning_' + parameter + '=' + value_str.replace('.', '_')
             print ('For parameter', parameter, '=', value_str, ', ', end=" ")
             if not(os.path.isfile(path)):
                 if not(os.path.isfile(path + '_lock')):
