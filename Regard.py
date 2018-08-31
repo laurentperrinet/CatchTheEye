@@ -336,8 +336,9 @@ class ML():
     def main(self, path=None):
         t0 = time.time()
         Accuracy = self.protocol(path=path)
-        print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy.mean()*100, Accuracy.std()*100),
-              ' in {:.1f} seconds'.format(time.time() - t0))
+        t1 = time.time() - t0
+        Accuracy = np.hstack((Accuracy, [t1]))
+        return Accuracy
 
 
 import time
@@ -358,7 +359,7 @@ class MetaML:
                 value_str = str(value)
             else:
                 value_str = '%.3f' % value
-            path = '_tmp_scanning_' + parameter + '=' + value_str.replace('.', '_')
+            path = '_tmp_scanning_' + parameter + '_' + value_str.replace('.', '_') + '.npy'
             print ('For parameter', parameter, '=', value_str, ', ', end=" ")
             if not(os.path.isfile(path)):
                 if not(os.path.isfile(path + '_lock')):
@@ -376,8 +377,8 @@ class MetaML:
             else:
                 Accuracy = np.load(path)
 
-            print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy.mean()*100, Accuracy.std()*100),
-              ' in {:.1f} seconds'.format(time.time() - t0))
+            print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
+              ' in {:.1f} seconds'.format(Accuracy[-1]))
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
