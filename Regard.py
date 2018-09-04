@@ -4,17 +4,17 @@ test_batch_size = 1
 valid_size = .2
 do_adam = False
 epochs = 40
-lr = 0.02
-momentum = 0.1
+lr = 0.008
+momentum = 0.18
 num_processes = 1
 seed = 42
 log_interval = 10
 fullsize = 175
 crop = 175 # int(.9*fullsize)
-size = 180
+size = 150
 mean = .36
 std = .3
-conv1_dim = 8
+conv1_dim = 5
 conv1_kernel_size = 7
 conv2_dim = 13
 conv2_kernel_size = 7
@@ -343,12 +343,13 @@ class ML():
 
 import time
 class MetaML:
-    def __init__(self, args, base = 2, N_scan = 9, verbose=0, log_interval=0):
+    def __init__(self, args, base = 2, N_scan = 9, tag='', verbose=0, log_interval=0):
         self.args = args
         self.seed = args.seed
 
         self.base = base
         self.N_scan = N_scan
+        self.tag = tag
         self.default = dict(verbose=verbose, log_interval=log_interval)
 
     def scan(self, parameter, values):
@@ -359,7 +360,7 @@ class MetaML:
                 value_str = str(value)
             else:
                 value_str = '%.3f' % value
-            path = '_tmp_scanning_' + parameter + '_' + value_str.replace('.', '_') + '.npy'
+            path = '_tmp_scanning_' + parameter + '_' + self.tag + '_' + value_str.replace('.', '_') + '.npy'
             print ('For parameter', parameter, '=', value_str, ', ', end=" ")
             if not(os.path.isfile(path + '_lock')):
                 if not(os.path.isfile(path)):
@@ -403,7 +404,7 @@ if __name__ == '__main__':
         mml = MetaML(args)
         mml.scan('no_cuda', [True, False])
     print(50*'-')
-    print(' parameter scan ')
+    print(' parameter scan')
     print(50*'-')
     for base in [10, 2]:
         print(50*'-')
@@ -421,14 +422,14 @@ if __name__ == '__main__':
         print('Using ADAM')
         print(50*'-')
         args = init(verbose=0, log_interval=0, do_adam=True)
-        mml = MetaML(args)
+        mml = MetaML(args, tag='adam')
         for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
             mml.parameter_scan(parameter)
 
         print(50*'-')
         args = init(verbose=0, log_interval=0)
         mml = MetaML(args)
-        print(' parameter scan : network ')
+        print(' parameter scan : network')
         print(50*'-')
         for parameter in ['conv1_kernel_size',
                           'conv1_dim',
@@ -439,7 +440,7 @@ if __name__ == '__main__':
             mml.parameter_scan(parameter)
 
         print(50*'-')
-        print(' parameter scan : data ')
+        print(' parameter scan : data')
         print(50*'-')
         for parameter in ['size', 'fullsize', 'crop', 'mean', 'std']:
             mml.parameter_scan(parameter)
