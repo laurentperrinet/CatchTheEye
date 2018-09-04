@@ -25,7 +25,7 @@ stride2 = 4
 N_cv = 20
 # DEBUG
 # epochs = 2
-# N_cv = 2
+N_cv = 2
 
 import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
@@ -67,6 +67,9 @@ class Data:
     def __init__(self, args):
         self.args = args
         # GPU boilerplate
+        if self.args.verbose:
+            if not self.args.no_cuda and not torch.cuda.is_available():
+                print('Trying to load cuda, but it is not available')
         self.args.no_cuda = self.args.no_cuda or not torch.cuda.is_available()
         if self.args.verbose:
             print('no cuda?', self.args.no_cuda)
