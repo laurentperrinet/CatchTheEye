@@ -219,8 +219,9 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
+            scale = 10
             self.optimizer = optim.Adam(self.model.parameters(),
-                                    lr=self.args.lr, weight_decay=1-self.args.momentum)
+                                    lr=self.args.lr/scale, weight_decay=1-self.args.momentum/scale)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
