@@ -149,6 +149,7 @@ class Net(nn.Module):
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
         out_width_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
+        # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         #self.conv2_drop = nn.Dropout2d()
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
