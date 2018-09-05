@@ -4,12 +4,12 @@ no_cuda = False
 test_batch_size = 1
 valid_size = .2
 do_adam = False
-epochs = 40
+epochs = 20
 lr = 0.05
 momentum = 0.18
 num_processes = 1
 seed = 42
-log_interval = 10
+log_interval = 0
 fullsize = 175
 crop = 175 # int(.9*fullsize)
 size = 150
@@ -340,19 +340,10 @@ class ML():
         else:
             return None, None
 
-    def protocol(self, path=None):
-        # makes a loop for the cross-validation of results
-        Accuracy = []
-        for i_cv in range(self.args.N_cv):
-            self.train(path=path, seed=self.args.seed + i_cv)
-            Accuracy.append(self.test())
-        return np.array(Accuracy)
 
-    def main(self, path=None):
-        t0 = time.time()
-        Accuracy = self.protocol(path=path)
-        t1 = time.time() - t0
-        Accuracy = np.hstack((Accuracy, [t1]))
+    def main(self, path=None, seed=None):
+        self.train(path=path, seed=seed)
+        Accuracy = self.test()
         return Accuracy
 
 
@@ -367,9 +358,26 @@ class MetaML:
         self.tag = tag
         self.default = dict(verbose=verbose, log_interval=log_interval)
 
+    def test(self, args, seed):
+        # makes a loop for the cross-validation of results
+        Accuracy = []
+        for i_cv in range(self.args.N_cv):
+            ml = ML(args)
+            ml.train(seed=seed + i_cv)
+            Accuracy.append(ml.test())
+        return np.array(Accuracy)
+
+    def protocol(self, args, seed):
+        t0 = time.time()
+        Accuracy = self.test(args, seed)
+        t1 = time.time() - t0
+        Accuracy = np.hstack((Accuracy, [t1]))
+        return Accuracy
+
     def scan(self, parameter, values):
         import os
         print('scanning over', parameter, '=', values)
+        seed = self.seed
         for value in values:
             if isinstance(value, int):
                 value_str = str(value)
@@ -383,9 +391,8 @@ class MetaML:
                     try:
                         args = easydict.EasyDict(self.args.copy())
                         args[parameter] = value
-                        ml = ML(args)
-                        Accuracy = ml.main()
-                        self.seed += 1
+                        Accuracy = self.protocol(args, seed)
+
                     except Exception as e:
                         print('Failed with error', e)
                     np.save(path, Accuracy)
@@ -397,6 +404,7 @@ class MetaML:
                   ' in {:.1f} seconds'.format(Accuracy[-1]))
             else:
                 print(' currently locked with ', path + '_lock')
+            seed += 1
 
     def parameter_scan(self, parameter):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
