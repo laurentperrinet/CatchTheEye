@@ -417,7 +417,10 @@ if __name__ == '__main__':
     if True :
         args = init(verbose=0, log_interval=0)
         mml = MetaML(args)
-        mml.scan('no_cuda', [True, False])
+        if torch.cuda.is_available():
+            mml.scan('no_cuda', [True, False])
+        else:
+            mml.scan('no_cuda', [True])
     print(50*'-')
     print(' parameter scan')
     print(50*'-')
