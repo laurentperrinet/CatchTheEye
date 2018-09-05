@@ -4,7 +4,7 @@ test_batch_size = 1
 valid_size = .2
 do_adam = False
 epochs = 40
-lr = 0.008
+lr = 0.05
 momentum = 0.18
 num_processes = 1
 seed = 42
@@ -22,10 +22,10 @@ dimension = 25
 verbose = False
 stride1 = 2
 stride2 = 4
-N_cv = 20
+N_cv = 10
 # DEBUG
 # epochs = 2
-N_cv = 2
+# N_cv = 2
 
 import easydict
 def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
@@ -234,7 +234,9 @@ class ML():
     #     # normalize img
     #     return (img - self.mean) / self.std
 
-    def train(self, path=None):
+    def train(self, path=None, seed=None):
+        if seed is None:
+            seed = self.args.seed
         # cosmetics
         try:
             from tqdm import tqdm
@@ -265,10 +267,10 @@ class ML():
                 print('Model saved at', path)
         else:
             for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
-                self.train_epoch(epoch, rank=0)
+                self.train_epoch(epoch, seed, rank=0)
 
-    def train_epoch(self, epoch, rank=0):
-        torch.manual_seed(self.args.seed + epoch + rank*self.args.epochs)
+    def train_epoch(self, epoch, seed, rank=0):
+        torch.manual_seed(seed + epoch + rank*self.args.epochs)
         for batch_idx, (data, target) in enumerate(self.dataset.train_loader):
             data, target = data.to(self.device), target.to(self.device)
             # Clear all accumulated gradients
@@ -336,9 +338,8 @@ class ML():
     def protocol(self, path=None):
         # makes a loop for the cross-validation of results
         Accuracy = []
-        for _ in range(self.args.N_cv):
-            args.seed += 1
-            self.train(path=path)
+        for i_cv in range(self.args.N_cv):
+            self.train(path=path, seed=self.args.seed + i_cv)
             Accuracy.append(self.test())
         return np.array(Accuracy)
 
