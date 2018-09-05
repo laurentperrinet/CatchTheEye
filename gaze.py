@@ -93,7 +93,6 @@ class Data:
             transforms.Resize(args.size),
             # transforms.RandomAffine(args.size),
             transforms.ToTensor(),
-            #transforms.Normalize(mean=self.IMAGENET_MEAN, std=self.IMAGENET_STD),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
         self.dataset = ImageFolder(self.args.dataset_folder, t)
@@ -285,9 +284,15 @@ class ML():
             self.optimizer.step()
             if self.args.verbose and self.args.log_interval>0:
                 if batch_idx % self.args.log_interval == 0:
-                    print('\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    status_str = '\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                         epoch, batch_idx * len(data), len(self.dataset.train_loader.dataset),
-                        100. * batch_idx / len(self.dataset.train_loader), loss.item()))
+                        100. * batch_idx / len(self.dataset.train_loader), loss.item())
+                    try:
+                        from tqdm import tqdm
+                        tqdm.write(status_str)
+                    except Exception as e:
+                        print(e)
+                        print(status_str)
 
     def test(self, dataloader=None):
         if dataloader is None:
