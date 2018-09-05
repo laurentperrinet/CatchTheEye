@@ -251,7 +251,6 @@ class ML():
 
         # setting up training
         self.model.train()
-
         if path is not None:
             # using a data_cache
             import os

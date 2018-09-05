@@ -1,0 +1,7 @@
+numpy
+imageio
+scipy
+matplotlib
+dlib
+watermark
+version_information
