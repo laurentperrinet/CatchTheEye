@@ -1,3 +1,4 @@
+dataset_folder = 'dataset_faces'
 batch_size = 16
 no_cuda = False
 test_batch_size = 1
@@ -28,7 +29,7 @@ N_cv = 10
 # N_cv = 2
 
 import easydict
-def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
+def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
             do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -37,7 +38,7 @@ def init(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=vali
             dimension=dimension, verbose=verbose):
     # Training settings
     kwargs = {}
-    kwargs.update(batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
+    kwargs.update(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
                 do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -95,7 +96,7 @@ class Data:
             #transforms.Normalize(mean=self.IMAGENET_MEAN, std=self.IMAGENET_STD),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
-        self.dataset = ImageFolder('dataset', t)
+        self.dataset = ImageFolder(self.args.dataset_folder, t)
         #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
         #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
 
