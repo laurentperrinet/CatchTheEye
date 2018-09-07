@@ -1,5 +1,5 @@
 dataset_folder = 'dataset_faces'
-batch_size = 16
+batch_size = 8
 no_cuda = False
 test_batch_size = 1
 valid_size = .2
@@ -10,20 +10,20 @@ momentum = 0.18
 num_processes = 1
 seed = 42
 log_interval = 0
-fullsize = 175
-crop = 175 # int(.9*fullsize)
-size = 150
+fullsize = 64
+crop = 64 # int(.9*fullsize)
+size = 64
 mean = .36
 std = .3
-conv1_dim = 5
+conv1_dim = 7
 conv1_kernel_size = 7
 conv2_dim = 13
 conv2_kernel_size = 7
-dimension = 25
+dimension = 30
 verbose = False
 stride1 = 2
 stride2 = 4
-N_cv = 10
+N_cv = 20
 # DEBUG
 # epochs = 2
 # N_cv = 2
@@ -56,8 +56,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms
 from torchvision.datasets import ImageFolder
-import torch.multiprocessing as mp
-import torchvision.models as models
+# import torch.multiprocessing as mp
+# import torchvision.models as models
 import torchvision
 # torchvision.set_image_backend('accimage')
 from torch.utils.data.sampler import SubsetRandomSampler
@@ -75,9 +75,6 @@ class Data:
         if self.args.verbose:
             print('no cuda?', self.args.no_cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1, 'shuffle': True}
-
-        # self.IMAGENET_MEAN = [0.485, 0.456, 0.406]
-        # self.IMAGENET_STD = [0.229, 0.224, 0.225]
 
         t = transforms.Compose([
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
