@@ -221,7 +221,7 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            scale = 10
+            scale = 10.
             self.optimizer = optim.Adam(self.model.parameters(),
                                     lr=self.args.lr/scale, weight_decay=1-self.args.momentum/scale)
         else:
@@ -389,16 +389,19 @@ class MetaML:
                         args = easydict.EasyDict(self.args.copy())
                         args[parameter] = value
                         Accuracy = self.protocol(args, seed)
-
+                        np.save(path, Accuracy)
+                        os.remove(path + '_lock')
                     except Exception as e:
                         print('Failed with error', e)
-                    np.save(path, Accuracy)
-                    os.remove(path + '_lock')
                 else:
                     Accuracy = np.load(path)
 
-                print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
+                try:
+                    print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
                   ' in {:.1f} seconds'.format(Accuracy[-1]))
+                except Exception as e:
+                    print('Failed with error', e)
+
             else:
                 print(' currently locked with ', path + '_lock')
             seed += 1
