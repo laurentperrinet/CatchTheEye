@@ -15,9 +15,9 @@ crop = 64 # int(.9*fullsize)
 size = 64
 mean = .36
 std = .3
-conv1_dim = 7
-conv1_kernel_size = 7
-conv2_dim = 13
+conv1_dim = 9
+conv1_kernel_size = 11
+conv2_dim = 18
 conv2_kernel_size = 7
 dimension = 30
 verbose = False
@@ -221,7 +221,7 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            scale = 10.
+            scale = 100.
             self.optimizer = optim.Adam(self.model.parameters(),
                                     lr=self.args.lr/scale, weight_decay=1-self.args.momentum/scale)
         else:
@@ -436,20 +436,13 @@ if __name__ == '__main__':
         print(50*'-')
         print(' base=', base)
         print(50*'-')
+
+        print(50*'-')
+        print(' parameter scan : data')
+        print(50*'-')
         args = init(verbose=0, log_interval=0)
         mml = MetaML(args, base=base)
-        print(' parameter scan : learning ')
-        print(50*'-')
-        print('Using SGD')
-        print(50*'-')
-        for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
-            mml.parameter_scan(parameter)
-        print(50*'-')
-        print('Using ADAM')
-        print(50*'-')
-        args = init(verbose=0, log_interval=0, do_adam=True)
-        mml = MetaML(args, tag='adam')
-        for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
+        for parameter in ['size', 'fullsize', 'crop', 'mean', 'std']:
             mml.parameter_scan(parameter)
 
         print(50*'-')
@@ -465,8 +458,18 @@ if __name__ == '__main__':
                           'dimension']:
             mml.parameter_scan(parameter)
 
+        args = init(verbose=0, log_interval=0)
+        mml = MetaML(args, base=base)
+        print(' parameter scan : learning ')
         print(50*'-')
-        print(' parameter scan : data')
+        print('Using SGD')
         print(50*'-')
-        for parameter in ['size', 'fullsize', 'crop', 'mean', 'std']:
+        for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
+            mml.parameter_scan(parameter)
+        print(50*'-')
+        print('Using ADAM')
+        print(50*'-')
+        args = init(verbose=0, log_interval=0, do_adam=True)
+        mml = MetaML(args, tag='adam')
+        for parameter in ['lr', 'momentum', 'batch_size', 'epochs']:
             mml.parameter_scan(parameter)
