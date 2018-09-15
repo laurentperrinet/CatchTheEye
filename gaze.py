@@ -5,7 +5,7 @@ test_batch_size = 1
 valid_size = .2
 do_adam = False
 epochs = 20
-lr = 0.035
+lr = 0.025
 momentum = 0.05
 num_processes = 1
 seed = 42
@@ -415,6 +415,9 @@ class MetaML:
 
 
 if __name__ == '__main__':
+    print(50*'-')
+    print(' parameter scan')
+    print(50*'-')
     if False :
         print(50*'-')
         print('Default parameters')
@@ -429,10 +432,7 @@ if __name__ == '__main__':
             mml.scan('no_cuda', [True, False])
         else:
             mml.scan('no_cuda', [True])
-    print(50*'-')
-    print(' parameter scan')
-    print(50*'-')
-    for base in [10, 2]:
+    for base in [2, 8]:
         print(50*'-')
         print(' base=', base)
         print(50*'-')
