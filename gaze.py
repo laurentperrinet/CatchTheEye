@@ -16,9 +16,9 @@ size = 64
 mean = .36
 std = .3
 conv1_dim = 9
-conv1_kernel_size = 11
-conv2_dim = 18
-conv2_kernel_size = 7
+conv1_kernel_size = 18
+conv2_dim = 36
+conv2_kernel_size = 14
 dimension = 30
 verbose = False
 stride1 = 2
@@ -221,9 +221,9 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            scale = 100.
+            scale = 1000.
             self.optimizer = optim.Adam(self.model.parameters(),
-                                    lr=self.args.lr/scale, weight_decay=1-self.args.momentum/scale)
+                                    lr=self.args.lr, weight_decay=1-self.args.momentum/scale)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
