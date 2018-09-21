@@ -8,6 +8,7 @@ push_dataset:
 
 gitrun:
 	echo "Running 'make gitrun'" > output.txt
+	echo `date`
 	python3 gaze.py >> output.txt ; git commit -m ' running without notebook : run parameter scan ' -a ; git push
 
 clean:
