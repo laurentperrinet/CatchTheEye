@@ -8,14 +8,10 @@ push_dataset:
 
 gitrun: clean
 	echo "Running 'make gitrun'" > output.txt
-<<<<<<< HEAD
 	git pull
-	python3 gaze.py >> output.txt 
-	git pull; git commit -m ' running without notebook : run parameter scan ' -a ; git push
-=======
 	echo `date`
-	python3 gaze.py >> output.txt ; git commit -m ' running without notebook : run parameter scan ' -a ; git push
->>>>>>> 9b65115e43907db4db1d65cca497f8818b0f74dd
+	python3 gaze.py >> output.txt
+	git pull; git commit -m ' running without notebook : run parameter scan ' -a ; git push
 
 clean:
 	rm _tmp_scanning_*
