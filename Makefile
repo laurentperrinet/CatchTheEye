@@ -6,9 +6,11 @@ run:
 push_dataset:
 	scp -r dataset* laurent@10.164.7.21:Documents/CatchTheEye
 
-gitrun:
+gitrun: clean
 	echo "Running 'make gitrun'" > output.txt
-	python3 gaze.py >> output.txt ; git commit -m ' running without notebook : run parameter scan ' -a ; git push
+	git pull
+	python3 gaze.py >> output.txt 
+	git pull; git commit -m ' running without notebook : run parameter scan ' -a ; git push
 
 clean:
 	rm _tmp_scanning_*
