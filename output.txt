@@ -1,15 +1,7 @@
 Running 'make gitrun'
+Already up-to-date.
 --------------------------------------------------
  parameter scan
 --------------------------------------------------
 scanning over no_cuda = [True, False]
-For parameter no_cuda = True ,  Accuracy=93.5% +/- 1.0%  in 11186.5 seconds
-For parameter no_cuda = False ,  Accuracy=94.4% +/- 0.0%  in 689.4 seconds
---------------------------------------------------
- base= 2
---------------------------------------------------
---------------------------------------------------
- parameter scan : data
---------------------------------------------------
-scanning over size = [32, 38, 45, 53, 64, 76, 90, 107, 128]
-For parameter size = 32 ,  
+For parameter no_cuda = True ,  
