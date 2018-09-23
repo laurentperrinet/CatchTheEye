@@ -1,7 +1,463 @@
 Running 'make gitrun'
-Already up-to-date.
+Fri Sep 21 15:37:42 CEST 2018
 --------------------------------------------------
  parameter scan
 --------------------------------------------------
 scanning over no_cuda = [True, False]
-For parameter no_cuda = True ,  
+For parameter no_cuda = True ,  Accuracy=95.0% +/- 1.0%  in 22093.7 seconds
+For parameter no_cuda = False ,  Accuracy=94.9% +/- 0.0%  in 688.2 seconds
+--------------------------------------------------
+ base= 2
+--------------------------------------------------
+--------------------------------------------------
+ parameter scan : data
+--------------------------------------------------
+scanning over size = [32, 38, 45, 53, 64, 76, 90, 107, 128]
+For parameter size = 32 ,  Failed with error Calculated padded input size per channel: (7 x 7). Kernel size: (14 x 14). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Failed with error local variable 'Accuracy' referenced before assignment
+For parameter size = 38 ,  Failed with error Calculated padded input size per channel: (10 x 10). Kernel size: (14 x 14). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Failed with error local variable 'Accuracy' referenced before assignment
+For parameter size = 45 ,  Failed with error float division by zero
+Failed with error local variable 'Accuracy' referenced before assignment
+For parameter size = 53 ,  Accuracy=94.9% +/- 0.0%  in 697.4 seconds
+For parameter size = 64 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter size = 76 ,  Accuracy=93.8% +/- 0.0%  in 720.4 seconds
+For parameter size = 90 ,  Accuracy=95.5% +/- 0.0%  in 738.5 seconds
+For parameter size = 107 ,  Accuracy=93.3% +/- 0.0%  in 764.6 seconds
+For parameter size = 128 ,  Accuracy=91.6% +/- 0.0%  in 942.9 seconds
+scanning over fullsize = [32, 38, 45, 53, 64, 76, 90, 107, 128]
+For parameter fullsize = 32 ,  Accuracy=78.1% +/- 0.0%  in 674.7 seconds
+For parameter fullsize = 38 ,  Accuracy=91.0% +/- 0.0%  in 677.7 seconds
+For parameter fullsize = 45 ,  Accuracy=94.4% +/- 0.0%  in 680.2 seconds
+For parameter fullsize = 53 ,  Accuracy=94.9% +/- 0.0%  in 683.6 seconds
+For parameter fullsize = 64 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter fullsize = 76 ,  Accuracy=94.4% +/- 0.0%  in 692.8 seconds
+For parameter fullsize = 90 ,  Accuracy=92.1% +/- 0.0%  in 699.4 seconds
+For parameter fullsize = 107 ,  Accuracy=87.1% +/- 0.0%  in 709.4 seconds
+For parameter fullsize = 128 ,  Accuracy=75.3% +/- 0.0%  in 721.8 seconds
+scanning over crop = [32, 38, 45, 53, 64, 76, 90, 107, 128]
+For parameter crop = 32 ,  Accuracy=63.5% +/- 0.0%  in 702.1 seconds
+For parameter crop = 38 ,  Accuracy=79.2% +/- 0.0%  in 703.4 seconds
+For parameter crop = 45 ,  Accuracy=92.1% +/- 0.0%  in 704.1 seconds
+For parameter crop = 53 ,  Accuracy=93.8% +/- 0.0%  in 705.4 seconds
+For parameter crop = 64 ,  Accuracy=94.9% +/- 0.0%  in 687.3 seconds
+For parameter crop = 76 ,  Accuracy=94.4% +/- 0.0%  in 710.6 seconds
+For parameter crop = 90 ,  Accuracy=94.9% +/- 0.0%  in 714.2 seconds
+For parameter crop = 107 ,  Accuracy=93.8% +/- 0.0%  in 718.8 seconds
+For parameter crop = 128 ,  Accuracy=91.6% +/- 0.0%  in 725.5 seconds
+scanning over mean = [ 0.18        0.21405728  0.25455844  0.30272271  0.36        0.42811456
+  0.50911688  0.60544542  0.72      ]
+For parameter mean = 0.180 ,  Accuracy=33.1% +/- 0.0%  in 687.5 seconds
+For parameter mean = 0.214 ,  Accuracy=50.6% +/- 0.0%  in 687.5 seconds
+For parameter mean = 0.255 ,  Accuracy=87.1% +/- 0.0%  in 687.3 seconds
+For parameter mean = 0.303 ,  Accuracy=92.7% +/- 0.0%  in 688.3 seconds
+For parameter mean = 0.360 ,  Accuracy=94.9% +/- 0.0%  in 688.0 seconds
+For parameter mean = 0.428 ,  Accuracy=96.1% +/- 0.0%  in 688.0 seconds
+For parameter mean = 0.509 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter mean = 0.605 ,  Accuracy=95.5% +/- 0.0%  in 687.3 seconds
+For parameter mean = 0.720 ,  Accuracy=94.4% +/- 0.0%  in 687.5 seconds
+scanning over std = [ 0.15        0.17838107  0.21213203  0.25226892  0.3         0.35676213
+  0.42426407  0.50453785  0.6       ]
+For parameter std = 0.150 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter std = 0.178 ,  Accuracy=96.6% +/- 0.0%  in 687.4 seconds
+For parameter std = 0.212 ,  Accuracy=93.3% +/- 0.0%  in 687.9 seconds
+For parameter std = 0.252 ,  Accuracy=93.3% +/- 0.0%  in 687.9 seconds
+For parameter std = 0.300 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter std = 0.357 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter std = 0.424 ,  Accuracy=96.6% +/- 0.0%  in 687.9 seconds
+For parameter std = 0.505 ,  Accuracy=96.1% +/- 0.0%  in 688.0 seconds
+For parameter std = 0.600 ,  Accuracy=95.5% +/- 0.0%  in 687.8 seconds
+--------------------------------------------------
+ parameter scan : network
+--------------------------------------------------
+scanning over conv1_kernel_size = [9, 10, 12, 15, 18, 21, 25, 30, 36]
+For parameter conv1_kernel_size = 9 ,  Accuracy=93.8% +/- 0.0%  in 687.4 seconds
+For parameter conv1_kernel_size = 10 ,  Accuracy=94.9% +/- 0.0%  in 687.1 seconds
+For parameter conv1_kernel_size = 12 ,  Accuracy=94.9% +/- 0.0%  in 687.1 seconds
+For parameter conv1_kernel_size = 15 ,  Accuracy=96.6% +/- 0.0%  in 687.6 seconds
+For parameter conv1_kernel_size = 18 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter conv1_kernel_size = 21 ,  Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter conv1_kernel_size = 25 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter conv1_kernel_size = 30 ,  Accuracy=91.6% +/- 0.0%  in 687.5 seconds
+For parameter conv1_kernel_size = 36 ,  Failed with error float division by zero
+Accuracy=91.6% +/- 0.0%  in 687.5 seconds
+scanning over conv1_dim = [4, 5, 6, 7, 9, 10, 12, 15, 18]
+For parameter conv1_dim = 4 ,  Accuracy=93.3% +/- 0.0%  in 687.5 seconds
+For parameter conv1_dim = 5 ,  Accuracy=94.9% +/- 0.0%  in 687.6 seconds
+For parameter conv1_dim = 6 ,  Accuracy=93.8% +/- 0.0%  in 688.1 seconds
+For parameter conv1_dim = 7 ,  Accuracy=94.9% +/- 0.0%  in 687.4 seconds
+For parameter conv1_dim = 9 ,  Accuracy=94.9% +/- 0.0%  in 687.6 seconds
+For parameter conv1_dim = 10 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter conv1_dim = 12 ,  Accuracy=94.4% +/- 0.0%  in 687.5 seconds
+For parameter conv1_dim = 15 ,  Accuracy=93.3% +/- 0.0%  in 687.6 seconds
+For parameter conv1_dim = 18 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+scanning over conv2_kernel_size = [7, 8, 9, 11, 14, 16, 19, 23, 28]
+For parameter conv2_kernel_size = 7 ,  Accuracy=95.5% +/- 0.0%  in 687.4 seconds
+For parameter conv2_kernel_size = 8 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter conv2_kernel_size = 9 ,  Accuracy=95.5% +/- 0.0%  in 687.0 seconds
+For parameter conv2_kernel_size = 11 ,  Accuracy=96.1% +/- 0.0%  in 687.9 seconds
+For parameter conv2_kernel_size = 14 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter conv2_kernel_size = 16 ,  Accuracy=94.4% +/- 0.0%  in 687.8 seconds
+For parameter conv2_kernel_size = 19 ,  Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter conv2_kernel_size = 23 ,  Failed with error float division by zero
+Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter conv2_kernel_size = 28 ,  Failed with error Calculated padded input size per channel: (23 x 23). Kernel size: (28 x 28). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+scanning over conv2_dim = [18, 21, 25, 30, 36, 42, 50, 60, 72]
+For parameter conv2_dim = 18 ,  Accuracy=94.4% +/- 0.0%  in 688.3 seconds
+For parameter conv2_dim = 21 ,  Accuracy=95.5% +/- 0.0%  in 688.0 seconds
+For parameter conv2_dim = 25 ,  Accuracy=94.4% +/- 0.0%  in 687.8 seconds
+For parameter conv2_dim = 30 ,  Accuracy=94.4% +/- 0.0%  in 687.4 seconds
+For parameter conv2_dim = 36 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter conv2_dim = 42 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter conv2_dim = 50 ,  Accuracy=94.9% +/- 0.0%  in 687.9 seconds
+For parameter conv2_dim = 60 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter conv2_dim = 72 ,  Accuracy=94.4% +/- 0.0%  in 687.5 seconds
+scanning over stride1 = [1, 1, 1, 1, 2, 2, 2, 3, 4]
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 2 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 2 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 2 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 3 ,  Failed with error float division by zero
+Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 4 ,  Failed with error Calculated padded input size per channel: (11 x 11). Kernel size: (14 x 14). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+scanning over stride2 = [2, 2, 2, 3, 4, 4, 5, 6, 8]
+For parameter stride2 = 2 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter stride2 = 2 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter stride2 = 2 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter stride2 = 3 ,  Accuracy=92.7% +/- 0.0%  in 687.5 seconds
+For parameter stride2 = 4 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter stride2 = 4 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter stride2 = 5 ,  Accuracy=95.5% +/- 0.0%  in 687.5 seconds
+For parameter stride2 = 6 ,  Accuracy=96.6% +/- 0.0%  in 687.7 seconds
+For parameter stride2 = 8 ,  Accuracy=95.5% +/- 0.0%  in 687.3 seconds
+scanning over dimension = [15, 17, 21, 25, 30, 35, 42, 50, 60]
+For parameter dimension = 15 ,  Accuracy=93.8% +/- 0.0%  in 687.6 seconds
+For parameter dimension = 17 ,  Accuracy=92.7% +/- 0.0%  in 687.2 seconds
+For parameter dimension = 21 ,  Accuracy=96.6% +/- 0.0%  in 687.7 seconds
+For parameter dimension = 25 ,  Accuracy=93.3% +/- 0.0%  in 687.6 seconds
+For parameter dimension = 30 ,  Accuracy=94.9% +/- 0.0%  in 687.9 seconds
+For parameter dimension = 35 ,  Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter dimension = 42 ,  Accuracy=96.1% +/- 0.0%  in 687.4 seconds
+For parameter dimension = 50 ,  Accuracy=91.0% +/- 0.0%  in 688.0 seconds
+For parameter dimension = 60 ,  Accuracy=94.4% +/- 0.0%  in 687.2 seconds
+ parameter scan : learning 
+--------------------------------------------------
+Using SGD
+--------------------------------------------------
+scanning over lr = [ 0.0125      0.01486509  0.01767767  0.02102241  0.025       0.02973018
+  0.03535534  0.04204482  0.05      ]
+For parameter lr = 0.013 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter lr = 0.015 ,  Accuracy=95.5% +/- 0.0%  in 687.8 seconds
+For parameter lr = 0.018 ,  Accuracy=96.1% +/- 0.0%  in 687.3 seconds
+For parameter lr = 0.021 ,  Accuracy=97.2% +/- 0.0%  in 687.5 seconds
+For parameter lr = 0.025 ,  Accuracy=94.9% +/- 0.0%  in 688.0 seconds
+For parameter lr = 0.030 ,  Accuracy=93.3% +/- 0.0%  in 687.7 seconds
+For parameter lr = 0.035 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter lr = 0.042 ,  Accuracy=23.6% +/- 0.0%  in 687.8 seconds
+For parameter lr = 0.050 ,  Accuracy=93.8% +/- 0.0%  in 687.5 seconds
+scanning over momentum = [ 0.025       0.02973018  0.03535534  0.04204482  0.05        0.05946036
+  0.07071068  0.08408964  0.1       ]
+For parameter momentum = 0.025 ,  Accuracy=92.7% +/- 0.0%  in 687.1 seconds
+For parameter momentum = 0.030 ,  Accuracy=94.4% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.035 ,  Accuracy=96.1% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.042 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.050 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter momentum = 0.059 ,  Accuracy=93.8% +/- 0.0%  in 687.9 seconds
+For parameter momentum = 0.071 ,  Accuracy=95.5% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.084 ,  Accuracy=96.1% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.100 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+scanning over batch_size = [4, 4, 5, 6, 8, 9, 11, 13, 16]
+For parameter batch_size = 4 ,  Accuracy=95.5% +/- 0.0%  in 701.0 seconds
+For parameter batch_size = 4 ,  Accuracy=95.5% +/- 0.0%  in 701.0 seconds
+For parameter batch_size = 5 ,  Accuracy=94.4% +/- 0.0%  in 695.1 seconds
+For parameter batch_size = 6 ,  Accuracy=95.5% +/- 0.0%  in 692.1 seconds
+For parameter batch_size = 8 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter batch_size = 9 ,  Accuracy=94.9% +/- 0.0%  in 687.0 seconds
+For parameter batch_size = 11 ,  Accuracy=96.6% +/- 0.0%  in 683.6 seconds
+For parameter batch_size = 13 ,  Accuracy=93.8% +/- 0.0%  in 683.0 seconds
+For parameter batch_size = 16 ,  Accuracy=95.5% +/- 0.0%  in 681.2 seconds
+scanning over epochs = [10, 11, 14, 16, 20, 23, 28, 33, 40]
+For parameter epochs = 10 ,  Accuracy=92.1% +/- 0.0%  in 349.4 seconds
+For parameter epochs = 11 ,  Accuracy=86.5% +/- 0.0%  in 383.0 seconds
+For parameter epochs = 14 ,  Accuracy=94.4% +/- 0.0%  in 484.6 seconds
+For parameter epochs = 16 ,  Accuracy=94.4% +/- 0.0%  in 552.2 seconds
+For parameter epochs = 20 ,  Accuracy=94.9% +/- 0.0%  in 687.9 seconds
+For parameter epochs = 23 ,  Accuracy=94.9% +/- 0.0%  in 789.5 seconds
+For parameter epochs = 28 ,  Accuracy=94.9% +/- 0.0%  in 958.1 seconds
+For parameter epochs = 33 ,  Accuracy=94.9% +/- 0.0%  in 1127.1 seconds
+For parameter epochs = 40 ,  Accuracy=94.9% +/- 0.0%  in 1365.2 seconds
+--------------------------------------------------
+Using ADAM
+--------------------------------------------------
+scanning over lr = [ 0.0125      0.01486509  0.01767767  0.02102241  0.025       0.02973018
+  0.03535534  0.04204482  0.05      ]
+For parameter lr = 0.013 ,  Accuracy=25.8% +/- 0.0%  in 688.3 seconds
+For parameter lr = 0.015 ,  Accuracy=25.8% +/- 0.0%  in 688.2 seconds
+For parameter lr = 0.018 ,  Accuracy=25.8% +/- 0.0%  in 687.7 seconds
+For parameter lr = 0.021 ,  Accuracy=25.8% +/- 0.0%  in 687.6 seconds
+For parameter lr = 0.025 ,  Accuracy=25.8% +/- 0.0%  in 687.9 seconds
+For parameter lr = 0.030 ,  Accuracy=23.6% +/- 0.0%  in 688.1 seconds
+For parameter lr = 0.035 ,  Accuracy=23.6% +/- 0.0%  in 688.0 seconds
+For parameter lr = 0.042 ,  Accuracy=23.6% +/- 0.0%  in 688.4 seconds
+For parameter lr = 0.050 ,  Accuracy=23.6% +/- 0.0%  in 687.5 seconds
+scanning over momentum = [ 0.025       0.02973018  0.03535534  0.04204482  0.05        0.05946036
+  0.07071068  0.08408964  0.1       ]
+For parameter momentum = 0.025 ,  Accuracy=25.8% +/- 0.0%  in 688.4 seconds
+For parameter momentum = 0.030 ,  Accuracy=25.8% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.035 ,  Accuracy=25.8% +/- 0.0%  in 687.7 seconds
+For parameter momentum = 0.042 ,  Accuracy=25.8% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.050 ,  Accuracy=25.8% +/- 0.0%  in 688.1 seconds
+For parameter momentum = 0.059 ,  Accuracy=25.8% +/- 0.0%  in 688.3 seconds
+For parameter momentum = 0.071 ,  Accuracy=25.8% +/- 0.0%  in 688.4 seconds
+For parameter momentum = 0.084 ,  Accuracy=25.8% +/- 0.0%  in 688.0 seconds
+For parameter momentum = 0.100 ,  Accuracy=25.8% +/- 0.0%  in 687.8 seconds
+scanning over batch_size = [4, 4, 5, 6, 8, 9, 11, 13, 16]
+For parameter batch_size = 4 ,  Accuracy=25.8% +/- 0.0%  in 701.4 seconds
+For parameter batch_size = 4 ,  Accuracy=25.8% +/- 0.0%  in 701.4 seconds
+For parameter batch_size = 5 ,  Accuracy=25.8% +/- 0.0%  in 694.9 seconds
+For parameter batch_size = 6 ,  Accuracy=23.6% +/- 0.0%  in 691.8 seconds
+For parameter batch_size = 8 ,  Accuracy=25.8% +/- 0.0%  in 688.1 seconds
+For parameter batch_size = 9 ,  Accuracy=25.8% +/- 0.0%  in 688.3 seconds
+For parameter batch_size = 11 ,  Accuracy=25.8% +/- 0.0%  in 684.7 seconds
+For parameter batch_size = 13 ,  Accuracy=25.8% +/- 0.0%  in 683.9 seconds
+For parameter batch_size = 16 ,  Accuracy=25.8% +/- 0.0%  in 682.0 seconds
+scanning over epochs = [10, 11, 14, 16, 20, 23, 28, 33, 40]
+For parameter epochs = 10 ,  Accuracy=25.8% +/- 0.0%  in 349.4 seconds
+For parameter epochs = 11 ,  Accuracy=25.8% +/- 0.0%  in 383.2 seconds
+For parameter epochs = 14 ,  Accuracy=25.8% +/- 0.0%  in 485.1 seconds
+For parameter epochs = 16 ,  Accuracy=25.8% +/- 0.0%  in 552.4 seconds
+For parameter epochs = 20 ,  Accuracy=25.8% +/- 0.0%  in 687.7 seconds
+For parameter epochs = 23 ,  Accuracy=25.8% +/- 0.0%  in 789.4 seconds
+For parameter epochs = 28 ,  Accuracy=25.8% +/- 0.0%  in 959.1 seconds
+For parameter epochs = 33 ,  Accuracy=25.8% +/- 0.0%  in 1128.4 seconds
+For parameter epochs = 40 ,  Accuracy=25.8% +/- 0.0%  in 1365.5 seconds
+--------------------------------------------------
+ base= 8
+--------------------------------------------------
+--------------------------------------------------
+ parameter scan : data
+--------------------------------------------------
+scanning over size = [8, 13, 22, 38, 64, 107, 181, 304, 512]
+For parameter size = 8 ,  Failed with error Calculated padded input size per channel: (8 x 8). Kernel size: (18 x 18). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Failed with error local variable 'Accuracy' referenced before assignment
+For parameter size = 13 ,  Failed with error Calculated padded input size per channel: (13 x 13). Kernel size: (18 x 18). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Failed with error local variable 'Accuracy' referenced before assignment
+For parameter size = 22 ,  Failed with error Calculated padded input size per channel: (2 x 2). Kernel size: (14 x 14). Kernel size can't be greater than actual input size at /tmp/pip-req-build-zek6v7ql/aten/src/THCUNN/generic/SpatialConvolutionMM.cu:51
+Failed with error local variable 'Accuracy' referenced before assignment
+For parameter size = 38 ,   currently locked with  _tmp_scanning_size__38.npy_lock
+For parameter size = 64 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter size = 107 ,  Accuracy=93.3% +/- 0.0%  in 764.6 seconds
+For parameter size = 181 ,  Accuracy=95.5% +/- 0.0%  in 1852.0 seconds
+For parameter size = 304 ,  Accuracy=20.8% +/- 0.0%  in 6370.1 seconds
+For parameter size = 512 ,  Accuracy=59.6% +/- 0.0%  in 19584.5 seconds
+scanning over fullsize = [8, 13, 22, 38, 64, 107, 181, 304, 512]
+For parameter fullsize = 8 ,  Accuracy=26.4% +/- 0.0%  in 660.2 seconds
+For parameter fullsize = 13 ,  Accuracy=23.6% +/- 0.0%  in 664.0 seconds
+For parameter fullsize = 22 ,  Accuracy=65.7% +/- 0.0%  in 669.7 seconds
+For parameter fullsize = 38 ,  Accuracy=91.0% +/- 0.0%  in 677.7 seconds
+For parameter fullsize = 64 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter fullsize = 107 ,  Accuracy=87.1% +/- 0.0%  in 709.4 seconds
+For parameter fullsize = 181 ,  Accuracy=28.7% +/- 0.0%  in 760.2 seconds
+For parameter fullsize = 304 ,  Accuracy=25.3% +/- 0.0%  in 908.4 seconds
+For parameter fullsize = 512 ,  Accuracy=27.0% +/- 0.0%  in 1295.6 seconds
+scanning over crop = [8, 13, 22, 38, 64, 107, 181, 304, 512]
+For parameter crop = 8 ,  Accuracy=24.7% +/- 0.0%  in 699.6 seconds
+For parameter crop = 13 ,  Accuracy=27.5% +/- 0.0%  in 700.5 seconds
+For parameter crop = 22 ,  Accuracy=30.3% +/- 0.0%  in 702.0 seconds
+For parameter crop = 38 ,  Accuracy=79.2% +/- 0.0%  in 703.4 seconds
+For parameter crop = 64 ,  Accuracy=94.9% +/- 0.0%  in 687.3 seconds
+For parameter crop = 107 ,  Accuracy=93.8% +/- 0.0%  in 718.8 seconds
+For parameter crop = 181 ,  Accuracy=64.0% +/- 0.0%  in 748.7 seconds
+For parameter crop = 304 ,  Accuracy=30.9% +/- 0.0%  in 824.2 seconds
+For parameter crop = 512 ,  Accuracy=28.7% +/- 0.0%  in 1005.1 seconds
+scanning over mean = [ 0.045       0.07568068  0.12727922  0.21405728  0.36        0.60544542
+  1.01823376  1.71245825  2.88      ]
+For parameter mean = 0.045 ,  Accuracy=27.5% +/- 0.0%  in 688.8 seconds
+For parameter mean = 0.076 ,  Accuracy=25.8% +/- 0.0%  in 688.0 seconds
+For parameter mean = 0.127 ,  Accuracy=65.7% +/- 0.0%  in 688.2 seconds
+For parameter mean = 0.214 ,  Accuracy=50.6% +/- 0.0%  in 687.5 seconds
+For parameter mean = 0.360 ,  Accuracy=94.9% +/- 0.0%  in 688.0 seconds
+For parameter mean = 0.605 ,  Accuracy=95.5% +/- 0.0%  in 687.3 seconds
+For parameter mean = 1.018 ,  Accuracy=25.8% +/- 0.0%  in 688.5 seconds
+For parameter mean = 1.712 ,  Accuracy=25.8% +/- 0.0%  in 688.7 seconds
+For parameter mean = 2.880 ,  Accuracy=25.8% +/- 0.0%  in 688.2 seconds
+scanning over std = [ 0.0375      0.06306723  0.10606602  0.17838107  0.3         0.50453785
+  0.84852814  1.42704854  2.4       ]
+For parameter std = 0.037 ,  Accuracy=64.0% +/- 0.0%  in 688.5 seconds
+For parameter std = 0.063 ,  Accuracy=89.3% +/- 0.0%  in 688.1 seconds
+For parameter std = 0.106 ,  Accuracy=93.8% +/- 0.0%  in 688.9 seconds
+For parameter std = 0.178 ,  Accuracy=96.6% +/- 0.0%  in 687.4 seconds
+For parameter std = 0.300 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter std = 0.505 ,  Accuracy=96.1% +/- 0.0%  in 688.0 seconds
+For parameter std = 0.849 ,  Accuracy=94.9% +/- 0.0%  in 688.4 seconds
+For parameter std = 1.427 ,  Accuracy=94.9% +/- 0.0%  in 688.6 seconds
+For parameter std = 2.400 ,  Accuracy=69.1% +/- 0.0%  in 688.5 seconds
+--------------------------------------------------
+ parameter scan : network
+--------------------------------------------------
+scanning over conv1_kernel_size = [9, 10, 12, 15, 18, 21, 25, 30, 36]
+For parameter conv1_kernel_size = 9 ,  Accuracy=93.8% +/- 0.0%  in 687.4 seconds
+For parameter conv1_kernel_size = 10 ,  Accuracy=94.9% +/- 0.0%  in 687.1 seconds
+For parameter conv1_kernel_size = 12 ,  Accuracy=94.9% +/- 0.0%  in 687.1 seconds
+For parameter conv1_kernel_size = 15 ,  Accuracy=96.6% +/- 0.0%  in 687.6 seconds
+For parameter conv1_kernel_size = 18 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter conv1_kernel_size = 21 ,  Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter conv1_kernel_size = 25 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter conv1_kernel_size = 30 ,  Accuracy=91.6% +/- 0.0%  in 687.5 seconds
+For parameter conv1_kernel_size = 36 ,   currently locked with  _tmp_scanning_conv1_kernel_size__36.npy_lock
+scanning over conv1_dim = [4, 5, 6, 7, 9, 10, 12, 15, 18]
+For parameter conv1_dim = 4 ,  Accuracy=93.3% +/- 0.0%  in 687.5 seconds
+For parameter conv1_dim = 5 ,  Accuracy=94.9% +/- 0.0%  in 687.6 seconds
+For parameter conv1_dim = 6 ,  Accuracy=93.8% +/- 0.0%  in 688.1 seconds
+For parameter conv1_dim = 7 ,  Accuracy=94.9% +/- 0.0%  in 687.4 seconds
+For parameter conv1_dim = 9 ,  Accuracy=94.9% +/- 0.0%  in 687.6 seconds
+For parameter conv1_dim = 10 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter conv1_dim = 12 ,  Accuracy=94.4% +/- 0.0%  in 687.5 seconds
+For parameter conv1_dim = 15 ,  Accuracy=93.3% +/- 0.0%  in 687.6 seconds
+For parameter conv1_dim = 18 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+scanning over conv2_kernel_size = [7, 8, 9, 11, 14, 16, 19, 23, 28]
+For parameter conv2_kernel_size = 7 ,  Accuracy=95.5% +/- 0.0%  in 687.4 seconds
+For parameter conv2_kernel_size = 8 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter conv2_kernel_size = 9 ,  Accuracy=95.5% +/- 0.0%  in 687.0 seconds
+For parameter conv2_kernel_size = 11 ,  Accuracy=96.1% +/- 0.0%  in 687.9 seconds
+For parameter conv2_kernel_size = 14 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter conv2_kernel_size = 16 ,  Accuracy=94.4% +/- 0.0%  in 687.8 seconds
+For parameter conv2_kernel_size = 19 ,  Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter conv2_kernel_size = 23 ,   currently locked with  _tmp_scanning_conv2_kernel_size__23.npy_lock
+For parameter conv2_kernel_size = 28 ,   currently locked with  _tmp_scanning_conv2_kernel_size__28.npy_lock
+scanning over conv2_dim = [18, 21, 25, 30, 36, 42, 50, 60, 72]
+For parameter conv2_dim = 18 ,  Accuracy=94.4% +/- 0.0%  in 688.3 seconds
+For parameter conv2_dim = 21 ,  Accuracy=95.5% +/- 0.0%  in 688.0 seconds
+For parameter conv2_dim = 25 ,  Accuracy=94.4% +/- 0.0%  in 687.8 seconds
+For parameter conv2_dim = 30 ,  Accuracy=94.4% +/- 0.0%  in 687.4 seconds
+For parameter conv2_dim = 36 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter conv2_dim = 42 ,  Accuracy=95.5% +/- 0.0%  in 687.7 seconds
+For parameter conv2_dim = 50 ,  Accuracy=94.9% +/- 0.0%  in 687.9 seconds
+For parameter conv2_dim = 60 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter conv2_dim = 72 ,  Accuracy=94.4% +/- 0.0%  in 687.5 seconds
+scanning over stride1 = [1, 1, 1, 1, 2, 2, 2, 3, 4]
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 1 ,  Accuracy=91.0% +/- 0.0%  in 687.9 seconds
+For parameter stride1 = 2 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 2 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 2 ,  Accuracy=94.9% +/- 0.0%  in 687.8 seconds
+For parameter stride1 = 3 ,   currently locked with  _tmp_scanning_stride1__3.npy_lock
+For parameter stride1 = 4 ,   currently locked with  _tmp_scanning_stride1__4.npy_lock
+scanning over stride2 = [2, 2, 2, 3, 4, 4, 5, 6, 8]
+For parameter stride2 = 2 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter stride2 = 2 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter stride2 = 2 ,  Accuracy=94.9% +/- 0.0%  in 688.3 seconds
+For parameter stride2 = 3 ,  Accuracy=92.7% +/- 0.0%  in 687.5 seconds
+For parameter stride2 = 4 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter stride2 = 4 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter stride2 = 5 ,  Accuracy=95.5% +/- 0.0%  in 687.5 seconds
+For parameter stride2 = 6 ,  Accuracy=96.6% +/- 0.0%  in 687.7 seconds
+For parameter stride2 = 8 ,  Accuracy=95.5% +/- 0.0%  in 687.3 seconds
+scanning over dimension = [15, 17, 21, 25, 30, 35, 42, 50, 60]
+For parameter dimension = 15 ,  Accuracy=93.8% +/- 0.0%  in 687.6 seconds
+For parameter dimension = 17 ,  Accuracy=92.7% +/- 0.0%  in 687.2 seconds
+For parameter dimension = 21 ,  Accuracy=96.6% +/- 0.0%  in 687.7 seconds
+For parameter dimension = 25 ,  Accuracy=93.3% +/- 0.0%  in 687.6 seconds
+For parameter dimension = 30 ,  Accuracy=94.9% +/- 0.0%  in 687.9 seconds
+For parameter dimension = 35 ,  Accuracy=95.5% +/- 0.0%  in 687.6 seconds
+For parameter dimension = 42 ,  Accuracy=96.1% +/- 0.0%  in 687.4 seconds
+For parameter dimension = 50 ,  Accuracy=91.0% +/- 0.0%  in 688.0 seconds
+For parameter dimension = 60 ,  Accuracy=94.4% +/- 0.0%  in 687.2 seconds
+ parameter scan : learning 
+--------------------------------------------------
+Using SGD
+--------------------------------------------------
+scanning over lr = [ 0.003125    0.0052556   0.00883883  0.01486509  0.025       0.04204482
+  0.07071068  0.11892071  0.2       ]
+For parameter lr = 0.003 ,  Accuracy=69.1% +/- 0.0%  in 687.4 seconds
+For parameter lr = 0.005 ,  Accuracy=94.4% +/- 0.0%  in 688.0 seconds
+For parameter lr = 0.009 ,  Accuracy=94.9% +/- 0.0%  in 688.0 seconds
+For parameter lr = 0.015 ,  Accuracy=95.5% +/- 0.0%  in 687.8 seconds
+For parameter lr = 0.025 ,  Accuracy=94.9% +/- 0.0%  in 688.0 seconds
+For parameter lr = 0.042 ,  Accuracy=23.6% +/- 0.0%  in 687.8 seconds
+For parameter lr = 0.071 ,  Accuracy=25.8% +/- 0.0%  in 687.4 seconds
+For parameter lr = 0.119 ,  Accuracy=25.8% +/- 0.0%  in 687.9 seconds
+For parameter lr = 0.200 ,  Accuracy=20.8% +/- 0.0%  in 688.0 seconds
+scanning over momentum = [ 0.00625     0.01051121  0.01767767  0.02973018  0.05        0.08408964
+  0.14142136  0.23784142  0.4       ]
+For parameter momentum = 0.006 ,  Accuracy=94.9% +/- 0.0%  in 688.2 seconds
+For parameter momentum = 0.011 ,  Accuracy=93.3% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.018 ,  Accuracy=95.5% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.030 ,  Accuracy=94.4% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.050 ,  Accuracy=94.9% +/- 0.0%  in 687.5 seconds
+For parameter momentum = 0.084 ,  Accuracy=96.1% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.141 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter momentum = 0.238 ,  Accuracy=94.4% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.400 ,  Accuracy=86.0% +/- 0.0%  in 688.2 seconds
+scanning over batch_size = [1, 1, 2, 4, 8, 13, 22, 38, 64]
+For parameter batch_size = 1 ,  Accuracy=25.8% +/- 0.0%  in 857.0 seconds
+For parameter batch_size = 1 ,  Accuracy=25.8% +/- 0.0%  in 857.0 seconds
+For parameter batch_size = 2 ,  Accuracy=58.4% +/- 0.0%  in 736.9 seconds
+For parameter batch_size = 4 ,  Accuracy=95.5% +/- 0.0%  in 701.0 seconds
+For parameter batch_size = 8 ,  Accuracy=94.9% +/- 0.0%  in 687.7 seconds
+For parameter batch_size = 13 ,  Accuracy=93.8% +/- 0.0%  in 683.0 seconds
+For parameter batch_size = 22 ,  Accuracy=95.5% +/- 0.0%  in 680.5 seconds
+For parameter batch_size = 38 ,  Accuracy=91.6% +/- 0.0%  in 679.7 seconds
+For parameter batch_size = 64 ,  Accuracy=41.0% +/- 0.0%  in 690.4 seconds
+scanning over epochs = [2, 4, 7, 11, 20, 33, 56, 95, 160]
+For parameter epochs = 2 ,  Accuracy=25.3% +/- 0.0%  in 78.3 seconds
+For parameter epochs = 4 ,  Accuracy=44.9% +/- 0.0%  in 146.1 seconds
+For parameter epochs = 7 ,  Accuracy=88.2% +/- 0.0%  in 247.7 seconds
+For parameter epochs = 11 ,  Accuracy=86.5% +/- 0.0%  in 383.0 seconds
+For parameter epochs = 20 ,  Accuracy=94.9% +/- 0.0%  in 687.9 seconds
+For parameter epochs = 33 ,  Accuracy=94.9% +/- 0.0%  in 1127.1 seconds
+For parameter epochs = 56 ,  Accuracy=94.9% +/- 0.0%  in 1906.8 seconds
+For parameter epochs = 95 ,  Accuracy=94.9% +/- 0.0%  in 3226.7 seconds
+For parameter epochs = 160 ,  Accuracy=95.5% +/- 0.0%  in 5429.5 seconds
+--------------------------------------------------
+Using ADAM
+--------------------------------------------------
+scanning over lr = [ 0.0125      0.01486509  0.01767767  0.02102241  0.025       0.02973018
+  0.03535534  0.04204482  0.05      ]
+For parameter lr = 0.013 ,  Accuracy=25.8% +/- 0.0%  in 688.3 seconds
+For parameter lr = 0.015 ,  Accuracy=25.8% +/- 0.0%  in 688.2 seconds
+For parameter lr = 0.018 ,  Accuracy=25.8% +/- 0.0%  in 687.7 seconds
+For parameter lr = 0.021 ,  Accuracy=25.8% +/- 0.0%  in 687.6 seconds
+For parameter lr = 0.025 ,  Accuracy=25.8% +/- 0.0%  in 687.9 seconds
+For parameter lr = 0.030 ,  Accuracy=23.6% +/- 0.0%  in 688.1 seconds
+For parameter lr = 0.035 ,  Accuracy=23.6% +/- 0.0%  in 688.0 seconds
+For parameter lr = 0.042 ,  Accuracy=23.6% +/- 0.0%  in 688.4 seconds
+For parameter lr = 0.050 ,  Accuracy=23.6% +/- 0.0%  in 687.5 seconds
+scanning over momentum = [ 0.025       0.02973018  0.03535534  0.04204482  0.05        0.05946036
+  0.07071068  0.08408964  0.1       ]
+For parameter momentum = 0.025 ,  Accuracy=25.8% +/- 0.0%  in 688.4 seconds
+For parameter momentum = 0.030 ,  Accuracy=25.8% +/- 0.0%  in 687.6 seconds
+For parameter momentum = 0.035 ,  Accuracy=25.8% +/- 0.0%  in 687.7 seconds
+For parameter momentum = 0.042 ,  Accuracy=25.8% +/- 0.0%  in 687.8 seconds
+For parameter momentum = 0.050 ,  Accuracy=25.8% +/- 0.0%  in 688.1 seconds
+For parameter momentum = 0.059 ,  Accuracy=25.8% +/- 0.0%  in 688.3 seconds
+For parameter momentum = 0.071 ,  Accuracy=25.8% +/- 0.0%  in 688.4 seconds
+For parameter momentum = 0.084 ,  Accuracy=25.8% +/- 0.0%  in 688.0 seconds
+For parameter momentum = 0.100 ,  Accuracy=25.8% +/- 0.0%  in 687.8 seconds
+scanning over batch_size = [4, 4, 5, 6, 8, 9, 11, 13, 16]
+For parameter batch_size = 4 ,  Accuracy=25.8% +/- 0.0%  in 701.4 seconds
+For parameter batch_size = 4 ,  Accuracy=25.8% +/- 0.0%  in 701.4 seconds
+For parameter batch_size = 5 ,  Accuracy=25.8% +/- 0.0%  in 694.9 seconds
+For parameter batch_size = 6 ,  Accuracy=23.6% +/- 0.0%  in 691.8 seconds
+For parameter batch_size = 8 ,  Accuracy=25.8% +/- 0.0%  in 688.1 seconds
+For parameter batch_size = 9 ,  Accuracy=25.8% +/- 0.0%  in 688.3 seconds
+For parameter batch_size = 11 ,  Accuracy=25.8% +/- 0.0%  in 684.7 seconds
+For parameter batch_size = 13 ,  Accuracy=25.8% +/- 0.0%  in 683.9 seconds
+For parameter batch_size = 16 ,  Accuracy=25.8% +/- 0.0%  in 682.0 seconds
+scanning over epochs = [10, 11, 14, 16, 20, 23, 28, 33, 40]
+For parameter epochs = 10 ,  Accuracy=25.8% +/- 0.0%  in 349.4 seconds
+For parameter epochs = 11 ,  Accuracy=25.8% +/- 0.0%  in 383.2 seconds
+For parameter epochs = 14 ,  Accuracy=25.8% +/- 0.0%  in 485.1 seconds
+For parameter epochs = 16 ,  Accuracy=25.8% +/- 0.0%  in 552.4 seconds
+For parameter epochs = 20 ,  Accuracy=25.8% +/- 0.0%  in 687.7 seconds
+For parameter epochs = 23 ,  Accuracy=25.8% +/- 0.0%  in 789.4 seconds
+For parameter epochs = 28 ,  Accuracy=25.8% +/- 0.0%  in 959.1 seconds
+For parameter epochs = 33 ,  Accuracy=25.8% +/- 0.0%  in 1128.4 seconds
+For parameter epochs = 40 ,  Accuracy=25.8% +/- 0.0%  in 1365.5 seconds
