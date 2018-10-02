@@ -437,7 +437,7 @@ if __name__ == '__main__':
         args = init(verbose=0, log_interval=0)
         ml = ML(args)
         ml.main()
-    if True :
+    if False :
         args = init(verbose=0, log_interval=0)
         mml = MetaML(args)
         if torch.cuda.is_available():
