@@ -2,7 +2,7 @@ dataset_folder = 'dataset_faces'
 batch_size = 8
 no_cuda = False
 test_batch_size = 1
-valid_size = .2
+size_test_set = .2
 do_adam = False
 epochs = 20
 lr = 0.025
@@ -29,7 +29,7 @@ N_cv = 20
 # N_cv = 2
 
 import easydict
-def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
+def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
             do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -38,7 +38,7 @@ def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=t
             dimension=dimension, verbose=verbose):
     # Training settings
     kwargs = {}
-    kwargs.update(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, valid_size=valid_size, epochs=epochs,
+    kwargs.update(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
                 do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -99,7 +99,7 @@ class Data:
         # https://gist.github.com/kevinzakka/d33bf8d6c7f06a9d8c76d97a7879f5cb
         num_train = len(self.dataset)
         # indices = list(range(num_train))
-        split = int(np.floor(self.args.valid_size * num_train))
+        split = int(np.floor(self.args.size_test_set * num_train))
         if self.args.verbose:
             print('Found', num_train, 'sample images; ', num_train-split, ' to train', split, 'to test')
         #
@@ -119,14 +119,14 @@ class Data:
         self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.args.test_batch_size, **kwargs)
         self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
 
-    def show(self, gamma=.5, noise_level=.4, transpose=True):
+    def show(self, gamma=.5, noise_level=.4, nrow=8, transpose=True):
 
         images, foo = next(iter(self.train_loader))
-
+        # https://pytorch.org/docs/stable/torchvision/utils.html#torchvision.utils.make_grid
         from torchvision.utils import make_grid
-        npimg = make_grid(images, normalize=True).numpy()
+        npimg = make_grid(images, normalize=True, nrow=nrow).numpy()
         import matplotlib.pyplot as plt
-        fig, ax = plt.subplots(figsize=((13, 5)))
+        fig, ax = plt.subplots(figsize=((8, 5)))
         import numpy as np
         if transpose:
             ax.imshow(np.transpose(npimg, (1, 2, 0)))
