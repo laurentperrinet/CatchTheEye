@@ -373,14 +373,19 @@ class MetaML:
 
     def scan(self, parameter, values):
         import os
+        try:
+            os.mkdir('_tmp_scanning')
+        except:
+            pass
         print('scanning over', parameter, '=', values)
         seed = self.seed
+        Accuracy = {}
         for value in values:
             if isinstance(value, int):
                 value_str = str(value)
             else:
                 value_str = '%.3f' % value
-            path = '_tmp_scanning_' + parameter + '_' + self.tag + '_' + value_str.replace('.', '_') + '.npy'
+            path = '_tmp_scanning/' + parameter + '_' + self.tag + '_' + value_str.replace('.', '_') + '.npy'
             print ('For parameter', parameter, '=', value_str, ', ', end=" ")
             if not(os.path.isfile(path + '_lock')):
                 if not(os.path.isfile(path)):
@@ -388,30 +393,37 @@ class MetaML:
                     try:
                         args = easydict.EasyDict(self.args.copy())
                         args[parameter] = value
-                        Accuracy = self.protocol(args, seed)
-                        np.save(path, Accuracy)
+                        Accuracy[value] = self.protocol(args, seed)
+                        np.save(path, Accuracy[value])
                         os.remove(path + '_lock')
                     except Exception as e:
                         print('Failed with error', e)
                 else:
-                    Accuracy = np.load(path)
+                    Accuracy[value] = np.load(path)
 
                 try:
-                    print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[:-1].mean()*100, Accuracy[:-1].std()*100),
-                  ' in {:.1f} seconds'.format(Accuracy[-1]))
+                    print('Accuracy={:.1f}% +/- {:.1f}%'.format(Accuracy[value][:-1].mean()*100, Accuracy[value][:-1].std()*100),
+                  ' in {:.1f} seconds'.format(Accuracy[value][-1]))
                 except Exception as e:
                     print('Failed with error', e)
 
             else:
                 print(' currently locked with ', path + '_lock')
             seed += 1
+        return Accuracy
 
-    def parameter_scan(self, parameter):
+    def parameter_scan(self, parameter, display=False):
         values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
         if isinstance(self.args[parameter], int):
             # print('integer detected') # DEBUG
             values =  [int(k) for k in values]
-        self.scan(parameter, values)
+        Accuracy = self.scan(parameter, values)
+        if display:
+            fig, ax = plt.subplots(figsize=(8, 5))
+
+
+
+        return Accuracy
 
 
 if __name__ == '__main__':

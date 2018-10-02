@@ -3,6 +3,9 @@ default: run
 run:
 	python3 gaze.py
 
+pull_results:
+	scp -r laurent@10.164.7.21:Documents/CatchTheEye/_tmp_scanning .
+
 push_dataset:
 	scp -r dataset* laurent@10.164.7.21:Documents/CatchTheEye
 
