@@ -10,7 +10,7 @@ lr = 0.025
 momentum = 0.05
 num_processes = 1
 seed = 42
-log_interval = 0
+log_interval = 1 # period with which we report results for the loss
 fullsize = 64
 crop = 64 # int(.9*fullsize)
 size = 64
@@ -252,38 +252,47 @@ class ML():
     #     return (img - self.mean) / self.std
 
     def train(self, path=None, seed=None):
-        if seed is None:
-            seed = self.args.seed
-        # cosmetics
-        try:
-            from tqdm import tqdm
-            #from tqdm import tqdm_notebook as tqdm
-            verbose = 1
-        except ImportError:
-            verbose = 0
-        if self.args.verbose == 0 or verbose == 0:
-            def tqdm(x, desc=None):
-                if desc is not None: print(desc)
-                return x
-
-        # setting up training
-        self.model.train()
-        if path is not None:
+        if not path is None:
             # using a data_cache
-            import os
-            import torch
             if os.path.isfile(path):
-                ml.model.load_state_dict(torch.load(path))
+                self.model.load_state_dict(torch.load(path))
                 print('Loading file', path)
             else:
                 print('Training model...')
-                for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
-                    self.train_epoch(epoch, rank=0)
-                    torch.save(ml.model.state_dict(), path) #save the neural network state
+                self.train(path=None, seed=seed)
+                torch.save(self.model.state_dict(), path) #save the neural network state
                 print('Model saved at', path)
         else:
+            # cosmetics
+            try:
+                from tqdm import tqdm
+                #from tqdm import tqdm_notebook as tqdm
+                verbose = 1
+            except ImportError:
+                verbose = 0
+            if self.args.verbose == 0 or verbose == 0:
+                def tqdm(x, desc=None):
+                    if desc is not None: print(desc)
+                    return x
+
+            # setting up training
+            if seed is None:
+                seed = self.args.seed
+            self.model.train(True)
             for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
-                self.train_epoch(epoch, seed, rank=0)
+                loss = self.train_epoch(epoch, seed, rank=0)
+                # report classification results
+                if self.args.verbose and self.args.log_interval>0:
+                    if epoch % self.args.log_interval == 0:
+                        status_str = '\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                            epoch, loss)
+                        try:
+                            from tqdm import tqdm
+                            tqdm.write(status_str)
+                        except Exception as e:
+                            print(e)
+                            print(status_str)
+            self.model.train(False)
 
     def train_epoch(self, epoch, seed, rank=0):
         torch.manual_seed(seed + epoch + rank*self.args.epochs)
@@ -299,17 +308,7 @@ class ML():
             loss.backward()
             # Adjust parameters according to the computed gradients
             self.optimizer.step()
-            if self.args.verbose and self.args.log_interval>0:
-                if batch_idx % self.args.log_interval == 0:
-                    status_str = '\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        epoch, batch_idx * len(data), len(self.dataset.train_loader.dataset),
-                        100. * batch_idx / len(self.dataset.train_loader), loss.item())
-                    try:
-                        from tqdm import tqdm
-                        tqdm.write(status_str)
-                    except Exception as e:
-                        print(e)
-                        print(status_str)
+        return loss.item()
 
     def test(self, dataloader=None):
         if dataloader is None:
