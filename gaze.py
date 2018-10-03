@@ -14,7 +14,7 @@ log_interval = 1 # period with which we report results for the loss
 fullsize = 64
 crop = 64 # int(.9*fullsize)
 size = 64
-mean = .36
+mean = .6
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
@@ -336,7 +336,7 @@ class ML():
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
         if only_wrong and not pred == target:
-            print('File', ml.dataset.dataset.imgs[])
+            #print('File', ml.dataset.dataset.imgs[])
             print('target:' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in target))
             print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
             #print(target, pred)
