@@ -1,4 +1,5 @@
-dataset_folder = 'dataset_faces'
+dataset_folder = 'dataset'
+dataset_faces_folder = 'dataset_faces'
 batch_size = 8
 no_cuda = False
 test_batch_size = 1
@@ -29,7 +30,7 @@ N_cv = 20
 # N_cv = 2
 
 import easydict
-def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
+def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
             do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -38,7 +39,7 @@ def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=t
             dimension=dimension, verbose=verbose):
     # Training settings
     kwargs = {}
-    kwargs.update(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
+    kwargs.update(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
                 do_adam=do_adam, lr=lr, momentum=momentum, no_cuda=no_cuda, num_processes=num_processes, seed=seed,
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
@@ -64,6 +65,7 @@ class FaceExtractor:
         face = frame[(d.top()):(d.bottom()), (d.left()):(d.right()), :]
         return face
 
+import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
 import torch.nn as nn
@@ -73,24 +75,23 @@ from torchvision.datasets import ImageFolder
 import torchvision
 import torch.optim as optim
 
-
 class Data:
     def __init__(self, args):
+        self.args = args
+
         # making sure that all folders exist
         try:
-            os.mkdir(self.args.dataset_folder)
+            os.mkdir(self.args.dataset_faces_folder)
         except:
             pass
-
-        for label in ['blink', 'center', 'left', 'right']: # TODO : get from the full dataset
+        self.classes = ['blink', 'center', 'left', 'right'] # TODO : get from the full dataset
+        for label in self.classes:
             try:
-                os.mkdir(os.path.join(self.args.dataset_folder, label))
-                print('Creating folder ', os.path.join(self.args.dataset_folder, label))
+                os.mkdir(os.path.join(self.args.dataset_faces_folder, label))
+                print('Creating folder ', os.path.join(self.args.dataset_faces_folder, label))
             except:
                 pass
 
-
-        self.args = args
         # GPU boilerplate
         if self.args.verbose:
             if not self.args.no_cuda and not torch.cuda.is_available():
@@ -116,24 +117,27 @@ class Data:
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
 
-        self.dataset = ImageFolder(self.args.dataset_folder, t)
-        #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
-        #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
+        try:
+            self.dataset = ImageFolder(self.args.dataset_faces_folder, t)
+            #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
+            #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
 
-        # https://gist.github.com/kevinzakka/d33bf8d6c7f06a9d8c76d97a7879f5cb
-        num_train = len(self.dataset)
-        # indices = list(range(num_train))
-        split = int(np.floor(self.args.size_test_set * num_train))
-        if self.args.verbose:
-            print('Found', num_train, 'sample images; ', num_train-split, ' to train', split, 'to test')
+            # https://gist.github.com/kevinzakka/d33bf8d6c7f06a9d8c76d97a7879f5cb
+            num_train = len(self.dataset)
+            # indices = list(range(num_train))
+            split = int(np.floor(self.args.size_test_set * num_train))
+            if self.args.verbose:
+                print('Found', num_train, 'sample images; ', num_train-split, ' to train', split, 'to test')
 
-        # N-batch_size, C-num_channels , H-height, W-width
-        from torch.utils.data import random_split
-        train_dataset, test_dataset = random_split(self.dataset, [num_train-split, split])
+            # N-batch_size, C-num_channels , H-height, W-width
+            from torch.utils.data import random_split
+            train_dataset, test_dataset = random_split(self.dataset, [num_train-split, split])
 
-        self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.args.batch_size, **kwargs)
-        self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.args.test_batch_size, **kwargs)
-        self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
+            self.train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=self.args.batch_size, **kwargs)
+            self.test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=self.args.test_batch_size, **kwargs)
+            self.classes = self.dataset.classes #'blink', 'left ', 'right', ' fix '
+        except Exception as e:
+            print('Could not load dataset', e)
 
     def show(self, gamma=.5, noise_level=.4, nrow=8, transpose=True):
 
