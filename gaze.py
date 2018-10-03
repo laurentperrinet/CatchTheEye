@@ -99,7 +99,7 @@ class Data:
         self.args.no_cuda = self.args.no_cuda or not torch.cuda.is_available()
         #if self.args.verbose:
         #    print('no cuda?', self.args.no_cuda)
-        kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1, 'shuffle': True}
+        kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1}
 
         self.t = transforms.Compose([
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
@@ -225,8 +225,7 @@ class ML():
         self.args = args
         # GPU boilerplate
         self.args.no_cuda = self.args.no_cuda or not torch.cuda.is_available()
-        if self.args.verbose:
-            print('cuda?', not self.args.no_cuda)
+        # if self.args.verbose: print('cuda?', not self.args.no_cuda)
         self.device = torch.device("cpu" if self.args.no_cuda else "cuda")
         torch.manual_seed(self.args.seed)
         # DATA
@@ -241,9 +240,9 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            scale = 1000.
+            scale = 100.
             self.optimizer = optim.Adam(self.model.parameters(),
-                                    lr=self.args.lr, weight_decay=1-self.args.momentum/scale)
+                                    lr=self.args.lr, betas=(1.-self.args.momentum, 1.-self.args.momentum/scale), eps=1e-8)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
@@ -337,6 +336,7 @@ class ML():
         output = self.model(data)
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
         if only_wrong and not pred == target:
+            print('File', ml.dataset.dataset.imgs[])
             print('target:' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in target))
             print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
             #print(target, pred)
