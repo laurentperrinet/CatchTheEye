@@ -56,11 +56,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torchvision import datasets, transforms
 from torchvision.datasets import ImageFolder
-# import torch.multiprocessing as mp
-# import torchvision.models as models
 import torchvision
-# torchvision.set_image_backend('accimage')
-from torch.utils.data.sampler import SubsetRandomSampler
 import torch.optim as optim
 
 
@@ -81,7 +77,6 @@ class Data:
             # Resize the input PIL Image to the given size. size (sequence or int) – Desired output size. If size is a sequence like (h, w), output size will be matched to this. If size is an int, smaller edge of the image will be matched to this number. i.e, if height > width, then image will be rescaled to (size * height / width, size)
             transforms.Resize(args.fullsize),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
-            #
             #transforms.RandomAffine(degrees=10, scale=(.8, 1.2), shear=10, resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
             # transforms.CenterCrop((args.crop, int(args.crop*4/3))),
@@ -102,16 +97,8 @@ class Data:
         split = int(np.floor(self.args.size_test_set * num_train))
         if self.args.verbose:
             print('Found', num_train, 'sample images; ', num_train-split, ' to train', split, 'to test')
-        #
-        # np.random.seed(self.args.seed)
-        # np.random.shuffle(indices)
-        #
-        # train_idx, valid_idx = indices[split:], indices[:split]
-        # train_sampler = SubsetRandomSampler(train_idx)
-        # valid_sampler = SubsetRandomSampler(valid_idx)
 
         # N-batch_size, C-num_channels , H-height, W-width
-
         from torch.utils.data import random_split
         train_dataset, test_dataset = random_split(self.dataset, [num_train-split, split])
 
