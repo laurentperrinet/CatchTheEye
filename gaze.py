@@ -50,6 +50,20 @@ def init(dataset_folder=dataset_folder, batch_size=batch_size, test_batch_size=t
     return easydict.EasyDict(kwargs)
 
 import numpy as np
+
+class FaceExtractor:
+    def __init__(self):
+
+        import dlib
+        self.detector = dlib.get_frontal_face_detector()
+
+    def face_extractor(self, frame):
+        N_X, N_Y, three = frame.shape
+        dets = self.detector(frame, 1)
+        d = dets[0]
+        face = frame[(d.top()):(d.bottom()), (d.left()):(d.right()), :]
+        return face
+
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
 import torch.nn as nn
@@ -62,14 +76,28 @@ import torch.optim as optim
 
 class Data:
     def __init__(self, args):
+        # making sure that all folders exist
+        try:
+            os.mkdir(self.args.dataset_folder)
+        except:
+            pass
+
+        for label in ['blink', 'center', 'left', 'right']: # TODO : get from the full dataset
+            try:
+                os.mkdir(os.path.join(self.args.dataset_folder, label))
+                print('Creating folder ', os.path.join(self.args.dataset_folder, label))
+            except:
+                pass
+
+
         self.args = args
         # GPU boilerplate
         if self.args.verbose:
             if not self.args.no_cuda and not torch.cuda.is_available():
                 print('Trying to load cuda, but it is not available')
         self.args.no_cuda = self.args.no_cuda or not torch.cuda.is_available()
-        if self.args.verbose:
-            print('no cuda?', self.args.no_cuda)
+        #if self.args.verbose:
+        #    print('no cuda?', self.args.no_cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1, 'shuffle': True}
 
         t = transforms.Compose([
@@ -87,6 +115,7 @@ class Data:
             transforms.ToTensor(),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
+
         self.dataset = ImageFolder(self.args.dataset_folder, t)
         #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
         #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
