@@ -101,7 +101,7 @@ class Data:
         #    print('no cuda?', self.args.no_cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1, 'shuffle': True}
 
-        t = transforms.Compose([
+        self.t = transforms.Compose([
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
             # Resize the input PIL Image to the given size. size (sequence or int) – Desired output size. If size is a sequence like (h, w), output size will be matched to this. If size is an int, smaller edge of the image will be matched to this number. i.e, if height > width, then image will be rescaled to (size * height / width, size)
             transforms.Resize(args.fullsize),
@@ -118,7 +118,7 @@ class Data:
             ])
 
         try:
-            self.dataset = ImageFolder(self.args.dataset_faces_folder, t)
+            self.dataset = ImageFolder(self.args.dataset_faces_folder, self.t)
             #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
             #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
 
