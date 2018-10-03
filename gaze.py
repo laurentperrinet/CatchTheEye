@@ -187,7 +187,7 @@ class Net(nn.Module):
         #     p=self.dropout_rate, training=self.training)    # batch_size x 128
         #x = F.dropout(x, training=self.training)
         x = self.fc2(x)
-        return F.log_softmax(x, dim=1)
+        return F.log_softmax(x, dim=1) # TODO; check this is compatible with nll_loss
 
     def num_flat_features(self, x):
         size = x.size()[1:]  # all dimensions except the batch dimension
