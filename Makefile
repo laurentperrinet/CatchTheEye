@@ -17,4 +17,4 @@ gitrun: clean
 	git pull; git commit -m ' running without notebook : run parameter scan ' -a ; git push
 
 clean:
-	rm _tmp_scanning_*
+	rm -fr _tmp_scanning
