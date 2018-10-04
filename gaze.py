@@ -283,8 +283,7 @@ class ML():
                 # report classification results
                 if self.args.verbose and self.args.log_interval>0:
                     if epoch % self.args.log_interval == 0:
-                        status_str = '\tTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                            epoch, loss)
+                        status_str = '\tTrain Epoch: {} \t Loss: {:.6f}'.format(epoch, loss)
                         try:
                             from tqdm import tqdm
                             tqdm.write(status_str)
