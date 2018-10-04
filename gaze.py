@@ -452,6 +452,7 @@ if __name__ == '__main__':
         Accuracy = mml.protocol(args, 42)
         print('Accuracy', Accuracy[:-1].mean(), '+/-', Accuracy[:-1].std())
         import numpy as np
+        import matplotlib.pyplot as plt
         fig, ax = plt.subplots(figsize=((8, 5)))
         n, bins, patches = ax.hist(Accuracy[:-1]*100, bins=np.linspace(0, 100, 100), alpha=.4)
         ax.vlines(np.median(Accuracy[:-1])*100, 0, n.max(), 'g', linestyles='dashed', label='median')
