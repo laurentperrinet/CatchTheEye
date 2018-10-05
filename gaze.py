@@ -11,15 +11,17 @@ momentum = 0.05
 num_processes = 1
 seed = 42
 log_interval = 0 # period with which we report results for the loss
-fullsize = 64
+fullsize = 75
 crop = 64 # int(.9*fullsize)
 size = 64
 mean = .6
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
+conv1_pdropout = .1
 conv2_dim = 36
 conv2_kernel_size = 14
+conv2_pdropout = .1
 dimension = 30
 verbose = False
 stride1 = 2
@@ -35,6 +37,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+            conv1_pdropout=conv1_pdropout, conv2_pdropout=conv2_pdropout,
             stride1=stride1, stride2=stride2, N_cv=N_cv,
             dimension=dimension, verbose=verbose):
     # Training settings
@@ -44,6 +47,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                 conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
+                conv1_pdropout=conv1_pdropout, conv2_pdropout=conv2_pdropout,
                 stride1=stride1, stride2=stride2, N_cv=N_cv,
                 dimension=dimension, verbose=verbose
                 )
@@ -113,8 +117,9 @@ class Data:
             #transforms.RandomAffine(degrees=10, scale=(.8, 1.2), shear=10, resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
             # transforms.CenterCrop((args.crop, int(args.crop*4/3))),
-            transforms.CenterCrop(args.crop),
-            #torchvision.transforms.RandomResizedCrop(size, scale=(0.08, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2)[
+            #transforms.CenterCrop(args.crop),
+            transforms.RandomCrop(args.crop),
+            #torchvision.transforms.RandomResizedCrop(size, scale=(0.8, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2),
             transforms.Resize(args.size),
             # transforms.RandomAffine(args.size),
             transforms.ToTensor(),
@@ -172,7 +177,8 @@ class Net(nn.Module):
         out_width_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
         # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
-        #self.conv2_drop = nn.Dropout2d()
+        self.conv1_drop = nn.Dropout2d(p=conv1_pdropout)
+        self.conv2_drop = nn.Dropout2d(p=conv2_pdropout)
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
         out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2**2) * args.conv2_dim
@@ -180,16 +186,11 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(args.dimension, len(self.args.classes))
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
-            # s = self.bn1(self.conv1(s))        # batch_size x 32 x 64 x 64
-        #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[2, 2], stride=[2, 2]))
-        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv1(x)), kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        #x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         x = x.view(-1, self.num_flat_features(x))
         x = F.relu(self.fc1(x))
-        #         # apply 2 fully connected layers with dropout
-        # s = F.dropout(F.relu(self.fcbn1(self.fc1(s))),
-        #     p=self.dropout_rate, training=self.training)    # batch_size x 128
-        #x = F.dropout(x, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
@@ -334,30 +335,31 @@ class ML():
         return correct.numpy() / len(self.dataset.test_loader.dataset)
 
     def show(self, gamma=.5, noise_level=.4, transpose=True, only_wrong=False):
-        data, target = next(iter(self.dataset.test_loader))
-        data, target = data.to(self.device), target.to(self.device)
-        output = self.model(data)
-        pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-        if only_wrong and not pred == target:
-            #print('File', ml.dataset.dataset.imgs[])
-            print('target:' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in target))
-            print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
-            #print(target, pred)
+        for idx, (data, target) in enumerate(self.dataset.test_loader):
+            #data, target = next(iter(self.dataset.test_loader))
+            data, target = data.to(self.device), target.to(self.device)
+            output = self.model(data)
+            pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
+            if only_wrong and not pred == target:
+                #print(target, self.dataset.dataset.imgs[self.dataset.test_loader.dataset.indices[idx]])
+                print('target:' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in target))
+                print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
+                #print(target, pred)
 
-            from torchvision.utils import make_grid
-            npimg = make_grid(data, normalize=True).numpy()
-            import matplotlib.pyplot as plt
-            fig, ax = plt.subplots(figsize=((13, 5)))
-            import numpy as np
-            if transpose:
-                ax.imshow(np.transpose(npimg, (1, 2, 0)))
+                from torchvision.utils import make_grid
+                npimg = make_grid(data, normalize=True).numpy()
+                import matplotlib.pyplot as plt
+                fig, ax = plt.subplots(figsize=((13, 5)))
+                import numpy as np
+                if transpose:
+                    ax.imshow(np.transpose(npimg, (1, 2, 0)))
+                else:
+                    ax.imshow(npimg)
+                plt.setp(ax, xticks=[], yticks=[])
+
+                return fig, ax
             else:
-                ax.imshow(npimg)
-            plt.setp(ax, xticks=[], yticks=[])
-
-            return fig, ax
-        else:
-            return None, None
+                return None, None
 
 
     def main(self, path=None, seed=None):
