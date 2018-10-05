@@ -58,11 +58,15 @@ class FaceExtractor:
         import dlib
         self.detector = dlib.get_frontal_face_detector()
 
-    def face_extractor(self, frame):
+    def get_bbox(self, frame):
         N_X, N_Y, three = frame.shape
         dets = self.detector(frame, 1)
-        d = dets[0]
-        face = frame[(d.top()):(d.bottom()), (d.left()):(d.right()), :]
+        return dets[0]
+
+    def face_extractor(self, frame, bbox=None):
+        if bbox is None:
+            bbox = self.get_bbox(frame)
+        face = frame[(bbox.top()):(bbox.bottom()), (bbox.left()):(bbox.right()), :]
         return face
 
 import os
