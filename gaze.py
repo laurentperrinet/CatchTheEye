@@ -18,10 +18,10 @@ mean = .6
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
-conv1_pdropout = .1
+conv1_pdropout = .1 # probability of an element to be zero-ed in the dropout layer
 conv2_dim = 36
 conv2_kernel_size = 14
-conv2_pdropout = .1
+conv2_pdropout = .1 # probability of an element to be zero-ed in the dropout layer
 dimension = 30
 verbose = False
 stride1 = 2
@@ -509,8 +509,10 @@ if __name__ == '__main__':
         print(50*'-')
         for parameter in ['conv1_kernel_size',
                           'conv1_dim',
+                          'conv1_pdropout',
                           'conv2_kernel_size',
                           'conv2_dim',
+                          'conv2_pdropout',
                           'stride1', 'stride2',
                           'dimension']:
             mml.parameter_scan(parameter)
