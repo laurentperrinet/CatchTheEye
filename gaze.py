@@ -5,7 +5,7 @@ no_cuda = False
 test_batch_size = 1
 size_test_set = .2
 do_adam = False
-epochs = 20
+epochs = 60
 lr = 0.025
 momentum = 0.05
 num_processes = 1
@@ -109,25 +109,30 @@ class Data:
         #    print('no cuda?', self.args.no_cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1}
 
-        self.t = transforms.Compose([
+        self.train_transform = transforms.Compose([
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
-            # Resize the input PIL Image to the given size. size (sequence or int) – Desired output size. If size is a sequence like (h, w), output size will be matched to this. If size is an int, smaller edge of the image will be matched to this number. i.e, if height > width, then image will be rescaled to (size * height / width, size)
+            # Resize the input PIL Image to the given size.
             transforms.Resize(args.fullsize),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
-            #transforms.RandomAffine(degrees=10, scale=(.8, 1.2), shear=10, resample=False, fillcolor=0),
+            transforms.RandomAffine(degrees=10, scale=(.9, 1.1), shear=10, resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
-            # transforms.CenterCrop((args.crop, int(args.crop*4/3))),
-            #transforms.CenterCrop(args.crop),
-            transforms.RandomCrop(args.crop),
+            transforms.CenterCrop(args.crop),
+            #transforms.RandomCrop(args.crop),
             #torchvision.transforms.RandomResizedCrop(size, scale=(0.8, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2),
             transforms.Resize(args.size),
-            # transforms.RandomAffine(args.size),
             transforms.ToTensor(),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
 
+        self.test_transform = transforms.Compose([
+            transforms.Resize(args.fullsize),
+            transforms.CenterCrop(args.crop),
+            transforms.Resize(args.size),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
+            ])
         try:
-            self.dataset = ImageFolder(self.args.dataset_faces_folder, self.t)
+            self.dataset = ImageFolder(self.args.dataset_faces_folder, self.train_transform)
             #self.train_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
             #self.test_loader = torch.utils.data.DataLoader(self.dataset, batch_size=args.test_batch_size, shuffle=True, num_workers=1)
 
@@ -312,6 +317,14 @@ class ML():
             # Adjust parameters according to the computed gradients
             self.optimizer.step()
         return loss.item()
+
+    def classify(self, image, t):
+        from PIL import Image
+        image = Image.fromarray(image)#.astype('uint8'), 'RGB')
+        data = t(image)
+        data.unsqueeze_(0)
+        output = self.model(data)
+        return np.exp(output.data.numpy()[0, :].astype(np.float))
 
     def test(self, dataloader=None):
         if dataloader is None:
