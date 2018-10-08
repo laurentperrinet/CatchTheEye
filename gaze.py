@@ -446,7 +446,9 @@ class MetaML:
 
 
 if __name__ == '__main__':
-    if True :
+    import os
+    filename = 'accuracy.pdf'
+    if not os.path.exist(filename) :
         args = init(verbose=0, log_interval=0, epochs=20)
         from gaze import MetaML
         mml = MetaML(args)
@@ -463,8 +465,8 @@ if __name__ == '__main__':
         ax.set_ylabel('Smarts')
         ax.legend(loc='best')
         plt.show()
-        plt.savefig('accuracy.pdf')
-        plt.savefig('accuracy.png')
+        plt.savefig(filename)
+        plt.savefig(filename.replace('.pdf', '.png')
 
     print(50*'-')
     print(' parameter scan')

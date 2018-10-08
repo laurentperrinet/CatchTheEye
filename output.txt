@@ -1,2 +1,45 @@
 Running 'make gitrun'
 Thu Oct 4 11:28:37 CEST 2018
+Accuracy 0.948033707865 +/- 0.00811695689708
+--------------------------------------------------
+ parameter scan
+--------------------------------------------------
+--------------------------------------------------
+ base= 2
+--------------------------------------------------
+--------------------------------------------------
+ parameter scan : data
+--------------------------------------------------
+scanning over size = [32, 38, 45, 53, 64, 76, 90, 107, 128]
+For parameter size = 32 ,  Failed with error sizes must be non-negative
+Failed with error 32
+For parameter size = 38 ,  Failed with error sizes must be non-negative
+Failed with error 38
+For parameter size = 45 ,  Failed with error sizes must be non-negative
+Failed with error 45
+For parameter size = 53 ,  Accuracy=95.6% +/- 0.7%  in 704.1 seconds
+For parameter size = 64 ,  Accuracy=94.9% +/- 0.7%  in 695.9 seconds
+For parameter size = 76 ,   currently locked with  _tmp_scanning/size__76.npy_lock
+For parameter size = 90 ,  Accuracy=94.5% +/- 1.1%  in 748.7 seconds
+For parameter size = 107 ,   currently locked with  _tmp_scanning/size__107.npy_lock
+For parameter size = 128 ,  Accuracy=94.1% +/- 1.1%  in 822.9 seconds
+scanning over fullsize = [32, 38, 45, 53, 64, 76, 90, 107, 128]
+For parameter fullsize = 32 ,   currently locked with  _tmp_scanning/fullsize__32.npy_lock
+For parameter fullsize = 38 ,  Accuracy=90.1% +/- 15.0%  in 685.0 seconds
+For parameter fullsize = 45 ,   currently locked with  _tmp_scanning/fullsize__45.npy_lock
+For parameter fullsize = 53 ,  Accuracy=95.0% +/- 0.7%  in 689.1 seconds
+For parameter fullsize = 64 ,   currently locked with  _tmp_scanning/fullsize__64.npy_lock
+For parameter fullsize = 76 ,  Accuracy=95.3% +/- 0.9%  in 701.9 seconds
+For parameter fullsize = 90 ,   currently locked with  _tmp_scanning/fullsize__90.npy_lock
+For parameter fullsize = 107 ,  Accuracy=88.0% +/- 2.5%  in 717.3 seconds
+For parameter fullsize = 128 ,   currently locked with  _tmp_scanning/fullsize__128.npy_lock
+scanning over crop = [32, 38, 45, 53, 64, 76, 90, 107, 128]
+For parameter crop = 32 ,  Accuracy=72.6% +/- 3.9%  in 712.2 seconds
+For parameter crop = 38 ,   currently locked with  _tmp_scanning/crop__38.npy_lock
+For parameter crop = 45 ,  Accuracy=92.2% +/- 0.9%  in 711.6 seconds
+For parameter crop = 53 ,   currently locked with  _tmp_scanning/crop__53.npy_lock
+For parameter crop = 64 ,  Accuracy=94.8% +/- 0.7%  in 697.2 seconds
+For parameter crop = 76 ,   currently locked with  _tmp_scanning/crop__76.npy_lock
+For parameter crop = 90 ,  Accuracy=95.3% +/- 0.7%  in 726.3 seconds
+For parameter crop = 107 ,   currently locked with  _tmp_scanning/crop__107.npy_lock
+For parameter crop = 128 ,  
