@@ -114,7 +114,7 @@ class Data:
             # Resize the input PIL Image to the given size.
             transforms.Resize(args.fullsize),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
-            transforms.RandomAffine(degrees=10, scale=(.9, 1.1), shear=10, resample=False, fillcolor=0),
+            transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
             transforms.CenterCrop(args.crop),
             #transforms.RandomCrop(args.crop),
