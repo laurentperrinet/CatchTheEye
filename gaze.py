@@ -464,7 +464,7 @@ class MetaML:
 
 
 if __name__ == '__main__':
-    if True :
+    if False : #True :
         args = init(verbose=0, log_interval=0, epochs=20)
         from gaze import MetaML
         mml = MetaML(args)
