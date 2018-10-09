@@ -62,15 +62,26 @@ class FaceExtractor:
         import dlib
         self.detector = dlib.get_frontal_face_detector()
 
-    def get_bbox(self, frame):
+    def get_bbox(self, frame, do_center=True):
         N_X, N_Y, three = frame.shape
         dets = self.detector(frame, 1)
-        return dets[0]
+        bbox = dets[0]
+        t, b, l, r = bbox.top(), bbox.bottom(), bbox.left(), bbox.right()
+        if do_center:
+            height = b - t
+            l = N_Y//2 - height
+            r = N_Y//2 + height
+            #TODO make a warning if we get out of the window?
+            return t, b, l, r
+        else:
+            return t, b, l, r
 
     def face_extractor(self, frame, bbox=None):
         if bbox is None:
-            bbox = self.get_bbox(frame)
-        face = frame[(bbox.top()):(bbox.bottom()), (bbox.left()):(bbox.right()), :]
+            t, b, l, r = self.get_bbox(frame)
+        else:
+            t, b, l, r = bbox
+        face = frame[t:b, l:r, :]
         return face
 
 import os
@@ -114,7 +125,7 @@ class Data:
             # Resize the input PIL Image to the given size.
             transforms.Resize(args.fullsize),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
-            transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
+            transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=True, fillcolor=0),
             #transforms.RandomVerticalFlip(),
             transforms.CenterCrop(args.crop),
             #transforms.RandomCrop(args.crop),
