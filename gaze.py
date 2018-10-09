@@ -18,15 +18,15 @@ mean = .6
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
-conv1_pdropout = .1 # probability of an element to be zero-ed in the dropout layer
 conv2_dim = 36
 conv2_kernel_size = 14
-conv2_pdropout = .1 # probability of an element to be zero-ed in the dropout layer
+bn1_momentum = .5
+bn2_momentum = .5
 dimension = 30
 verbose = False
 stride1 = 2
 stride2 = 4
-N_cv = 20
+N_cv = 8
 # DEBUG
 # epochs = 2
 # N_cv = 2
@@ -37,7 +37,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-            conv1_pdropout=conv1_pdropout, conv2_pdropout=conv2_pdropout,
+            bn1_momentum=bn1_momentum, bn2_momentum=bn2_momentum,
             stride1=stride1, stride2=stride2, N_cv=N_cv,
             dimension=dimension, verbose=verbose):
     # Training settings
@@ -47,7 +47,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                 conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-                conv1_pdropout=conv1_pdropout, conv2_pdropout=conv2_pdropout,
+                bn1_momentum=bn1_momentum, bn2_momentum=bn2_momentum,
                 stride1=stride1, stride2=stride2, N_cv=N_cv,
                 dimension=dimension, verbose=verbose
                 )
@@ -182,21 +182,23 @@ class Net(nn.Module):
         out_width_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
         # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
-        self.conv1_drop = nn.Dropout2d(p=conv1_pdropout)
-        self.conv2_drop = nn.Dropout2d(p=conv2_pdropout)
+        #self.conv1_drop = nn.Dropout2d(p=conv1_pdropout)
+        #self.conv2_drop = nn.Dropout2d(p=conv2_pdropout)
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
         out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2**2) * args.conv2_dim
         self.fc1 = nn.Linear(fc1_dim, args.dimension)
+        self.bn1 = nn.BatchNorm1d(args.dimension, momentum=args.bn1_momentum)
         self.fc2 = nn.Linear(args.dimension, len(self.args.classes))
+        self.bn2 = nn.BatchNorm1d(len(self.args.classes), momentum=args.bn2_momentum)
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv1(x)), kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
-        #x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
+        # x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         x = x.view(-1, self.num_flat_features(x))
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
+        x = F.relu(self.bn1(self.fc1(x)))
+        x = self.bn2(self.fc2(x))
         return F.log_softmax(x, dim=1)
 
     def num_flat_features(self, x):
@@ -250,9 +252,8 @@ class ML():
 
         if self.args.do_adam:
             # see https://heartbeat.fritz.ai/basics-of-image-classification-with-pytorch-2f8973c51864
-            scale = 100.
             self.optimizer = optim.Adam(self.model.parameters(),
-                                    lr=self.args.lr, betas=(1.-self.args.momentum, 1.-self.args.momentum/scale), eps=1e-8)
+                                    lr=self.args.lr, betas=(1.-self.args.momentum, 0.999), eps=1e-8)
         else:
             self.optimizer = optim.SGD(self.model.parameters(),
                                     lr=self.args.lr, momentum=self.args.momentum)
@@ -321,8 +322,9 @@ class ML():
     def classify(self, image, t):
         from PIL import Image
         image = Image.fromarray(image)#.astype('uint8'), 'RGB')
-        data = t(image)
-        data.unsqueeze_(0)
+        data = t(image).unsqueeze_(0)
+        # data.requires_grad = False
+        self.model.eval()
         output = self.model(data)
         return np.exp(output.data.numpy()[0, :].astype(np.float))
 
@@ -524,10 +526,10 @@ if __name__ == '__main__':
         print(50*'-')
         for parameter in ['conv1_kernel_size',
                           'conv1_dim',
-                          'conv1_pdropout',
+                          'bn1_momentum',
                           'conv2_kernel_size',
                           'conv2_dim',
-                          'conv2_pdropout',
+                          'bn2_momentum',
                           'stride1', 'stride2',
                           'dimension']:
             mml.parameter_scan(parameter)
