@@ -17,4 +17,9 @@ For parameter size = 38 ,  Failed with error sizes must be non-negative
 Failed with error 38
 For parameter size = 45 ,  Failed with error sizes must be non-negative
 Failed with error 45
-For parameter size = 53 ,  
+For parameter size = 53 ,  Accuracy=79.4% +/- 10.1%  in 838.3 seconds
+For parameter size = 64 ,  Accuracy=89.0% +/- 1.9%  in 830.5 seconds
+For parameter size = 76 ,  Accuracy=84.3% +/- 7.6%  in 853.5 seconds
+For parameter size = 90 ,  Accuracy=80.5% +/- 12.5%  in 868.7 seconds
+For parameter size = 107 ,  Accuracy=82.8% +/- 13.6%  in 891.1 seconds
+For parameter size = 128 ,  
