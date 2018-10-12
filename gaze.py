@@ -127,6 +127,7 @@ class Data:
             transforms.Resize((args.fullsize, 1*args.fullsize)),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
             #transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
+            transforms.RandomAffine(degrees=5, scale=(.9, 1.1), resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
             transforms.CenterCrop((args.crop, 1*args.crop)),
             #transforms.RandomCrop(args.crop),
