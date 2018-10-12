@@ -69,8 +69,9 @@ class FaceExtractor:
         t, b, l, r = bbox.top(), bbox.bottom(), bbox.left(), bbox.right()
         if do_center:
             height = b - t
-            l = N_Y//2 - height
-            r = N_Y//2 + height
+            # print(height, N_Y//2 - height, N_Y//2 + height)
+            l = np.max((N_Y//2 - height, 0))
+            r = np.min((N_Y//2 + height, N_Y))
             #TODO make a warning if we get out of the window?
             return t, b, l, r
         else:
@@ -123,22 +124,22 @@ class Data:
         self.train_transform = transforms.Compose([
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
             # Resize the input PIL Image to the given size.
-            transforms.Resize(args.fullsize),
+            transforms.Resize((args.fullsize, 1*args.fullsize)),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
-            transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=True, fillcolor=0),
+            #transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
-            transforms.CenterCrop(args.crop),
+            transforms.CenterCrop((args.crop, 1*args.crop)),
             #transforms.RandomCrop(args.crop),
             #torchvision.transforms.RandomResizedCrop(size, scale=(0.8, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2),
-            transforms.Resize(args.size),
+            transforms.Resize((args.size, 1*args.size)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
 
         self.test_transform = transforms.Compose([
-            transforms.Resize(args.fullsize),
-            transforms.CenterCrop(args.crop),
-            transforms.Resize(args.size),
+            transforms.Resize((args.fullsize, 1*args.fullsize)),
+            transforms.CenterCrop((args.crop, 1*args.crop)),
+            transforms.Resize((args.size, 1*args.size)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
             ])
@@ -190,14 +191,14 @@ class Net(nn.Module):
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
-        out_width_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
+        out_height_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
+        out_width_1 = (1*args.size - padding1 - args.stride1) // args.stride1 + 1
         # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
-        #self.conv1_drop = nn.Dropout2d(p=conv1_pdropout)
-        #self.conv2_drop = nn.Dropout2d(p=conv2_pdropout)
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
-        out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
-        fc1_dim = (out_width_2**2) * args.conv2_dim
+        out_height_2 = (out_height_1 - padding2 - args.stride2) // args.stride2 + 1
+        out_width_2 = (1*out_width_1 - padding2 - args.stride2) // args.stride2 + 1
+        fc1_dim = (out_width_2*out_height_2) * args.conv2_dim
         self.fc1 = nn.Linear(fc1_dim, args.dimension)
         self.bn1 = nn.BatchNorm1d(args.dimension, momentum=args.bn1_momentum)
         self.fc2 = nn.Linear(args.dimension, len(self.args.classes))
@@ -208,8 +209,10 @@ class Net(nn.Module):
         # x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         x = x.view(-1, self.num_flat_features(x))
-        x = F.relu(self.bn1(self.fc1(x)))
-        x = self.bn2(self.fc2(x))
+        x = F.relu(self.fc1(x))
+        x = self.fc2(x)
+        # x = F.relu(self.bn1(self.fc1(x)))
+        # x = self.bn2(self.fc2(x))
         return F.log_softmax(x, dim=1)
 
     def num_flat_features(self, x):
