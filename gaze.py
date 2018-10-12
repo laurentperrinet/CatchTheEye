@@ -129,7 +129,7 @@ class Data:
             #transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
             transforms.RandomAffine(degrees=5, scale=(.9, 1.1), resample=False, fillcolor=0),
             #transforms.RandomVerticalFlip(),
-            transforms.CenterCrop((args.crop, 1*args.crop)),
+            transforms.CenterCrop((args.crop, 2*args.crop)),
             #transforms.RandomCrop(args.crop),
             #torchvision.transforms.RandomResizedCrop(size, scale=(0.8, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2),
             transforms.Resize((args.size, 1*args.size)),
