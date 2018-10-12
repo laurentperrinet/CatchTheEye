@@ -5,7 +5,7 @@ no_cuda = False
 test_batch_size = 1
 size_test_set = .2
 do_adam = False
-epochs = 60
+epochs = 20
 lr = 0.025
 momentum = 0.05
 num_processes = 1
@@ -124,7 +124,7 @@ class Data:
         self.train_transform = transforms.Compose([
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
             # Resize the input PIL Image to the given size.
-            transforms.Resize((args.fullsize, 1*args.fullsize)),
+            transforms.Resize((args.fullsize, 2*args.fullsize)),
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
             #transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
             transforms.RandomAffine(degrees=5, scale=(.9, 1.1), resample=False, fillcolor=0),
@@ -482,7 +482,7 @@ class MetaML:
 
 if __name__ == '__main__':
     import os
-    filename = 'accuracy.pdf'
+    filename = 'figures/accuracy.pdf'
     if not os.path.exists(filename) :
         args = init(verbose=0, log_interval=0, epochs=20)
         from gaze import MetaML
@@ -521,7 +521,8 @@ if __name__ == '__main__':
             mml.scan('no_cuda', [True, False])
         else:
             mml.scan('no_cuda', [True])
-    for base in [2, 8]:
+
+    for base in [2]:#, 8]:
         print(50*'-')
         print(' base=', base)
         print(50*'-')
