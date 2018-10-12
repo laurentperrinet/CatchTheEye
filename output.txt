@@ -273,4 +273,57 @@ For parameter size = 64 ,  Accuracy=94.3% +/- 1.6%  in 2085.4 seconds
 For parameter size = 107 ,  Accuracy=94.3% +/- 1.5%  in 2326.3 seconds
 For parameter size = 181 ,  Accuracy=81.5% +/- 25.6%  in 2959.0 seconds
 For parameter size = 304 ,   currently locked with  _tmp_scanning/size__304.npy_lock
-For parameter size = 512 ,  
+For parameter size = 512 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 130, in pil_loader
+    return img.convert('RGB')
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/Image.py", line 892, in convert
+    self.load()
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/ImageFile.py", line 219, in load
+    s = read(self.decodermaxblock)
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/PngImagePlugin.py", line 620, in load_read
+    cid, pos, length = self.png.read()
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/PngImagePlugin.py", line 119, in read
+    raise SyntaxError("broken PNG file (chunk %s)" % repr(cid))
+  File "<string>", line None
+SyntaxError: broken PNG file (chunk b'\xdc\xd3\x89H')
+
+Failed with error 512
+scanning over fullsize = [9, 15, 26, 44, 75, 126, 212, 356, 600]
+For parameter fullsize = 9 ,  Accuracy=25.8% +/- 0.0%  in 2157.1 seconds
+For parameter fullsize = 15 ,   currently locked with  _tmp_scanning/fullsize__15.npy_lock
+For parameter fullsize = 26 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 130, in pil_loader
+    return img.convert('RGB')
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/Image.py", line 892, in convert
+    self.load()
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/ImageFile.py", line 254, in load
+    raise_ioerror(err_code)
+  File "/home/laurent/.local/lib/python3.5/site-packages/PIL/ImageFile.py", line 59, in raise_ioerror
+    raise IOError(message + " when reading image file")
+OSError: unrecognized data stream contents when reading image file
+
+Failed with error 26
+For parameter fullsize = 44 ,  Accuracy=91.7% +/- 3.0%  in 2041.9 seconds
+For parameter fullsize = 75 ,  Accuracy=94.8% +/- 2.0%  in 2098.6 seconds
+For parameter fullsize = 126 ,  Accuracy=79.9% +/- 3.2%  in 2187.6 seconds
+For parameter fullsize = 212 ,  
