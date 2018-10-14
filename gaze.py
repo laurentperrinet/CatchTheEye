@@ -14,7 +14,7 @@ log_interval = 0 # period with which we report results for the loss
 fullsize = 75
 crop = 64 # int(.9*fullsize)
 size = 64
-mean = .6
+mean = .4
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
@@ -26,7 +26,7 @@ dimension = 30
 verbose = False
 stride1 = 2
 stride2 = 4
-N_cv = 8
+N_cv = 4
 # DEBUG
 # epochs = 2
 # N_cv = 2

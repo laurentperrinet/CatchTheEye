@@ -14,6 +14,8 @@ gitrun: clean
 	git pull
 	echo `date` >> output.txt
 	python3 gaze.py >> output.txt
+	echo "Finished running 'make gitrun'" >> output.txt
+	echo `date` >> output.txt
 	git commit -m ' running without notebook : run parameter scan ' -a ; git push
 
 clean:
