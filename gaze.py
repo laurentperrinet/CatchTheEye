@@ -120,29 +120,25 @@ class Data:
         #if self.args.verbose:
         #    print('no cuda?', self.args.no_cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1}
+        # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
+        # Resize the input PIL Image to the given size.
+        tr = transforms.Resize((args.fullsize, 2*args.fullsize))
+        tcc = transforms.CenterCrop((args.crop, 2*args.crop))
+        tr2 = transforms.Resize((args.size, 1*args.size))
+        ttt= transforms.ToTensor()
+        tn = transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3)
 
         self.train_transform = transforms.Compose([
-            # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
-            # Resize the input PIL Image to the given size.
-            transforms.Resize((args.fullsize, 2*args.fullsize)),
+            tr,
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
             #transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
-            transforms.RandomAffine(degrees=5, scale=(.9, 1.1), resample=False, fillcolor=0),
-            #transforms.RandomVerticalFlip(),
-            transforms.CenterCrop((args.crop, 2*args.crop)),
-            #transforms.RandomCrop(args.crop),
-            #torchvision.transforms.RandomResizedCrop(size, scale=(0.8, 1.0), ratio=(0.75, 1.3333333333333333), interpolation=2),
-            transforms.Resize((args.size, 1*args.size)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
+            transforms.RandomAffine(degrees=2.5, shear=1., resample=False, fillcolor=0),
+            tcc, tr2, ttt, tn,
             ])
 
         self.test_transform = transforms.Compose([
-            transforms.Resize((args.fullsize, 1*args.fullsize)),
-            transforms.CenterCrop((args.crop, 1*args.crop)),
-            transforms.Resize((args.size, 1*args.size)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3),
+            tr,
+            tcc, tr2, ttt, tn,
             ])
         try:
             self.dataset = ImageFolder(self.args.dataset_faces_folder, self.train_transform)
@@ -166,7 +162,7 @@ class Data:
         except Exception as e:
             print('Could not load dataset', e)
 
-    def show(self, gamma=.5, noise_level=.4, nrow=8, transpose=True):
+    def show(self, noise_level=.4, nrow=8, transpose=True):
 
         images, foo = next(iter(self.train_loader))
         # https://pytorch.org/docs/stable/torchvision/utils.html#torchvision.utils.make_grid
