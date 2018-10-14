@@ -153,4 +153,6 @@ For parameter stride2 = 4 ,  Accuracy=93.1% +/- 0.9%  in 1667.4 seconds
 For parameter stride2 = 4 ,  Accuracy=93.1% +/- 0.9%  in 1667.4 seconds
 For parameter stride2 = 5 ,  Accuracy=90.7% +/- 7.3%  in 1667.3 seconds
 For parameter stride2 = 6 ,  Accuracy=91.6% +/- 2.4%  in 1666.9 seconds
-For parameter stride2 = 8 ,  
+For parameter stride2 = 8 ,  Accuracy=93.3% +/- 2.0%  in 1666.6 seconds
+scanning over dimension = [15, 17, 21, 25, 30, 35, 42, 50, 60]
+For parameter dimension = 15 ,  
