@@ -2,7 +2,7 @@
 
 this simple framework uses a deep learning network to find the eye in the image of a face (for instance the image that will be taken by a WebCam) and then to predict the direction of the gaze
 
-![description1](timing.png "temporal prediction of eye position")
+![description1](figures/timing.png "temporal prediction of eye position")
 ***Figure:*** *In a rapid succession of grabbed frames, we report the prediction of LeCheapEyeTracker when showing the target at different locations (white and blue dot)*
 
 ## install

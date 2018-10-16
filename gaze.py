@@ -18,10 +18,11 @@ mean = .4
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
+conv1_bn_momentum = .9
 conv2_dim = 36
 conv2_kernel_size = 14
-bn1_momentum = .5
-bn2_momentum = .5
+conv2_bn_momentum = .9
+dense_bn_momentum = .9
 dimension = 30
 verbose = False
 stride1 = 2
@@ -37,7 +38,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
             log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
             conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
             conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-            bn1_momentum=bn1_momentum, bn2_momentum=bn2_momentum,
+            conv1_bn_momentum=conv1_bn_momentum, conv2_bn_momentum=conv2_bn_momentum, dense_bn_momentum=dense_bn_momentum,
             stride1=stride1, stride2=stride2, N_cv=N_cv,
             dimension=dimension, verbose=verbose):
     # Training settings
@@ -47,7 +48,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
                 log_interval=log_interval, fullsize=fullsize, crop=crop, size=size, mean=mean, std=std,
                 conv1_dim=conv1_dim, conv1_kernel_size=conv1_kernel_size,
                 conv2_dim=conv2_dim, conv2_kernel_size=conv2_kernel_size,
-                bn1_momentum=bn1_momentum, bn2_momentum=bn2_momentum,
+                conv1_bn_momentum=conv1_bn_momentum, conv2_bn_momentum=conv2_bn_momentum, dense_bn_momentum=dense_bn_momentum,
                 stride1=stride1, stride2=stride2, N_cv=N_cv,
                 dimension=dimension, verbose=verbose
                 )
@@ -186,30 +187,38 @@ class Net(nn.Module):
         self.args = args
         # data is in the format (N, C, H, W)
         self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
+        self.conv1_bn = nn.BatchNorm2d(args.conv1_dim, momentum=1-args.conv1_bn_momentum)
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
         out_height_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
         out_width_1 = (1*args.size - padding1 - args.stride1) // args.stride1 + 1
         # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
+        self.conv2_bn = nn.BatchNorm2d(args.conv2_dim, momentum=1-args.conv2_bn_momentum)
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
         out_height_2 = (out_height_1 - padding2 - args.stride2) // args.stride2 + 1
         out_width_2 = (1*out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2*out_height_2) * args.conv2_dim
-        self.fc1 = nn.Linear(fc1_dim, args.dimension)
-        self.bn1 = nn.BatchNorm1d(args.dimension, momentum=args.bn1_momentum)
-        self.fc2 = nn.Linear(args.dimension, len(self.args.classes))
-        self.bn2 = nn.BatchNorm1d(len(self.args.classes), momentum=args.bn2_momentum)
+        self.dense_1 = nn.Linear(fc1_dim, args.dimension)
+        #This momentum argument is different from one used in optimizer classes and the conventional notion of momentum. Mathematically, the update rule for running statistics here is x̂ new=(1−momentum)×x̂ +momemtum×xt, where x̂  is the estimated statistic and xt is the new observed value.
+        self.dense_bn = nn.BatchNorm1d(args.dimension, momentum=1-args.dense_bn_momentum)
+        self.dense_2 = nn.Linear(args.dimension, len(self.args.classes))
+        self.dense_input_size = None
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
+        x = self.conv1(x)
+        if self.args.conv1_bn_momentum>0: x = self.conv1_bn(x)
+        x = F.relu(F.max_pool2d(x, kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
         # x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
-        x = F.relu(F.max_pool2d(self.conv2(x), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
-        x = x.view(-1, self.num_flat_features(x))
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        # x = F.relu(self.bn1(self.fc1(x)))
-        # x = self.bn2(self.fc2(x))
+        x = self.conv2(x)
+        if self.args.conv2_bn_momentum>0:x = self.conv2_bn(x)
+        x = F.relu(F.max_pool2d(x, kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        if self.dense_input_size is None: self.dense_input_size= self.num_flat_features(x)
+        x = x.view(-1, self.dense_input_size)
+        x = self.dense_1(x)
+        if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
+        x = F.relu(x)
+        x = self.dense_2(x)
         return F.log_softmax(x, dim=1)
 
     def num_flat_features(self, x):
@@ -218,29 +227,6 @@ class Net(nn.Module):
         for s in size:
             num_features *= s
         return num_features
-
-# class Net(nn.Module):
-#     def __init__(self, args):
-#         super(Net, self).__init__()
-#         self.conv1 = nn.Conv2d(3, 10, kernel_size=5)
-#         #self.pool = nn.MaxPool2d(2, 2)#
-#         self.conv2 = nn.Conv2d(10, 20, kernel_size=5)
-#         self.conv2_drop = nn.Dropout2d()
-#         self.fc1 = nn.Linear(320, args.dimension)
-#         self.fc2 = nn.Linear(args.dimension, 10)
-#
-#     def forward(self, x):
-#         x = F.relu(F.max_pool2d(self.conv1(x), 4))
-#         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 4))
-#         x = x.view(-1, 20480)
-#         #x = F.relu(F.max_pool2d(self.conv1(x), 2))
-#         #x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-#         #x = x.view(-1, 320)
-#         x = F.relu(self.fc1(x))
-#         x = self.fc2(x)
-#         #x = F.dropout(x, training=self.training)
-#         x = self.fc3(x)
-#         return F.log_softmax(x, dim=1)
 
 
 class ML():
@@ -299,7 +285,7 @@ class ML():
             # setting up training
             if seed is None:
                 seed = self.args.seed
-            self.model.train(True)
+            self.model.train()
             for epoch in tqdm(range(1, self.args.epochs + 1), desc='Train Epoch' if self.args.verbose else None):
                 loss = self.train_epoch(epoch, seed, rank=0)
                 # report classification results
@@ -312,7 +298,7 @@ class ML():
                         except Exception as e:
                             print(e)
                             print(status_str)
-            self.model.train(False)
+            self.model.eval()
 
     def train_epoch(self, epoch, seed, rank=0):
         torch.manual_seed(seed + epoch + rank*self.args.epochs)
@@ -538,11 +524,12 @@ if __name__ == '__main__':
         print(50*'-')
         for parameter in ['conv1_kernel_size',
                           'conv1_dim',
-                          'bn1_momentum',
+                          'conv1_bn_momentum',
                           'conv2_kernel_size',
                           'conv2_dim',
-                          'bn2_momentum',
+                          'conv2_bn_momentum',
                           'stride1', 'stride2',
+                          'dense_bn_momentum',
                           'dimension']:
             mml.parameter_scan(parameter)
 
