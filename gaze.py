@@ -31,6 +31,7 @@ N_cv = 4
 # DEBUG
 # epochs = 2
 # N_cv = 2
+#https://raw.githubusercontent.com/MorvanZhou/PyTorch-Tutorial/master/tutorial-contents/504_batch_normalization.py
 
 import easydict
 def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folder, batch_size=batch_size, test_batch_size=test_batch_size, size_test_set=size_test_set, epochs=epochs,
@@ -90,11 +91,13 @@ import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
 import torch.nn as nn
-import torch.nn.functional as F
 from torchvision import datasets, transforms
 from torchvision.datasets import ImageFolder
 import torchvision
 import torch.optim as optim
+import torch.nn.functional as F
+ACTIVATION = F.relu
+ACTIVATION = torch.tanh
 
 class Data:
     def __init__(self, args):
@@ -208,16 +211,16 @@ class Net(nn.Module):
     def forward(self, x):
         x = self.conv1(x)
         if self.args.conv1_bn_momentum>0: x = self.conv1_bn(x)
-        x = F.relu(F.max_pool2d(x, kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
-        # x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        x = ACTIVATION(F.max_pool2d(x, kernel_size=[self.args.stride1, self.args.stride1]))#, stride=[self.args.stride1, self.args.stride1]))
+        # x = ACTIVATION(F.max_pool2d(self.conv2_drop(self.conv2(x)), kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         x = self.conv2(x)
         if self.args.conv2_bn_momentum>0:x = self.conv2_bn(x)
-        x = F.relu(F.max_pool2d(x, kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
+        x = ACTIVATION(F.max_pool2d(x, kernel_size=[self.args.stride2, self.args.stride2]))#, stride=[self.args.stride2, self.args.stride2]))
         if self.dense_input_size is None: self.dense_input_size= self.num_flat_features(x)
         x = x.view(-1, self.dense_input_size)
         x = self.dense_1(x)
         if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
-        x = F.relu(x)
+        x = ACTIVATION(x)
         x = self.dense_2(x)
         return F.log_softmax(x, dim=1)
 
@@ -309,7 +312,7 @@ class ML():
             # Predict classes using images from the train set
             output = self.model(data)
             # Compute the loss based on the predictions and actual labels
-            loss = F.nll_loss(output, target)
+            loss = F.nll_loss(output, target, reduction='sum')
             # Backpropagate the loss
             loss.backward()
             # Adjust parameters according to the computed gradients
@@ -334,7 +337,7 @@ class ML():
         for data, target in dataloader:
             data, target = data.to(self.device), target.to(self.device)
             output = self.model(data)
-            test_loss += F.nll_loss(output, target, reduction='elementwise_mean').item() # sum up batch loss
+            test_loss += F.nll_loss(output, target, reduction='sum').item() # sum up batch loss
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).long().cpu().sum()
 
