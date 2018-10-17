@@ -452,7 +452,10 @@ class MetaML:
         return Accuracy
 
     def parameter_scan(self, parameter, display=False):
-        values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
+        if parameter in ['momentum', 'conv1_bn_momentum', 'conv2_bn_momentum', 'dense_bn_momentum']:
+            values = np.linspace(0, 1, self.N_scan, endpoint=True)
+        else:
+            values = self.args[parameter] * np.logspace(-1, 1, self.N_scan, base=self.base)
         if isinstance(self.args[parameter], int):
             # print('integer detected') # DEBUG
             values =  [int(k) for k in values]

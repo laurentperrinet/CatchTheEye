@@ -7,7 +7,8 @@ pull_results:
 	scp -r laurent@10.164.7.21:Documents/CatchTheEye/_tmp_scanning .
 
 push_dataset:
-	scp -r dataset* laurent@10.164.7.21:Documents/CatchTheEye
+	rsync -av --delete dataset laurent@10.164.7.21:Documents/CatchTheEye
+	rsync -av --delete dataset_faces laurent@10.164.7.21:Documents/CatchTheEye
 
 gitrun: clean
 	echo "Running 'make gitrun'" > output.txt
