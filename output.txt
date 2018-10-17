@@ -1,5 +1,5 @@
 Running 'make gitrun'
-Tue Oct 16 14:59:40 CEST 2018
+Tue Oct 16 15:02:31 CEST 2018
 --------------------------------------------------
  parameter scan
 --------------------------------------------------
@@ -10,80 +10,195 @@ Tue Oct 16 14:59:40 CEST 2018
  parameter scan : data
 --------------------------------------------------
 scanning over size = [32, 38, 45, 53, 64, 76, 90, 107, 128]
-For parameter size = 32 ,   currently locked with  _tmp_scanning/size__32.npy_lock
-For parameter size = 38 ,   currently locked with  _tmp_scanning/size__38.npy_lock
-For parameter size = 45 ,   currently locked with  _tmp_scanning/size__45.npy_lock
-For parameter size = 53 ,  Accuracy=91.9% +/- 3.3%  in 831.9 seconds
-For parameter size = 64 ,  Accuracy=81.9% +/- 21.7%  in 833.0 seconds
-For parameter size = 76 ,  Accuracy=95.0% +/- 2.1%  in 848.3 seconds
-For parameter size = 90 ,  Accuracy=85.4% +/- 18.3%  in 860.5 seconds
-For parameter size = 107 ,  Accuracy=97.4% +/- 1.0%  in 878.8 seconds
-For parameter size = 128 ,  Accuracy=74.7% +/- 29.6%  in 895.9 seconds
+For parameter size = 32 ,  Failed with error sizes must be non-negative
+Failed with error 32
+For parameter size = 38 ,  Failed with error sizes must be non-negative
+Failed with error 38
+For parameter size = 45 ,  Failed with error sizes must be non-negative
+Failed with error 45
+For parameter size = 53 ,  Accuracy=75.3% +/- 24.2%  in 832.3 seconds
+For parameter size = 64 ,  Accuracy=87.7% +/- 2.8%  in 836.1 seconds
+For parameter size = 76 ,  Accuracy=78.9% +/- 11.2%  in 851.2 seconds
+For parameter size = 90 ,  Accuracy=92.5% +/- 1.3%  in 862.5 seconds
+For parameter size = 107 ,  Accuracy=68.6% +/- 17.7%  in 879.4 seconds
+For parameter size = 128 ,  Accuracy=61.8% +/- 26.3%  in 899.2 seconds
 scanning over fullsize = [37, 44, 53, 63, 75, 89, 106, 126, 150]
-For parameter fullsize = 37 ,  Accuracy=86.9% +/- 2.8%  in 807.4 seconds
-For parameter fullsize = 44 ,  Accuracy=90.7% +/- 1.9%  in 811.1 seconds
-For parameter fullsize = 53 ,  Accuracy=91.9% +/- 1.0%  in 817.2 seconds
-For parameter fullsize = 63 ,  Accuracy=92.7% +/- 3.6%  in 824.0 seconds
-For parameter fullsize = 75 ,  Accuracy=93.2% +/- 3.2%  in 832.8 seconds
-For parameter fullsize = 89 ,  Accuracy=94.2% +/- 1.4%  in 844.7 seconds
-For parameter fullsize = 106 ,  Accuracy=88.5% +/- 10.3%  in 861.9 seconds
-For parameter fullsize = 126 ,  Accuracy=89.5% +/- 1.0%  in 880.6 seconds
-For parameter fullsize = 150 ,  Accuracy=68.6% +/- 1.7%  in 910.1 seconds
+For parameter fullsize = 37 ,  Accuracy=76.4% +/- 3.5%  in 810.6 seconds
+For parameter fullsize = 44 ,  Accuracy=79.7% +/- 6.3%  in 815.4 seconds
+For parameter fullsize = 53 ,  Accuracy=77.9% +/- 18.0%  in 824.1 seconds
+For parameter fullsize = 63 ,  Accuracy=85.8% +/- 3.4%  in 830.7 seconds
+For parameter fullsize = 75 ,  Accuracy=86.3% +/- 3.5%  in 835.3 seconds
+For parameter fullsize = 89 ,  Accuracy=87.9% +/- 2.9%  in 843.6 seconds
+For parameter fullsize = 106 ,  Accuracy=69.1% +/- 19.4%  in 865.0 seconds
+For parameter fullsize = 126 ,  Accuracy=85.1% +/- 1.6%  in 882.3 seconds
+For parameter fullsize = 150 ,  Accuracy=54.4% +/- 5.8%  in 909.8 seconds
 scanning over crop = [32, 38, 45, 53, 64, 76, 90, 107, 128]
-For parameter crop = 32 ,  Accuracy=62.2% +/- 3.0%  in 830.2 seconds
-For parameter crop = 38 ,  Accuracy=90.0% +/- 2.1%  in 834.0 seconds
-For parameter crop = 45 ,  Accuracy=93.5% +/- 0.8%  in 836.0 seconds
-For parameter crop = 53 ,  Accuracy=91.9% +/- 6.2%  in 836.9 seconds
-For parameter crop = 64 ,  Accuracy=91.2% +/- 0.8%  in 833.6 seconds
-For parameter crop = 76 ,  Accuracy=91.1% +/- 1.6%  in 843.1 seconds
-For parameter crop = 90 ,  Accuracy=91.4% +/- 2.2%  in 847.8 seconds
-For parameter crop = 107 ,  Accuracy=89.2% +/- 1.4%  in 853.6 seconds
-For parameter crop = 128 ,  Accuracy=88.9% +/- 2.0%  in 861.7 seconds
+For parameter crop = 32 ,  Accuracy=45.9% +/- 9.1%  in 829.8 seconds
+For parameter crop = 38 ,  Accuracy=75.5% +/- 14.9%  in 834.4 seconds
+For parameter crop = 45 ,  Accuracy=75.9% +/- 13.7%  in 835.6 seconds
+For parameter crop = 53 ,  Accuracy=84.9% +/- 8.7%  in 836.0 seconds
+For parameter crop = 64 ,  Accuracy=91.8% +/- 1.0%  in 832.8 seconds
+For parameter crop = 76 ,  Accuracy=80.4% +/- 16.7%  in 841.6 seconds
+For parameter crop = 90 ,  Accuracy=84.9% +/- 4.7%  in 846.7 seconds
+For parameter crop = 107 ,  Accuracy=82.9% +/- 1.8%  in 852.6 seconds
+For parameter crop = 128 ,  Accuracy=64.2% +/- 23.8%  in 862.2 seconds
 scanning over mean = [ 0.2         0.23784142  0.28284271  0.33635857  0.4         0.47568285
   0.56568542  0.67271713  0.8       ]
-For parameter mean = 0.200 ,  Accuracy=69.3% +/- 25.9%  in 833.5 seconds
-For parameter mean = 0.238 ,  Accuracy=76.7% +/- 29.1%  in 833.2 seconds
-For parameter mean = 0.283 ,  Accuracy=91.5% +/- 1.4%  in 833.0 seconds
-For parameter mean = 0.336 ,  Accuracy=92.7% +/- 2.4%  in 833.6 seconds
-For parameter mean = 0.400 ,  Accuracy=93.9% +/- 0.6%  in 833.2 seconds
-For parameter mean = 0.476 ,  Accuracy=92.5% +/- 2.5%  in 833.5 seconds
-For parameter mean = 0.566 ,  Accuracy=92.7% +/- 2.6%  in 833.2 seconds
-For parameter mean = 0.673 ,  Accuracy=91.8% +/- 3.1%  in 833.4 seconds
-For parameter mean = 0.800 ,  Accuracy=92.1% +/- 1.8%  in 833.2 seconds
+For parameter mean = 0.200 ,  Accuracy=90.6% +/- 1.0%  in 832.4 seconds
+For parameter mean = 0.238 ,  Accuracy=70.2% +/- 22.3%  in 832.1 seconds
+For parameter mean = 0.283 ,  Accuracy=86.9% +/- 4.4%  in 832.8 seconds
+For parameter mean = 0.336 ,  Accuracy=86.0% +/- 3.7%  in 833.1 seconds
+For parameter mean = 0.400 ,  Accuracy=90.3% +/- 1.9%  in 833.5 seconds
+For parameter mean = 0.476 ,  Accuracy=81.6% +/- 14.9%  in 833.6 seconds
+For parameter mean = 0.566 ,  Accuracy=78.5% +/- 22.7%  in 834.0 seconds
+For parameter mean = 0.673 ,  Accuracy=90.0% +/- 3.2%  in 833.6 seconds
+For parameter mean = 0.800 ,  Accuracy=88.3% +/- 5.1%  in 832.7 seconds
 scanning over std = [ 0.15        0.17838107  0.21213203  0.25226892  0.3         0.35676213
   0.42426407  0.50453785  0.6       ]
-For parameter std = 0.150 ,  Accuracy=94.9% +/- 1.4%  in 833.4 seconds
-For parameter std = 0.178 ,  Accuracy=93.7% +/- 1.1%  in 833.4 seconds
-For parameter std = 0.212 ,  Accuracy=92.8% +/- 2.8%  in 833.0 seconds
-For parameter std = 0.252 ,  Accuracy=95.8% +/- 0.8%  in 833.1 seconds
-For parameter std = 0.300 ,  Accuracy=91.5% +/- 3.3%  in 833.5 seconds
-For parameter std = 0.357 ,  Accuracy=91.5% +/- 1.5%  in 833.5 seconds
-For parameter std = 0.424 ,  Accuracy=94.0% +/- 2.3%  in 833.4 seconds
-For parameter std = 0.505 ,  Accuracy=91.4% +/- 5.0%  in 833.5 seconds
-For parameter std = 0.600 ,  Accuracy=91.2% +/- 4.7%  in 833.8 seconds
+For parameter std = 0.150 ,  Accuracy=78.9% +/- 8.8%  in 833.1 seconds
+For parameter std = 0.178 ,  Accuracy=86.1% +/- 4.5%  in 833.2 seconds
+For parameter std = 0.212 ,  Accuracy=78.6% +/- 16.7%  in 834.5 seconds
+For parameter std = 0.252 ,  Accuracy=89.9% +/- 2.8%  in 833.3 seconds
+For parameter std = 0.300 ,  Accuracy=89.2% +/- 1.9%  in 833.0 seconds
+For parameter std = 0.357 ,  Accuracy=80.1% +/- 18.8%  in 833.9 seconds
+For parameter std = 0.424 ,  Accuracy=86.3% +/- 4.6%  in 833.1 seconds
+For parameter std = 0.505 ,  Accuracy=88.8% +/- 4.1%  in 833.1 seconds
+For parameter std = 0.600 ,  Accuracy=73.3% +/- 28.6%  in 832.3 seconds
 --------------------------------------------------
  parameter scan : network
 --------------------------------------------------
 scanning over conv1_kernel_size = [9, 10, 12, 15, 18, 21, 25, 30, 36]
-For parameter conv1_kernel_size = 9 ,  Accuracy=96.4% +/- 0.5%  in 833.0 seconds
-For parameter conv1_kernel_size = 10 ,  Accuracy=95.1% +/- 1.6%  in 833.2 seconds
-For parameter conv1_kernel_size = 12 ,  Accuracy=95.7% +/- 0.8%  in 833.2 seconds
-For parameter conv1_kernel_size = 15 ,  Accuracy=94.8% +/- 0.7%  in 832.9 seconds
-For parameter conv1_kernel_size = 18 ,  Accuracy=95.1% +/- 0.6%  in 833.0 seconds
-For parameter conv1_kernel_size = 21 ,  Accuracy=92.8% +/- 2.1%  in 833.6 seconds
-For parameter conv1_kernel_size = 25 ,  Accuracy=81.7% +/- 20.3%  in 833.2 seconds
-For parameter conv1_kernel_size = 30 ,  Accuracy=91.5% +/- 2.0%  in 833.3 seconds
-For parameter conv1_kernel_size = 36 ,   currently locked with  _tmp_scanning/conv1_kernel_size__36.npy_lock
+For parameter conv1_kernel_size = 9 ,  Accuracy=88.1% +/- 3.6%  in 831.9 seconds
+For parameter conv1_kernel_size = 10 ,  Accuracy=81.0% +/- 17.4%  in 832.2 seconds
+For parameter conv1_kernel_size = 12 ,  Accuracy=92.1% +/- 0.8%  in 832.3 seconds
+For parameter conv1_kernel_size = 15 ,  Accuracy=77.2% +/- 16.3%  in 832.6 seconds
+For parameter conv1_kernel_size = 18 ,  Accuracy=89.6% +/- 3.5%  in 832.5 seconds
+For parameter conv1_kernel_size = 21 ,  Accuracy=76.7% +/- 13.5%  in 833.1 seconds
+For parameter conv1_kernel_size = 25 ,  Accuracy=90.3% +/- 1.1%  in 832.4 seconds
+For parameter conv1_kernel_size = 30 ,  Accuracy=87.5% +/- 3.5%  in 832.3 seconds
+For parameter conv1_kernel_size = 36 ,  Failed with error sizes must be non-negative
+Failed with error 36
 scanning over conv1_dim = [4, 5, 6, 7, 9, 10, 12, 15, 18]
-For parameter conv1_dim = 4 ,  Accuracy=94.7% +/- 1.1%  in 833.6 seconds
-For parameter conv1_dim = 5 ,  Accuracy=92.7% +/- 1.4%  in 833.3 seconds
-For parameter conv1_dim = 6 ,  Accuracy=94.3% +/- 2.2%  in 833.5 seconds
-For parameter conv1_dim = 7 ,  Accuracy=93.3% +/- 2.4%  in 833.7 seconds
-For parameter conv1_dim = 9 ,  Accuracy=95.2% +/- 0.9%  in 832.9 seconds
-For parameter conv1_dim = 10 ,  Accuracy=84.7% +/- 10.3%  in 833.4 seconds
-For parameter conv1_dim = 12 ,  Accuracy=79.2% +/- 16.3%  in 833.4 seconds
-For parameter conv1_dim = 15 ,  Accuracy=94.2% +/- 1.4%  in 833.8 seconds
-For parameter conv1_dim = 18 ,  Accuracy=93.4% +/- 1.8%  in 833.0 seconds
+For parameter conv1_dim = 4 ,  Accuracy=87.4% +/- 4.5%  in 832.9 seconds
+For parameter conv1_dim = 5 ,  Accuracy=74.4% +/- 16.6%  in 833.1 seconds
+For parameter conv1_dim = 6 ,  Accuracy=72.3% +/- 15.6%  in 833.3 seconds
+For parameter conv1_dim = 7 ,  Accuracy=60.4% +/- 22.0%  in 832.2 seconds
+For parameter conv1_dim = 9 ,  Accuracy=85.9% +/- 5.5%  in 832.6 seconds
+For parameter conv1_dim = 10 ,  Accuracy=84.5% +/- 7.0%  in 833.1 seconds
+For parameter conv1_dim = 12 ,  Accuracy=79.7% +/- 14.6%  in 833.9 seconds
+For parameter conv1_dim = 15 ,  Accuracy=84.6% +/- 5.2%  in 832.9 seconds
+For parameter conv1_dim = 18 ,  Accuracy=85.9% +/- 6.4%  in 832.6 seconds
 scanning over conv1_bn_momentum = [ 0.45        0.5351432   0.6363961   0.75680677  0.9         1.0702864
   1.27279221  1.51361355  1.8       ]
-For parameter conv1_bn_momentum = 0.450 ,  
+For parameter conv1_bn_momentum = 0.450 ,  Accuracy=89.2% +/- 2.1%  in 832.9 seconds
+For parameter conv1_bn_momentum = 0.535 ,  Accuracy=90.4% +/- 0.4%  in 832.3 seconds
+For parameter conv1_bn_momentum = 0.636 ,  Accuracy=84.4% +/- 6.1%  in 832.8 seconds
+For parameter conv1_bn_momentum = 0.757 ,  Accuracy=85.4% +/- 8.6%  in 832.7 seconds
+For parameter conv1_bn_momentum = 0.900 ,  Accuracy=90.3% +/- 2.2%  in 833.6 seconds
+For parameter conv1_bn_momentum = 1.070 ,  Accuracy=25.7% +/- 1.2%  in 832.9 seconds
+For parameter conv1_bn_momentum = 1.273 ,  Accuracy=25.7% +/- 1.2%  in 832.6 seconds
+For parameter conv1_bn_momentum = 1.514 ,  Accuracy=26.4% +/- 0.0%  in 833.7 seconds
+For parameter conv1_bn_momentum = 1.800 ,  Accuracy=25.7% +/- 1.2%  in 833.2 seconds
+scanning over conv2_kernel_size = [7, 8, 9, 11, 14, 16, 19, 23, 28]
+For parameter conv2_kernel_size = 7 ,  Accuracy=71.5% +/- 24.4%  in 833.2 seconds
+For parameter conv2_kernel_size = 8 ,  Accuracy=86.2% +/- 2.1%  in 832.8 seconds
+For parameter conv2_kernel_size = 9 ,  Accuracy=86.6% +/- 1.4%  in 832.5 seconds
+For parameter conv2_kernel_size = 11 ,  Accuracy=89.2% +/- 3.1%  in 833.0 seconds
+For parameter conv2_kernel_size = 14 ,  Accuracy=89.0% +/- 3.1%  in 833.0 seconds
+For parameter conv2_kernel_size = 16 ,  Accuracy=91.7% +/- 3.1%  in 833.3 seconds
+For parameter conv2_kernel_size = 19 ,  Accuracy=88.4% +/- 4.0%  in 832.2 seconds
+For parameter conv2_kernel_size = 23 ,  Failed with error sizes must be non-negative
+Failed with error 23
+For parameter conv2_kernel_size = 28 ,  Failed with error sizes must be non-negative
+Failed with error 28
+scanning over conv2_dim = [18, 21, 25, 30, 36, 42, 50, 60, 72]
+For parameter conv2_dim = 18 ,  Accuracy=78.8% +/- 20.4%  in 832.1 seconds
+For parameter conv2_dim = 21 ,  Accuracy=87.9% +/- 2.5%  in 833.2 seconds
+For parameter conv2_dim = 25 ,  Accuracy=87.9% +/- 0.8%  in 833.6 seconds
+For parameter conv2_dim = 30 ,  Accuracy=76.3% +/- 17.2%  in 832.5 seconds
+For parameter conv2_dim = 36 ,  Accuracy=86.7% +/- 4.3%  in 833.6 seconds
+For parameter conv2_dim = 42 ,  Accuracy=77.8% +/- 16.2%  in 833.1 seconds
+For parameter conv2_dim = 50 ,  Accuracy=80.3% +/- 10.5%  in 833.9 seconds
+For parameter conv2_dim = 60 ,  Accuracy=62.6% +/- 22.9%  in 834.6 seconds
+For parameter conv2_dim = 72 ,  Accuracy=83.3% +/- 11.8%  in 839.2 seconds
+scanning over conv2_bn_momentum = [ 0.45        0.5351432   0.6363961   0.75680677  0.9         1.0702864
+  1.27279221  1.51361355  1.8       ]
+For parameter conv2_bn_momentum = 0.450 ,  Accuracy=68.9% +/- 23.1%  in 840.2 seconds
+For parameter conv2_bn_momentum = 0.535 ,  Accuracy=87.8% +/- 3.1%  in 839.4 seconds
+For parameter conv2_bn_momentum = 0.636 ,  Accuracy=89.2% +/- 2.3%  in 836.1 seconds
+For parameter conv2_bn_momentum = 0.757 ,  Accuracy=91.1% +/- 1.9%  in 840.3 seconds
+For parameter conv2_bn_momentum = 0.900 ,  Accuracy=71.5% +/- 27.5%  in 839.6 seconds
+For parameter conv2_bn_momentum = 1.070 ,  Accuracy=23.6% +/- 0.0%  in 839.0 seconds
+For parameter conv2_bn_momentum = 1.273 ,  Accuracy=23.6% +/- 0.0%  in 892.4 seconds
+For parameter conv2_bn_momentum = 1.514 ,  Accuracy=23.6% +/- 0.0%  in 863.5 seconds
+For parameter conv2_bn_momentum = 1.800 ,  Accuracy=23.6% +/- 0.0%  in 833.8 seconds
+scanning over stride1 = [1, 1, 1, 1, 2, 2, 2, 3, 4]
+For parameter stride1 = 1 ,  Accuracy=59.3% +/- 17.8%  in 833.7 seconds
+For parameter stride1 = 1 ,  Accuracy=59.3% +/- 17.8%  in 833.7 seconds
+For parameter stride1 = 1 ,  Accuracy=59.3% +/- 17.8%  in 833.7 seconds
+For parameter stride1 = 1 ,  Accuracy=59.3% +/- 17.8%  in 833.7 seconds
+For parameter stride1 = 2 ,  Accuracy=89.7% +/- 3.1%  in 832.5 seconds
+For parameter stride1 = 2 ,  Accuracy=89.7% +/- 3.1%  in 832.5 seconds
+For parameter stride1 = 2 ,  Accuracy=89.7% +/- 3.1%  in 832.5 seconds
+For parameter stride1 = 3 ,  Failed with error sizes must be non-negative
+Failed with error 3
+For parameter stride1 = 4 ,  Failed with error sizes must be non-negative
+Failed with error 4
+scanning over stride2 = [2, 2, 2, 3, 4, 4, 5, 6, 8]
+For parameter stride2 = 2 ,  Accuracy=64.2% +/- 21.3%  in 836.8 seconds
+For parameter stride2 = 2 ,  Accuracy=64.2% +/- 21.3%  in 836.8 seconds
+For parameter stride2 = 2 ,  Accuracy=64.2% +/- 21.3%  in 836.8 seconds
+For parameter stride2 = 3 ,  Accuracy=82.1% +/- 4.3%  in 833.6 seconds
+For parameter stride2 = 4 ,  Accuracy=77.1% +/- 18.4%  in 834.1 seconds
+For parameter stride2 = 4 ,  Accuracy=77.1% +/- 18.4%  in 834.1 seconds
+For parameter stride2 = 5 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 128, in pil_loader
+    with open(path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'dataset_faces/center/2018-09-14_Laurent_073.png'
+
+Failed with error 5
+For parameter stride2 = 6 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 128, in pil_loader
+    with open(path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'dataset_faces/left/2018-09-05_Laurent_132.png'
+
+Failed with error 6
+For parameter stride2 = 8 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 128, in pil_loader
+    with open(path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'dataset_faces/right/2018-10-03_Laurent_236.png'
+
+Failed with error 8
+scanning over dense_bn_momentum = [ 0.45        0.5351432   0.6363961   0.75680677  0.9         1.0702864
+  1.27279221  1.51361355  1.8       ]
+For parameter dense_bn_momentum = 0.450 ,  
