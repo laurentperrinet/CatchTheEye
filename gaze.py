@@ -6,28 +6,28 @@ test_batch_size = 1
 size_test_set = .2
 do_adam = False
 epochs = 40
-lr = 0.025
+lr = 0.01
 momentum = 0.05
 num_processes = 1
 seed = 42
 log_interval = 0 # period with which we report results for the loss
 fullsize = 75
 crop = 64 # int(.9*fullsize)
-size = 64
+size = 90
 mean = .4
 std = .3
 conv1_dim = 9
 conv1_kernel_size = 18
-conv1_bn_momentum = .9
-conv2_dim = 36
+conv1_bn_momentum = .5
 conv2_kernel_size = 14
-conv2_bn_momentum = .9
+conv2_dim = 36
+conv2_bn_momentum = .5
 dense_bn_momentum = .9
 dimension = 30
 verbose = False
 stride1 = 2
 stride2 = 4
-N_cv = 4
+N_cv = 20
 # DEBUG
 # epochs = 2
 # N_cv = 2
@@ -510,7 +510,8 @@ if __name__ == '__main__':
         else:
             mml.scan('no_cuda', [True])
 
-    for base in [2]:#, 8]:
+    # for base in [2]:#, 8]:
+    for base in [2, 8]:
         print(50*'-')
         print(' base=', base)
         print(50*'-')
