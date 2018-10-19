@@ -231,4 +231,48 @@ For parameter lr = 0.025 ,  Accuracy=88.5% +/- 1.8%  in 1085.8 seconds
 For parameter lr = 0.030 ,  Accuracy=85.1% +/- 2.6%  in 1084.0 seconds
 For parameter lr = 0.035 ,  Accuracy=82.6% +/- 4.1%  in 1081.8 seconds
 For parameter lr = 0.042 ,  Accuracy=55.0% +/- 23.2%  in 1085.5 seconds
-For parameter lr = 0.050 ,  
+For parameter lr = 0.050 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 128, in pil_loader
+    with open(path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'dataset_faces/left/2018-10-14_Laurent_198.png'
+
+Failed with error 0.050000000000000003
+scanning over momentum = [ 0.     0.125  0.25   0.375  0.5    0.625  0.75   0.875  1.   ]
+For parameter momentum = 0.000 ,  Failed with error Invalid beta parameter at index 0: 1.0
+Failed with error 0.0
+For parameter momentum = 0.125 ,  Accuracy=85.1% +/- 0.3%  in 1204.7 seconds
+For parameter momentum = 0.250 ,  Failed with error Traceback (most recent call last):
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in _worker_loop
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataloader.py", line 106, in <listcomp>
+    samples = collate_fn([dataset[i] for i in batch_indices])
+  File "/home/laurent/.local/lib/python3.5/site-packages/torch/utils/data/dataset.py", line 103, in __getitem__
+    return self.dataset[self.indices[idx]]
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 101, in __getitem__
+    sample = self.loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 147, in default_loader
+    return pil_loader(path)
+  File "/home/laurent/.local/lib/python3.5/site-packages/torchvision/datasets/folder.py", line 128, in pil_loader
+    with open(path, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: 'dataset_faces/left/2018-10-18_Laurent_218.png'
+
+Failed with error 0.25
+For parameter momentum = 0.375 ,  Failed with error Expected more than 1 value per channel when training, got input size [1, 30]
+Failed with error 0.375
+For parameter momentum = 0.500 ,  Failed with error Expected more than 1 value per channel when training, got input size [1, 30]
+Failed with error 0.5
+For parameter momentum = 0.625 ,  Failed with error Expected more than 1 value per channel when training, got input size [1, 30]
+Failed with error 0.625
+For parameter momentum = 0.750 ,  Failed with error Expected more than 1 value per channel when training, got input size [1, 30]
+Failed with error 0.75
+For parameter momentum = 0.875 ,  
