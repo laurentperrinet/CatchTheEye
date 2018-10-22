@@ -1,8 +1,8 @@
 dataset_folder = 'dataset'
 dataset_faces_folder = 'dataset_faces'
-batch_size = 8
+batch_size = 16
 no_cuda = False
-test_batch_size = 1
+test_batch_size = 8
 size_test_set = .2
 do_adam = False
 epochs = 40
@@ -219,7 +219,7 @@ class Net(nn.Module):
         if self.dense_input_size is None: self.dense_input_size= self.num_flat_features(x)
         x = x.view(-1, self.dense_input_size)
         x = self.dense_1(x)
-        if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
+        #if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
         x = ACTIVATION(x)
         x = self.dense_2(x)
         return F.log_softmax(x, dim=1)
