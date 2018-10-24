@@ -69,7 +69,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 #ACTIVATION = F.relu
 #ACTIVATION = torch.tanh
-ACTIVATION = torch.softmax
+ACTIVATION = F.softmax
 
 class Data:
     def __init__(self, args):
