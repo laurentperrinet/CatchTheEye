@@ -57,38 +57,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
     return easydict.EasyDict(kwargs)
 
 import numpy as np
-
-class FaceExtractor:
-    def __init__(self):
-
-        import dlib
-        self.detector = dlib.get_frontal_face_detector()
-
-    def get_bbox(self, frame, do_center=True, do_topcrop=True):
-        N_X, N_Y, three = frame.shape
-        dets = self.detector(frame, 1)
-        bbox = dets[0]
-        t, b, l, r = bbox.top(), bbox.bottom(), bbox.left(), bbox.right()
-        if do_center:
-            height = b - t
-            # print(height, N_Y//2 - height, N_Y//2 + height)
-            l = np.max((N_Y//2 - height, 0))
-            r = np.min((N_Y//2 + height, N_Y))
-            #TODO make a warning if we get out of the window?
-            if do_topcrop:
-                b = t + height//2
-            return t, b, l, r
-        else:
-            return t, b, l, r
-
-    def face_extractor(self, frame, bbox=None):
-        if bbox is None:
-            t, b, l, r = self.get_bbox(frame)
-        else:
-            t, b, l, r = bbox
-        face = frame[t:b, l:r, :]
-        return face
-
+from LeCheapEyeTracker.EyeTrackerServer import FaceExtractor
 import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
@@ -98,8 +67,9 @@ from torchvision.datasets import ImageFolder
 import torchvision
 import torch.optim as optim
 import torch.nn.functional as F
-ACTIVATION = F.relu
-ACTIVATION = torch.tanh
+#ACTIVATION = F.relu
+#ACTIVATION = torch.tanh
+ACTIVATION = torch.softmax
 
 class Data:
     def __init__(self, args):
