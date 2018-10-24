@@ -11,9 +11,9 @@ momentum = 0.05
 num_processes = 1
 seed = 42
 log_interval = 0 # period with which we report results for the loss
-fullsize = 75
+fullsize = 75 # size at the input of the transforms pipeline
 crop = 64 # int(.9*fullsize)
-size = 90
+size = 90 # size at the output of the transforms pipeline
 mean = .4
 std = .3
 conv1_dim = 9
@@ -22,7 +22,7 @@ conv1_bn_momentum = .5
 conv2_kernel_size = 14
 conv2_dim = 36
 conv2_bn_momentum = .5
-dense_bn_momentum = .9
+dense_bn_momentum = .5
 dimension = 30
 verbose = False
 stride1 = 2
@@ -64,7 +64,7 @@ class FaceExtractor:
         import dlib
         self.detector = dlib.get_frontal_face_detector()
 
-    def get_bbox(self, frame, do_center=True):
+    def get_bbox(self, frame, do_center=True, do_topcrop=True):
         N_X, N_Y, three = frame.shape
         dets = self.detector(frame, 1)
         bbox = dets[0]
@@ -75,6 +75,8 @@ class FaceExtractor:
             l = np.max((N_Y//2 - height, 0))
             r = np.min((N_Y//2 + height, N_Y))
             #TODO make a warning if we get out of the window?
+            if do_topcrop:
+                b = t + height//2
             return t, b, l, r
         else:
             return t, b, l, r
@@ -126,9 +128,9 @@ class Data:
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1}
         # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
         # Resize the input PIL Image to the given size.
-        tr = transforms.Resize((args.fullsize, 2*args.fullsize))
-        tcc = transforms.CenterCrop((args.crop, 2*args.crop))
-        tr2 = transforms.Resize((args.size, 1*args.size))
+        tr = transforms.Resize((args.fullsize, 4*args.fullsize))
+        tcc = transforms.CenterCrop((args.crop, 4*args.crop))
+        tr2 = transforms.Resize((args.size, 4*args.size))
         ttt= transforms.ToTensor()
         tn = transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3)
 
@@ -194,13 +196,13 @@ class Net(nn.Module):
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
         out_height_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
-        out_width_1 = (1*args.size - padding1 - args.stride1) // args.stride1 + 1
+        out_width_1 = (4*args.size - padding1 - args.stride1) // args.stride1 + 1
         # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         self.conv2_bn = nn.BatchNorm2d(args.conv2_dim, momentum=1-args.conv2_bn_momentum)
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
         out_height_2 = (out_height_1 - padding2 - args.stride2) // args.stride2 + 1
-        out_width_2 = (1*out_width_1 - padding2 - args.stride2) // args.stride2 + 1
+        out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2*out_height_2) * args.conv2_dim
         self.dense_1 = nn.Linear(fc1_dim, args.dimension)
         #This momentum argument is different from one used in optimizer classes and the conventional notion of momentum. Mathematically, the update rule for running statistics here is x̂ new=(1−momentum)×x̂ +momemtum×xt, where x̂  is the estimated statistic and xt is the new observed value.
