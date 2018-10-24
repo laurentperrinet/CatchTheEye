@@ -12,14 +12,14 @@ num_processes = 1
 seed = 42
 log_interval = 0 # period with which we report results for the loss
 fullsize = 75 # size at the input of the transforms pipeline
-crop = 64 # int(.9*fullsize)
-size = 90 # size at the output of the transforms pipeline
+crop = 75 # int(.9*fullsize)
+size = 40 # size at the output of the transforms pipeline
 mean = .4
 std = .3
 conv1_dim = 9
-conv1_kernel_size = 18
+conv1_kernel_size = 8
 conv1_bn_momentum = .5
-conv2_kernel_size = 14
+conv2_kernel_size = 12
 conv2_dim = 36
 conv2_bn_momentum = .5
 dense_bn_momentum = .5
@@ -221,7 +221,7 @@ class Net(nn.Module):
         if self.dense_input_size is None: self.dense_input_size= self.num_flat_features(x)
         x = x.view(-1, self.dense_input_size)
         x = self.dense_1(x)
-        #if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
+        if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
         x = ACTIVATION(x)
         x = self.dense_2(x)
         return F.log_softmax(x, dim=1)
@@ -324,7 +324,7 @@ class ML():
     def classify(self, image, t):
         from PIL import Image
         image = Image.fromarray(image)#.astype('uint8'), 'RGB')
-        data = t(image).unsqueeze_(0)
+        data = t(image).unsqueeze(0)
         # data.requires_grad = False
         self.model.eval()
         output = self.model(data)
