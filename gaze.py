@@ -11,18 +11,18 @@ momentum = 0.05
 num_processes = 1
 seed = 42
 log_interval = 0 # period with which we report results for the loss
-fullsize = 75
-crop = 64 # int(.9*fullsize)
-size = 90
+fullsize = 75 # size at the input of the transforms pipeline
+crop = 75 # int(.9*fullsize)
+size = 40 # size at the output of the transforms pipeline
 mean = .4
 std = .3
 conv1_dim = 9
-conv1_kernel_size = 18
+conv1_kernel_size = 8
 conv1_bn_momentum = .5
-conv2_kernel_size = 14
+conv2_kernel_size = 12
 conv2_dim = 36
 conv2_bn_momentum = .5
-dense_bn_momentum = .9
+dense_bn_momentum = .5
 dimension = 30
 verbose = False
 stride1 = 2
@@ -57,36 +57,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
     return easydict.EasyDict(kwargs)
 
 import numpy as np
-
-class FaceExtractor:
-    def __init__(self):
-
-        import dlib
-        self.detector = dlib.get_frontal_face_detector()
-
-    def get_bbox(self, frame, do_center=True):
-        N_X, N_Y, three = frame.shape
-        dets = self.detector(frame, 1)
-        bbox = dets[0]
-        t, b, l, r = bbox.top(), bbox.bottom(), bbox.left(), bbox.right()
-        if do_center:
-            height = b - t
-            # print(height, N_Y//2 - height, N_Y//2 + height)
-            l = np.max((N_Y//2 - height, 0))
-            r = np.min((N_Y//2 + height, N_Y))
-            #TODO make a warning if we get out of the window?
-            return t, b, l, r
-        else:
-            return t, b, l, r
-
-    def face_extractor(self, frame, bbox=None):
-        if bbox is None:
-            t, b, l, r = self.get_bbox(frame)
-        else:
-            t, b, l, r = bbox
-        face = frame[t:b, l:r, :]
-        return face
-
+from LeCheapEyeTracker.EyeTrackerServer import FaceExtractor
 import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
@@ -96,8 +67,9 @@ from torchvision.datasets import ImageFolder
 import torchvision
 import torch.optim as optim
 import torch.nn.functional as F
-ACTIVATION = F.relu
-ACTIVATION = torch.tanh
+#ACTIVATION = F.relu
+#ACTIVATION = torch.tanh
+ACTIVATION = F.softmax
 
 class Data:
     def __init__(self, args):
@@ -126,9 +98,9 @@ class Data:
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1}
         # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
         # Resize the input PIL Image to the given size.
-        tr = transforms.Resize((args.fullsize, 2*args.fullsize))
-        tcc = transforms.CenterCrop((args.crop, 2*args.crop))
-        tr2 = transforms.Resize((args.size, 1*args.size))
+        tr = transforms.Resize((args.fullsize, 4*args.fullsize))
+        tcc = transforms.CenterCrop((args.crop, 4*args.crop))
+        tr2 = transforms.Resize((args.size, 4*args.size))
         ttt= transforms.ToTensor()
         tn = transforms.Normalize(mean=[args.mean]*3, std=[args.std]*3)
 
@@ -194,13 +166,13 @@ class Net(nn.Module):
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
         out_height_1 = (args.size - padding1 - args.stride1) // args.stride1 + 1
-        out_width_1 = (1*args.size - padding1 - args.stride1) // args.stride1 + 1
+        out_width_1 = (4*args.size - padding1 - args.stride1) // args.stride1 + 1
         # TODO : self.bn1 = nn.BatchNorm2d(32)
         self.conv2 = nn.Conv2d(args.conv1_dim, args.conv2_dim, kernel_size=args.conv2_kernel_size)
         self.conv2_bn = nn.BatchNorm2d(args.conv2_dim, momentum=1-args.conv2_bn_momentum)
         padding2 = args.conv2_kernel_size - 1 # total padding in layer 2
         out_height_2 = (out_height_1 - padding2 - args.stride2) // args.stride2 + 1
-        out_width_2 = (1*out_width_1 - padding2 - args.stride2) // args.stride2 + 1
+        out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2*out_height_2) * args.conv2_dim
         self.dense_1 = nn.Linear(fc1_dim, args.dimension)
         #This momentum argument is different from one used in optimizer classes and the conventional notion of momentum. Mathematically, the update rule for running statistics here is x̂ new=(1−momentum)×x̂ +momemtum×xt, where x̂  is the estimated statistic and xt is the new observed value.
@@ -219,7 +191,7 @@ class Net(nn.Module):
         if self.dense_input_size is None: self.dense_input_size= self.num_flat_features(x)
         x = x.view(-1, self.dense_input_size)
         x = self.dense_1(x)
-        #if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
+        if self.args.dense_bn_momentum>0: x = self.dense_bn(x)
         x = ACTIVATION(x)
         x = self.dense_2(x)
         return F.log_softmax(x, dim=1)
@@ -322,7 +294,7 @@ class ML():
     def classify(self, image, t):
         from PIL import Image
         image = Image.fromarray(image)#.astype('uint8'), 'RGB')
-        data = t(image).unsqueeze_(0)
+        data = t(image).unsqueeze(0)
         # data.requires_grad = False
         self.model.eval()
         output = self.model(data)
