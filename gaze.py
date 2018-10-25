@@ -2,7 +2,7 @@ dataset_folder = 'dataset'
 dataset_faces_folder = 'dataset_faces'
 batch_size = 16
 no_cuda = False
-test_batch_size = 8
+test_batch_size = 1
 size_test_set = .2
 do_adam = False
 epochs = 40
@@ -68,8 +68,8 @@ import torchvision
 import torch.optim as optim
 import torch.nn.functional as F
 #ACTIVATION = F.relu
-#ACTIVATION = torch.tanh
-ACTIVATION = F.softmax
+ACTIVATION = torch.tanh
+#ACTIVATION = F.softmax
 
 class Data:
     def __init__(self, args):
@@ -108,7 +108,7 @@ class Data:
             tr,
             # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.RandomAffine
             #transforms.RandomAffine(degrees=5, scale=(.9, 1.1), shear=3, resample=False, fillcolor=0),
-            transforms.RandomAffine(degrees=2.5, shear=1., resample=False, fillcolor=0),
+            #transforms.RandomAffine(degrees=2.5, shear=1., resample=False, fillcolor=0),
             tcc, tr2, ttt, tn,
             ])
 
