@@ -7,12 +7,12 @@
 #     y1 = faceRect.top()
 #     x2 = faceRect.right()
 #     y2 = faceRect.bottom()
-# 
+#
 dataset_folder = 'dataset'
 dataset_faces_folder = 'dataset_faces'
 batch_size = 16
 no_cuda = False
-test_batch_size = 1
+test_batch_size = 16
 size_test_set = .2
 do_adam = False
 epochs = 40
@@ -106,6 +106,7 @@ class Data:
         #if self.args.verbose:
         #    print('no cuda?', self.args.no_cuda)
         kwargs = {'num_workers': 1, 'pin_memory': True} if not args.no_cuda else {'num_workers': 1}
+        kwargs.update(drop_last=True)
         # https://pytorch.org/docs/master/torchvision/transforms.html#torchvision.transforms.Resize
         # Resize the input PIL Image to the given size.
         tr = transforms.Resize((args.fullsize, 4*args.fullsize))
@@ -323,13 +324,13 @@ class ML():
             pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
             correct += pred.eq(target.data.view_as(pred)).long().cpu().sum()
 
-        test_loss /= len(self.dataset.test_loader.dataset)
+        test_loss /= len(dataloader.dataset)
 
         if self.args.log_interval>0:
             print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-            test_loss, correct, len(self.dataset.test_loader.dataset),
-            100. * correct / len(self.dataset.test_loader.dataset)))
-        return correct.numpy() / len(self.dataset.test_loader.dataset)
+            test_loss, correct, len(dataloader.dataset),
+            100. * correct / len(dataloader.dataset)))
+        return correct.numpy() / len(dataloader.dataset)
 
     def show(self, gamma=.5, noise_level=.4, transpose=True, only_wrong=False):
         for idx, (data, target) in enumerate(self.dataset.test_loader):
