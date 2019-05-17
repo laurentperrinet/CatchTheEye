@@ -67,7 +67,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
     return easydict.EasyDict(kwargs)
 
 import numpy as np
-from LeCheapEyeTracker.EyeTrackerServer import FaceExtractor
+# from LeCheapEyeTracker.EyeTrackerServer import FaceExtractor
 import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
@@ -454,7 +454,7 @@ class MetaML:
 if __name__ == '__main__':
     import os
     filename = 'figures/accuracy.pdf'
-    if not os.path.exists(filename) :
+    if False : #not os.path.exists(filename) :
         args = init(verbose=0, log_interval=0, epochs=20)
         from gaze import MetaML
         mml = MetaML(args)
