@@ -308,8 +308,10 @@ class ML():
         data = t(image).unsqueeze(0)
         # data.requires_grad = False
         self.model.eval()
-        output = self.model(data)
-        return np.exp(output.data.numpy()[0, :].astype(np.float))
+        #output = self.model(data)
+        #return np.exp(output.data.numpy()[0, :].astype(np.float))
+        output = self.model(data.cuda())
+        return np.exp(output.cpu().data.numpy()[0, :].astype(np.float))
 
     def test(self, dataloader=None):
         if dataloader is None:
@@ -337,8 +339,9 @@ class ML():
             #data, target = next(iter(self.dataset.test_loader))
             data, target = data.to(self.device), target.to(self.device)
             output = self.model(data)
-            pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
-            if only_wrong and not pred == target:
+            pred = output.data.max(1, keepdim=False)[1] # get the index of the max log-probability
+            #if only_wrong and not pred == target :
+            if only_wrong and not all(pred) == all(target) :
                 #print(target, self.dataset.dataset.imgs[self.dataset.test_loader.dataset.indices[idx]])
                 print('target:' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in target))
                 print('pred  :' + ' '.join('%5s' % self.dataset.dataset.classes[j] for j in pred))
