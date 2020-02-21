@@ -105,3 +105,5 @@ ENV/
 # mypy
 .mypy_cache/
 .DS_Store
+figures/accuracy.pdf
+_Regard_400.pt
