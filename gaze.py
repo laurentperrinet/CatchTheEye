@@ -67,7 +67,7 @@ def init(dataset_folder=dataset_folder, dataset_faces_folder=dataset_faces_folde
     return easydict.EasyDict(kwargs)
 
 import numpy as np
-# from LeCheapEyeTracker.EyeTrackerServer import FaceExtractor
+from LeCheapEyeTracker.EyeTrackerServer import FaceExtractor
 import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
