@@ -77,9 +77,11 @@ from torchvision.datasets import ImageFolder
 import torchvision
 import torch.optim as optim
 import torch.nn.functional as F
-#ACTIVATION = F.relu
-ACTIVATION = torch.tanh
-#ACTIVATION = F.softmax
+
+# TODO add a args.activation str variable
+ACTIVATION = F.relu
+# ACTIVATION = torch.tanh
+# ACTIVATION = F.softmax
 
 class Data:
     def __init__(self, args):
@@ -169,10 +171,11 @@ class Data:
 
 class Net(nn.Module):
     def __init__(self, args):
+        # TODO : rajouter la position de la tete comme entrée
         super(Net, self).__init__()
         self.args = args
         # data is in the format (N, C, H, W)
-        self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size)
+        self.conv1 = nn.Conv2d(3, args.conv1_dim, kernel_size=args.conv1_kernel_size) # TODO add , padding_mode=args.padding_mode
         self.conv1_bn = nn.BatchNorm2d(args.conv1_dim, momentum=1-args.conv1_bn_momentum)
         padding1 = args.conv1_kernel_size - 1 # total padding in layer 1 (before max pooling)
         # https://pytorch.org/docs/stable/nn.html#torch.nn.MaxPool2d
@@ -186,7 +189,7 @@ class Net(nn.Module):
         out_width_2 = (out_width_1 - padding2 - args.stride2) // args.stride2 + 1
         fc1_dim = (out_width_2*out_height_2) * args.conv2_dim
         self.dense_1 = nn.Linear(fc1_dim, args.dimension)
-        #This momentum argument is different from one used in optimizer classes and the conventional notion of momentum. Mathematically, the update rule for running statistics here is x̂ new=(1−momentum)×x̂ +momemtum×xt, where x̂  is the estimated statistic and xt is the new observed value.
+        # This momentum argument is different from one used in optimizer classes and the conventional notion of momentum. Mathematically, the update rule for running statistics here is x̂ new=(1−momentum)×x̂ +momemtum×xt, where x̂  is the estimated statistic and xt is the new observed value.
         self.dense_bn = nn.BatchNorm1d(args.dimension, momentum=1-args.dense_bn_momentum)
         self.dense_2 = nn.Linear(args.dimension, len(self.args.classes))
         self.dense_input_size = None
@@ -448,8 +451,6 @@ class MetaML:
         Accuracy = self.scan(parameter, values)
         if display:
             fig, ax = plt.subplots(figsize=(8, 5))
-
-
 
         return Accuracy
 
