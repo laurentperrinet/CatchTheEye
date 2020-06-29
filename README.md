@@ -5,6 +5,17 @@ this simple framework uses a deep learning network to find the eye in the image 
 ![description1](figures/timing.png "temporal prediction of eye position")
 ***Figure:*** *In a rapid succession of grabbed frames, we report the prediction of LeCheapEyeTracker when showing the target at different locations (white and blue dot)*
 
+
+# to look at:
+
+* http://dlib.net/face_alignment.py.html
+
+* https://chtseng.files.wordpress.com/2018/08/5748_kwml-lh-w.png?w=1140
+
+* https://hintjens.gitbooks.io/psychopathcode/content/
+
+* https://github.com/laurentperrinet/ActiveVision/blob/master/dev/2020-04-12_HOLO_server.py
+
 ## install
 
 ````
