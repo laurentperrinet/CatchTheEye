@@ -10,9 +10,12 @@ import numpy as np
 import time
 
 # VISUALIZATION ROUTINES
-from vispy import app
-from vispy import gloo
-
+# TODO remove that dependence when not using it
+try:
+    from vispy import app
+    from vispy import gloo
+except:
+    pass
 #--------------------------------------------------------------------------
 
 class Stimulation(object):

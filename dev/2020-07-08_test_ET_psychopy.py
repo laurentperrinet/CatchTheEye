@@ -30,9 +30,8 @@ class Experiment(object) :
         try: os.mkdir(self.datadir)
         except: pass
         for target in targets :
-            print(os.path.join(self.datadir, target))
-            try: os.mkdir(os.path.join(self.datadir, target))
-            except: pass
+            print('target:', os.path.join(self.datadir, target))
+            os.makedirs(os.path.join(self.datadir, target), exist_ok=True)
 
         #----------------------------------------------------
         # Caméra
@@ -48,13 +47,14 @@ class Experiment(object) :
         # ---------------------------------------------------
         # Présente un dialogue pour changer les paramètres
         # ---------------------------------------------------
-        expInfo = {"Sujet":'', "Age":'', "Nomdre de trials":''}
-        from psychopy import gui
-        dlg = gui.DlgFromDict(expInfo, title=u'aSPEM')
+        # TODO faire un argparse
+        # expInfo = {"Sujet":'', "Age":'', "Nomdre de trials":''}
+        #from psychopy import gui
+        #dlg = gui.DlgFromDict(expInfo, title=u'aSPEM')
 
-        self.observer = expInfo["Sujet"]
-        age = expInfo["Age"]
-        N_trials = int(expInfo["Nomdre de trials"])
+        self.observer = "Toto" # expInfo["Sujet"]
+        # age = 12 # expInfo["Age"]
+        N_trials = 200 # int(expInfo["Nomdre de trials"])
 
         # ---------------------------------------------------
         # screen
@@ -67,7 +67,7 @@ class Experiment(object) :
         # ---------------------------------------------------
         # stimulus parameters
         # ---------------------------------------------------
-        dot_size = 10 # (0.02*screen_height_px)
+        dot_size = 30 # (0.02*screen_height_px) TODO : make relative to screen size
         saccade_px = .618*screen_height_px
         offset = 0 #.2*screen_height_px
 
@@ -75,14 +75,15 @@ class Experiment(object) :
         # Trial
         # ---------------------------------------------------
         #seed = 51
-        trials = [targets[x%4] for x in range(N_trials)]
+        trials = [targets[x%len(targets)] for x in range(N_trials)]
+        np.random.shuffle(trials)
 
         # ---------------------------------------------------
         self.param_exp = dict(N_trials=N_trials, trials=trials, #seed=seed,
                               screen=screen, framerate=framerate,
                               screen_width_px=screen_width_px, screen_height_px=screen_height_px,
                               dot_size=dot_size, saccade_px=saccade_px, offset=offset,
-                              age=age, observer=self.observer, timeStr=self.timeStr)
+                              observer=self.observer, timeStr=self.timeStr)
 
     def exp_name(self) :
         return os.path.join(self.datadir, self.timeStr[:10] + '_' + self.observer + '.pkl')
@@ -95,7 +96,6 @@ class Experiment(object) :
         # ---------------------------------------------------
         win = visual.Window([self.param_exp['screen_width_px'], self.param_exp['screen_height_px']], color=(0, 0, 0),
                             allowGUI=False, fullscr=True, screen=self.param_exp['screen'], units='pix') # enlever fullscr=True pour écran 2
-
         win.setRecordFrameIntervals(True)
         win._refreshThreshold = 1/self.param_exp['framerate'] + 0.004 # i've got 50Hz monitor and want to allow 4ms tolerance
 
@@ -107,16 +107,16 @@ class Experiment(object) :
         fixation = visual.GratingStim(win, mask='cross', sf=0, color='white', size=self.param_exp['dot_size'])
         target   = visual.GratingStim(win, mask='circle', sf=0, color='white', size=self.param_exp['dot_size'])
 
-        def escape_possible() :
+        def possible_escape() :
             if event.getKeys(keyList=['escape', 'a', 'q']):
                 win.close()
                 core.quit()
 
         # ---------------------------------------------------
         def presentStimulus(dir_target) :
-            escape_possible()
+            possible_escape()
             if dir_target=='blink' :
-                escape_possible()
+                possible_escape()
                 win.color = (1, 1, 1)
                 win.flip()
                 win.flip()
@@ -128,11 +128,13 @@ class Experiment(object) :
                 win.flip()
                 core.wait(0.5)
 
-            if self.camera != None : frame = self.camera.grab()
-            else :              frame = None
+            # if self.camera != None :
+
+            frame = self.camera.grab()
+            # else :              frame = None
             core.wait(0.5)
             win.color = (0, 0, 0)
-            escape_possible()
+            possible_escape()
             win.flip()
 
             return frame
@@ -147,16 +149,16 @@ class Experiment(object) :
             # FIXATION
             # ---------------------------------------------------
             fixation.draw()
-            escape_possible()
+            possible_escape()
             win.flip()
-            core.wait(1)
+            core.wait(.2)
 
             # ---------------------------------------------------
             # GAP
             # ---------------------------------------------------
             win.flip()
-            escape_possible()
-            core.wait(0.3)
+            possible_escape()
+            core.wait(.2)
 
             # ---------------------------------------------------
             # Target
@@ -168,8 +170,8 @@ class Experiment(object) :
             frame = presentStimulus(dir_target)
 
 
-            if frame != None :
-                filename = os.path.join(datadir, self.timeStr[:10] + '_' + self.observer + '_' + '%.3d' % i + '.png')
+            if not(frame is None):
+                filename = os.path.join(self.datadir, trial, self.timeStr[:10] + '_' + self.observer + '_' + '%.3d' % i + '.png')
                 imageio.imwrite(filename, frame[:, :, ::-1]) # converting on the fly from BGR > RGB
             else :
 
@@ -178,7 +180,7 @@ class Experiment(object) :
 
                 win.flip()
                 msg_Warning.draw()
-                escape_possible()
+                possible_escape()
                 win.flip()
                 core.wait(2)
 
@@ -203,7 +205,7 @@ if __name__ == '__main__':
 
     import time
     timeStr = time.strftime("%Y-%m-%d_%H%M%S", time.localtime())
-
     e = Experiment(timeStr)
     print('Starting protocol')
     e.run_experiment()
+    
