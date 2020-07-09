@@ -28,7 +28,7 @@ def parse() :
     parser.add_argument("-g_dur",   "--gap_dur",            default=.2,         type=float,     help="durée du GAP")
     parser.add_argument("-v",       "--verb",               default=False,      type=bool,      help="Verbose?")
 
-     return parser.parse_args()
+    return parser.parse_args()
 
 
 class Experiment(object) :
@@ -48,7 +48,7 @@ class Experiment(object) :
         import os
         os.makedirs(self.datadir, exist_ok=True)
         for target in targets :
-            if self.verb: print('target:', os.path.join(self.datadir, target))
+            if self.args.verb: print('target:', os.path.join(self.datadir, target))
             os.makedirs(os.path.join(self.datadir, target), exist_ok=True)
 
         #----------------------------------------------------
@@ -74,7 +74,7 @@ class Experiment(object) :
             i=0
             while os.path.exists(self.exp_name()) :
                 self.args.observer = observer + '_' + str(i)
-                if self.verb: print(observer, self.args.observer)
+                if self.args.verb: print(observer, self.args.observer)
                 i+=1
 
         self.exp_name = self.exp_name()
@@ -146,7 +146,7 @@ class Experiment(object) :
                               )
 
     def exp_name(self) :
-        return os.path.join(self.datadir, self.timeStr[:10] + '_' + self.args.observer + '_' + self.args.age + '.pkl')
+        return os.path.join(self.datadir, self.timeStr[:10] + '_' + self.args.observer + '_' + str(self.args.age) + '.pkl')
 
     def save_param_exp(self):
         self.param_exp['N_trials'] = self.trial
