@@ -22,10 +22,10 @@ def parse() :
     parser.add_argument("-s_h",     "--screen_height_px",   default=1080,       type=int,       help="hauteur de l'écran (en pixel)")
     parser.add_argument("-f",       "--framerate",          default=60,         type=float,     help="taux de rafraichisement de l'écran")
     parser.add_argument("-t_s",     "--target_size",        default=0.05,       type=float,     help="taille de la cible relative à l'écran'")
-    parser.add_argument("-t_dur",   "--target_dur",         default=1.,         type=float,    help="durée de la cible  /!\ doit être superieur a photo_time")
-    parser.add_argument("-p_t",     "--photo_time",         default=.5,         type=float,     help="temps où la photo sera prise après l'apparition de la cible")
-    parser.add_argument("-f_dur",   "--fix_dur",            default=.2,         type=float,     help="durée de la fixation")
-    parser.add_argument("-g_dur",   "--gap_dur",            default=.2,         type=float,     help="durée du GAP")
+    parser.add_argument("-t_dur",   "--target_dur",         default=.7,         type=float,     help="durée de la cible  /!\ doit être superieur a photo_time")
+    parser.add_argument("-p_t",     "--photo_time",         default=.35,         type=float,     help="temps où la photo sera prise après l'apparition de la cible")
+    parser.add_argument("-f_dur",   "--fix_dur",            default=.15,         type=float,     help="durée de la fixation")
+    parser.add_argument("-g_dur",   "--gap_dur",            default=.1,         type=float,     help="durée du GAP")
     parser.add_argument("-v",       "--verb",               default=False,      type=bool,      help="Verbose?")
 
     return parser.parse_args()
@@ -80,43 +80,6 @@ class Experiment(object) :
         self.exp_name = self.exp_name()
 
         # ---------------------------------------------------
-        # Présente un dialogue pour changer les paramètres
-        # ---------------------------------------------------
-        if self.args.N_trials is None :
-
-            try :
-                expInfo = {"Sujet":self.args.observer,
-                            "Nomdre d'essais":'200',
-                            "largeur écran (en pixel)":self.args.screen_width_px,
-                            "hauteur écran (en pixel)":self.args.screen_height_px,
-                            "taux de rafraichisement de l'écran":self.args.framerate,
-                            "taille de la cible":self.args.target_size,
-                            "durée de la cible":self.args.target_dur,
-                            "temps où la photo sera prise après l'apparition de la cible":self.args.photo_time,
-                            "durée fixation":self.args.fix_dur,
-                            "durée GAP":self.args.gap_dur,
-                            }
-                from psychopy import gui
-                dlg = gui.DlgFromDict(expInfo, title=u'Experiment')
-
-                self.args.observer = expInfo["Sujet"] #"Toto"
-                self.args.N_trials = int(expInfo["Nomdre d'essais"])
-
-                self.args.screen_width_px = int(expInfo["largeur écran (en pixel)"])
-                self.args.screen_height_px = int(expInfo["hauteur écran (en pixel)"])
-                self.args.framerate = float(expInfo["taux de rafraichisement de l'écran"])
-
-                self.args.target_size=float(expInfo["taille de la cible"])
-                self.args.target_dur=float(expInfo["durée de la cible"])
-                self.args.photo_time=float(expInfo["temps où la photo sera prise après l'apparition de la cible"])
-                self.args.fix_dur=float(expInfo["durée fixation"])
-                self.args.gap_dur=float(expInfo["durée GAP"])
-
-            except :
-                print('N_trials pas définit par defaut 200')
-                self.args.N_trials = 200
-
-        # ---------------------------------------------------
         # screen
         # ---------------------------------------------------
         screen = 0 # 1 pour afficher sur l'écran 2 (ne marche pas pour eyeMvt (mac))
@@ -124,7 +87,7 @@ class Experiment(object) :
         # ---------------------------------------------------
         # stimulus parameters
         # ---------------------------------------------------
-        target_size = 0.05 # (0.02*screen_height_px) TODO : make relative to screen size
+        target_size = 0.05 # (0.02*screen_height_px) - relative to screen size
         saccade_px = .618 #*self.args.screen_height_px
         offset = 0 #.2*screen_height_px
 
@@ -145,8 +108,8 @@ class Experiment(object) :
                               fix_dur=self.args.fix_dur, gap_dur=self.args.gap_dur
                               )
 
-    def exp_name(self) :
-        return os.path.join(self.datadir, self.timeStr[:10] + '_' + self.args.observer + '_' + str(self.args.age) + '.pkl')
+    def exp_name(self, ext='.pkl') :
+        return os.path.join(self.datadir, self.timeStr[:10] + '_' + self.args.observer + '_' + str(self.args.age) + ext)
 
     def save_param_exp(self):
         self.param_exp['N_trials'] = self.trial
@@ -160,7 +123,6 @@ class Experiment(object) :
 
     def run_experiment(self, verb=True) :
 
-        self.trial=0
         from psychopy import visual, core, event, logging, prefs
 
         # ---------------------------------------------------
@@ -193,9 +155,13 @@ class Experiment(object) :
 
             possible_escape()
             if dir_target is None :
-                win.color = (1, 1, 1)
-                win.flip()
-                win.flip()
+                for _ in range(8):
+                    win.color = (1, 1, 1)
+                    win.flip()
+                    win.flip()
+                    win.color = (0, 0, 0)
+                    win.flip()
+                    win.flip()
                 core.wait(self.args.photo_time)
 
             else :
@@ -239,7 +205,6 @@ class Experiment(object) :
 
             frame = presentStimulus(trial)
 
-            self.trial=i+1
             if not(frame is None):
                 filename = os.path.join(self.datadir, trial, self.timeStr[:10] + '_' + self.args.observer + '__' + '%.3d' % i + '.png')
                 imageio.imwrite(filename, frame[:, :, ::-1]) # converting on the fly from BGR > RGB
@@ -251,17 +216,17 @@ class Experiment(object) :
                 possible_escape()
                 win.flip()
                 core.wait(2)
-
+                # TODO : break the loop + stop experiment
                 print("trial %.3d : non enregistré"%i)
 
 
         #''''''''''''''''''''''''''''''''''''''''''''
         # enregistre param_exp
         #''''''''''''''''''''''''''''''''''''''''''''
+        self.trial = i+1
         self.save_param_exp()
 
         win.update()
-        core.wait(0.5)
         win.saveFrameIntervals(fileName=None, clear=True)
 
         win.close()
