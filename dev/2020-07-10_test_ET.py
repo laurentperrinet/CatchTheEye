@@ -7,7 +7,7 @@ import os
 
 import imageio
 
-if False:
+if True:
     from LeCheapEyeTracker.EyeTrackerServer import Server
     et = Server()
     camera = et.cam
@@ -22,9 +22,10 @@ import time
 
 for i in range(5):
     print('i=', i+1)
-    frame = False
-    while not (frame):
-        ret, frame = camera.grab()
-        print(ret, frame)
+    # frame = False
+    frame = camera.grab()
+    # while not (frame):
+    #     ret, frame = camera.grab()
+    #     print(ret, frame)
     imageio.imwrite(f'/tmp/{i}.png', frame[:, :, ::-1]) # converting on the fly from BGR > RGB
     time.sleep(1)

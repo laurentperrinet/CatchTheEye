@@ -77,7 +77,6 @@ class Experiment(object) :
                 if self.args.verb: print(observer, self.args.observer)
                 i+=1
 
-        self.exp_name = self.exp_name()
 
         # ---------------------------------------------------
         # screen
@@ -116,7 +115,7 @@ class Experiment(object) :
         self.param_exp['trials']   = self.param_exp['trials'][:self.trial]
         print(self.param_exp)
 
-        with open(self.exp_name, 'wb') as fichier:
+        with open(self.exp_name(), 'wb') as fichier:
             f = pickle.Pickler(fichier)
             f.dump(self.param_exp)
 
@@ -205,10 +204,12 @@ class Experiment(object) :
 
             frame = presentStimulus(trial)
 
-            if not(frame is None):
+            #if not(frame is None):
+            try:
                 filename = os.path.join(self.datadir, trial, self.timeStr[:10] + '_' + self.args.observer + '__' + '%.3d' % i + '.png')
                 imageio.imwrite(filename, frame[:, :, ::-1]) # converting on the fly from BGR > RGB
-            else :
+            except Exception as e: #else :
+                print(f"trial {i} : non enregistré - error {e}")
                 msg_Warning = visual.TextStim(win, text=u"\n\n\ntrial %.3d : non enregistré"%i,
                                                font='calibri', height=.02, anchorHoriz='center', anchorVert='bottom')
                 win.flip()
@@ -217,7 +218,6 @@ class Experiment(object) :
                 win.flip()
                 core.wait(2)
                 # TODO : break the loop + stop experiment
-                print("trial %.3d : non enregistré"%i)
 
 
         #''''''''''''''''''''''''''''''''''''''''''''
