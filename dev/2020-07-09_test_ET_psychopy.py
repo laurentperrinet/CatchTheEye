@@ -154,7 +154,8 @@ class Experiment(object) :
 
             possible_escape()
             if dir_target is None :
-                for _ in range(8):
+                for _ in range(2):
+                    core.wait(self.args.target_dur/4)
                     win.color = (1, 1, 1)
                     win.flip()
                     win.flip()
