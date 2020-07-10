@@ -7,14 +7,8 @@ this simple framework uses a deep learning network to find the eye in the image 
 
 
 # to look at:
-* argparse as in https://laurentperrinet.github.io/sciblog/posts/2020-06-19-caustic-optics.html / https://github.com/NaturalPatterns/2020_caustiques/blob/master/caustique.py#L63
 
-* http://dlib.net/face_alignment.py.html
-
-* https://chtseng.files.wordpress.com/2018/08/5748_kwml-lh-w.png?w=1140
-
-* https://hintjens.gitbooks.io/psychopathcode/content/
-
+* https://pytorch.org/docs/stable/torchvision/models.html#object-detection-instance-segmentation-and-person-keypoint-detection instead of dlib
 * https://github.com/laurentperrinet/ActiveVision/blob/master/dev/2020-04-12_HOLO_server.py
 
 ## install
