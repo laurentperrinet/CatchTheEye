@@ -1,7 +1,7 @@
 default: run
 
 IP=10.164.6.114
-USER=laurent
+USER=chloe
 
 run:
 	python3 gaze.py
