@@ -1,14 +1,19 @@
 default: run
 
+IP=10.164.6.114
+USER=laurent
+
 run:
 	python3 gaze.py
 
 pull_results:
-	scp -r laurent@10.164.7.21:Documents/CatchTheEye/_tmp_scanning .
+	scp -r ${USER}@${IP}:Documents/CatchTheEye/_tmp_scanning .
 
 push_dataset:
-	rsync -av --delete dataset laurent@10.164.7.21:Documents/CatchTheEye
-	rsync -av --delete dataset_faces laurent@10.164.7.21:Documents/CatchTheEye
+	rsync -av --delete dataset ${USER}@${IP}:Documents/CatchTheEye
+
+pull_dataset:
+	rsync -av --delete ${USER}@${IP}:Documents/CatchTheEye/dataset .
 
 gitrun: clean
 	echo "Running 'make gitrun'" > output.txt

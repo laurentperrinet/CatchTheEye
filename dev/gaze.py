@@ -15,7 +15,7 @@
 #https://raw.githubusercontent.com/MorvanZhou/PyTorch-Tutorial/master/tutorial-contents/504_batch_normalization.py
 
 
-def init(print_help=False, dataset_folder='dataset', dataset_faces_folder=None, # dataset_faces_folder='dataset_faces',
+def init(print_help=False, dataset_folder='dataset', dataset_faces_folder=None, # dataset_faces_folder='_cache_dataset_faces',
          dataset_train='dataset_train', dataset_test='dataset_test',
          batch_size=16, test_batch_size=16, size_test_set=.2,
          epochs=40, do_adam=False, lr=0.01, momentum=0.05,

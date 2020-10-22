@@ -9,7 +9,7 @@
 #     y2 = faceRect.bottom()
 #
 dataset_folder = 'dataset'
-dataset_faces_folder = 'dataset_faces'
+dataset_faces_folder = '_cache_dataset_faces'
 batch_size = 16
 no_cuda = False
 test_batch_size = 16
