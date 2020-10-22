@@ -1,7 +1,8 @@
 
 _tmp_*
 dataset_faces
-dataset
+dataset*
+*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

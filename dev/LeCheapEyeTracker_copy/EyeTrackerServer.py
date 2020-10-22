@@ -67,9 +67,13 @@ class FaceExtractor:
                 
         cv2.destroyAllWindows()
 
-        eyes = np.concatenate([eyes[0][:np.min([np.shape(eyes[0])[0], np.shape(eyes[1])[0]])],
-                               eyes[1][:np.min([np.shape(eyes[0])[0], np.shape(eyes[1])[0]])]], axis=1)
-        
+        try :
+            eyes = np.concatenate([eyes[0][:np.min([np.shape(eyes[0])[0], np.shape(eyes[1])[0]])],
+                                   eyes[1][:np.min([np.shape(eyes[0])[0], np.shape(eyes[1])[0]])]], axis=1)
+        except :
+            eyes = None
+            print('/!\ no eyes found')
+
         return eyes
     
 
