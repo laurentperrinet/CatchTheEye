@@ -1,2 +1,2 @@
 from .EyeTrackerServer import *
-from .EyeTrackerClient import *
+#from .EyeTrackerClient import *

@@ -10,12 +10,16 @@ import time
 import numpy as np
 import cv2
 
+
 class FaceExtractor:
     def __init__(self):
 
         import dlib
         self.detector = dlib.get_frontal_face_detector()
-        p = "shape_predictor_68_face_landmarks.dat"
+        
+        from pathlib import Path
+        import os
+        p = os.path.join(Path(__file__).parent, "shape_predictor_68_face_landmarks.dat")
         self.predictor = dlib.shape_predictor(p)
 
     #def get_bbox(self, frame, do_center=True, do_topcrop=True):

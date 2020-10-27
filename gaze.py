@@ -102,7 +102,7 @@ def init(print_help=False, dataset_folder='dataset', dataset_faces_folder=None, 
 
 
 import numpy as np
-from LeCheapEyeTracker_copy.EyeTrackerServer import FaceExtractor
+from dev.LeCheapEyeTracker_copy.EyeTrackerServer import FaceExtractor # à changer
 import os
 import torch
 torch.set_default_tensor_type('torch.FloatTensor')
